@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MULTANI SMM PANEL</title>
     <!-- Stable Supabase CDN -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2.39.8/dist/umd/supabase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -363,10 +363,9 @@
 
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
-        const SUPABASE_KEY = "Sb_publishable_ZZ965dE5E0pkrTRLpE4Xpw_kB7yiQpW";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         let supabaseClient = null;
 
-        // Init Supabase
         if (window.supabase) {
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
@@ -374,7 +373,6 @@
         let currentUser = null;
         let allServices = [];
 
-        // Tab Switch (Login / Register)
         function showAuthTab(tab) {
             const loginCard = document.getElementById("loginCard");
             const registerCard = document.getElementById("registerCard");
@@ -394,7 +392,6 @@
             }
         }
 
-        // Auto Check Login
         window.addEventListener("DOMContentLoaded", async () => {
             if (!supabaseClient) return;
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -404,7 +401,6 @@
             }
         });
 
-        // Register Handler
         async function handleRegister(e) {
             e.preventDefault();
             const btn = document.getElementById("btnRegister");
@@ -434,14 +430,13 @@
                 currentUser = data.user;
                 openDashboard();
             } else {
-                // Direct Login fallback
                 const { data: logData, error: logErr } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: pass
                 });
 
                 if (logErr) {
-                    alert("Account ban gaya hai! Ab Login tab par ja kar login karein.");
+                    alert("Account create ho gaya! Login tab se login karein.");
                     showAuthTab('login');
                     document.getElementById("loginEmail").value = email;
                 } else {
@@ -451,7 +446,6 @@
             }
         }
 
-        // Login Handler
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById("btnLogin");
