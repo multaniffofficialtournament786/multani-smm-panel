@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase CDN Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
 
     <style>
         :root {
@@ -55,7 +55,7 @@
         ::-webkit-scrollbar-track { background: var(--bg-base); }
         ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
 
-        /* TOAST */
+        /* TOAST ALERT */
         #toastContainer {
             position: fixed;
             top: 15px;
@@ -69,7 +69,7 @@
         }
         .toast {
             padding: 12px 16px;
-            background: rgba(14, 17, 24, 0.95);
+            background: rgba(14, 17, 24, 0.96);
             border-left: 4px solid var(--accent-cyan);
             border-radius: 8px;
             display: flex;
@@ -88,7 +88,7 @@
         .toast.success { border-left-color: #10B981; }
         @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* AUTH */
+        /* AUTH SECTION */
         #authContainer {
             width: 100%;
             min-height: 100vh;
@@ -276,7 +276,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            max-width: 130px;
+            max-width: 120px;
             cursor: pointer;
         }
         .user-pill img {
@@ -316,6 +316,7 @@
             margin-bottom: 2px;
         }
 
+        /* 2 COLUMNS FIXED GRID FOR ALL MOBILES */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr) !important;
@@ -392,6 +393,7 @@
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
         .badge-failed { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
+        /* SERVICES CATALOG CARDS */
         .service-list {
             display: flex;
             flex-direction: column;
@@ -413,7 +415,7 @@
         .srv-right { text-align: right; flex-shrink: 0; }
         .srv-price { color: var(--accent-cyan); font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
 
-        /* DIRECT MESSENGER CHAT BOX */
+        /* LIVE CHAT BOX */
         .chat-container {
             display: flex;
             flex-direction: column;
@@ -485,7 +487,7 @@
             flex-shrink: 0;
         }
 
-        /* PROFILE AVATAR PICKER */
+        /* AVATAR GALLERY PICKER */
         .avatar-uploader-box {
             display: flex;
             flex-direction: column;
@@ -930,12 +932,11 @@
                     </div>
                 </section>
 
-                <!-- VIEW 9: PROFILE (WITH GALLERY AVATAR & LOCKED GMAIL & CONTACT NOTICE) -->
+                <!-- VIEW 9: PROFILE -->
                 <section id="profileView" class="page-view">
                     <div class="vip-card" style="max-width: 500px; margin: 0 auto;">
                         <h2 style="margin-bottom: 16px; color: var(--accent-cyan); font-size: 1.25rem;"><i class="fa-solid fa-user-gear"></i> Profile</h2>
                         
-                        <!-- Gallery Photo Picker -->
                         <div class="avatar-uploader-box">
                             <div class="avatar-preview-wrap" onclick="document.getElementById('avatarFileInput').click()">
                                 <img id="profileDisplayAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile Picture">
@@ -950,13 +951,11 @@
                             <input type="text" id="profFullName" placeholder="Your name">
                         </div>
 
-                        <!-- Fixed Permanent Email -->
                         <div class="form-group">
                             <label>Account Email (Fixed)</label>
                             <input type="email" id="profEmail" readonly disabled style="opacity: 0.6; cursor: not-allowed; background: #080b12;">
                         </div>
 
-                        <!-- English Notice for Password Change -->
                         <div style="background: rgba(0, 213, 255, 0.08); border-left: 3px solid var(--accent-cyan); padding: 12px; border-radius: 6px; margin-bottom: 18px; font-size: 0.8rem; color: var(--text-main);">
                             <i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan); margin-right: 6px;"></i>
                             To change your password, please contact admin support.
@@ -1148,10 +1147,8 @@
                 document.getElementById("dashWelcomeName").innerText = data.full_name || "VIP Member";
                 document.getElementById("profFullName").value = data.full_name || "";
                 
-                // Locked Permanent Email Display
                 document.getElementById("profEmail").value = currentUser.email || "";
 
-                // Avatar Display
                 if (data.avatar_url) {
                     document.getElementById("navAvatarImg").src = data.avatar_url;
                     document.getElementById("profileDisplayAvatar").src = data.avatar_url;
@@ -1162,7 +1159,6 @@
             }
         }
 
-        // GALLERY AVATAR UPLOAD
         async function uploadAvatarFromGallery(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1472,7 +1468,6 @@
             `).join("");
         }
 
-        /* LIVE CHAT MESSENGER */
         async function loadChatMessages() {
             const { data, error } = await supabaseClient
                 .from("chat_messages")
