@@ -169,7 +169,6 @@
             cursor: pointer;
         }
 
-        /* POST-AUTH APP */
         #appContainer {
             width: 100%;
             display: flex;
@@ -233,7 +232,7 @@
             overflow-x: hidden;
         }
 
-        /* TOP NAVBAR - COMPACT & NO OVERFLOW */
+        /* TOP NAVBAR */
         .top-navbar {
             height: 60px;
             background: var(--bg-card);
@@ -278,13 +277,15 @@
             align-items: center;
             gap: 6px;
             max-width: 130px;
+            cursor: pointer;
         }
         .user-pill img {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             border: 1.5px solid var(--accent-orange);
             flex-shrink: 0;
+            object-fit: cover;
         }
         .user-name-text {
             font-weight: 600;
@@ -303,7 +304,6 @@
         .page-view { display: none; }
         .page-view.active { display: block; }
 
-        /* WELCOME BANNER - SLEEK & COMPACT */
         .vip-banner {
             background: linear-gradient(135deg, #151C29 0%, #0E1118 100%);
             border: 1px solid var(--border-card);
@@ -316,7 +316,6 @@
             margin-bottom: 2px;
         }
 
-        /* STATS GRID - 2 COLUMNS STRICT */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr) !important;
@@ -393,7 +392,6 @@
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
         .badge-failed { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
-        /* SERVICES CARDS VIEW (MOBILE-FIRST) */
         .service-list {
             display: flex;
             flex-direction: column;
@@ -487,7 +485,41 @@
             flex-shrink: 0;
         }
 
-        /* MOBILE BOTTOM APP BAR */
+        /* PROFILE AVATAR PICKER */
+        .avatar-uploader-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .avatar-preview-wrap {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-cyan);
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 213, 255, 0.3);
+            cursor: pointer;
+        }
+        .avatar-preview-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-cam-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            text-align: center;
+            font-size: 0.75rem;
+            padding: 3px 0;
+        }
+
         .mobile-bottom-nav {
             display: none;
             position: fixed;
@@ -516,7 +548,6 @@
         .mobile-nav-item i { font-size: 1.15rem; }
         .mobile-nav-item.active { color: var(--accent-orange); }
 
-        /* MODAL */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -569,7 +600,7 @@
         </div>
     </div>
 
-    <!-- 1. AUTH SCREEN -->
+    <!-- AUTH SCREEN -->
     <div id="authContainer">
         <div class="auth-box">
             <div style="text-align: center; margin-bottom: 20px;">
@@ -613,7 +644,7 @@
         </div>
     </div>
 
-    <!-- 2. MAIN VIP APP -->
+    <!-- MAIN VIP APP -->
     <div id="appContainer" class="hidden">
         
         <aside class="sidebar" id="appSidebar">
@@ -647,7 +678,7 @@
                 </div>
                 <div class="top-right">
                     <div class="user-pill" onclick="navigateTo('profileView')">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar">
+                        <img id="navAvatarImg" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar">
                         <span class="user-name-text" id="navUserName">VIP User</span>
                     </div>
                 </div>
@@ -657,13 +688,11 @@
                 
                 <!-- VIEW 1: DASHBOARD -->
                 <section id="dashboardView" class="page-view active">
-                    <!-- Clean Compact Welcome Banner -->
                     <div class="vip-banner">
                         <h2>Welcome, <span id="dashWelcomeName" style="color: var(--accent-cyan);">VIP Member</span></h2>
                         <p style="color: var(--text-muted); font-size: 0.75rem;">Account: <span style="color: #10B981; font-weight: 700;">Active Level 1</span></p>
                     </div>
 
-                    <!-- 2-Column Balanced Stats Grid -->
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-icon" style="background: rgba(52, 120, 246, 0.15); color: var(--accent-blue);"><i class="fa-solid fa-cart-shopping"></i></div>
@@ -763,7 +792,7 @@
                     </div>
                 </section>
 
-                <!-- VIEW 3: SERVICES CATALOG (CARDS FORMAT) -->
+                <!-- VIEW 3: SERVICES CATALOG -->
                 <section id="servicesView" class="page-view">
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px;">
@@ -876,7 +905,7 @@
                     </div>
                 </section>
 
-                <!-- VIEW 8: DIRECT LIVE CHAT (REPLACES TRADITIONAL TICKETS) -->
+                <!-- VIEW 8: DIRECT LIVE CHAT -->
                 <section id="supportView" class="page-view">
                     <div class="chat-container">
                         <div class="chat-header">
@@ -901,22 +930,38 @@
                     </div>
                 </section>
 
-                <!-- VIEW 9: PROFILE -->
+                <!-- VIEW 9: PROFILE (WITH GALLERY AVATAR & LOCKED GMAIL & CONTACT NOTICE) -->
                 <section id="profileView" class="page-view">
                     <div class="vip-card" style="max-width: 500px; margin: 0 auto;">
                         <h2 style="margin-bottom: 16px; color: var(--accent-cyan); font-size: 1.25rem;"><i class="fa-solid fa-user-gear"></i> Profile</h2>
+                        
+                        <!-- Gallery Photo Picker -->
+                        <div class="avatar-uploader-box">
+                            <div class="avatar-preview-wrap" onclick="document.getElementById('avatarFileInput').click()">
+                                <img id="profileDisplayAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Profile Picture">
+                                <div class="avatar-cam-badge"><i class="fa-solid fa-camera"></i> Change</div>
+                            </div>
+                            <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="uploadAvatarFromGallery(event)">
+                            <small style="color: var(--text-muted); font-size: 0.7rem; margin-top: 6px;">Tap image to upload from gallery</small>
+                        </div>
+
                         <div class="form-group">
                             <label>Full Name</label>
                             <input type="text" id="profFullName" placeholder="Your name">
                         </div>
+
+                        <!-- Fixed Permanent Email -->
                         <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="profEmail" readonly disabled style="opacity: 0.6;">
+                            <label>Account Email (Fixed)</label>
+                            <input type="email" id="profEmail" readonly disabled style="opacity: 0.6; cursor: not-allowed; background: #080b12;">
                         </div>
-                        <div class="form-group">
-                            <label>New Password (Optional)</label>
-                            <input type="password" id="profNewPass" placeholder="••••••••">
+
+                        <!-- English Notice for Password Change -->
+                        <div style="background: rgba(0, 213, 255, 0.08); border-left: 3px solid var(--accent-cyan); padding: 12px; border-radius: 6px; margin-bottom: 18px; font-size: 0.8rem; color: var(--text-main);">
+                            <i class="fa-solid fa-shield-halved" style="color: var(--accent-cyan); margin-right: 6px;"></i>
+                            To change your password, please contact admin support.
                         </div>
+
                         <button class="btn-vip" onclick="updateUserProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
                     </div>
                 </section>
@@ -1102,11 +1147,52 @@
                 document.getElementById("navUserName").innerText = data.full_name || "VIP User";
                 document.getElementById("dashWelcomeName").innerText = data.full_name || "VIP Member";
                 document.getElementById("profFullName").value = data.full_name || "";
-                document.getElementById("profEmail").value = data.email || currentUser.email;
+                
+                // Locked Permanent Email Display
+                document.getElementById("profEmail").value = currentUser.email || "";
+
+                // Avatar Display
+                if (data.avatar_url) {
+                    document.getElementById("navAvatarImg").src = data.avatar_url;
+                    document.getElementById("profileDisplayAvatar").src = data.avatar_url;
+                }
 
                 const refCode = data.referral_code || "VIP";
                 document.getElementById("refLinkInput").value = `${window.location.origin}?ref=${refCode}`;
             }
+        }
+
+        // GALLERY AVATAR UPLOAD
+        async function uploadAvatarFromGallery(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            notify("Uploading photo...", "info");
+            const fileExt = file.name.split('.').pop();
+            const filePath = `avatar_${currentUser.id}_${Date.now()}.${fileExt}`;
+
+            const { error: uploadError } = await supabaseClient.storage
+                .from('avatars')
+                .upload(filePath, file, { upsert: true });
+
+            if (uploadError) return notify("Upload failed: " + uploadError.message, "error");
+
+            const { data: urlData } = supabaseClient.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            const publicUrl = urlData.publicUrl;
+
+            const { error: updateError } = await supabaseClient
+                .from('profiles')
+                .update({ avatar_url: publicUrl })
+                .eq('id', currentUser.id);
+
+            if (updateError) return notify(updateError.message, "error");
+
+            document.getElementById("profileDisplayAvatar").src = publicUrl;
+            document.getElementById("navAvatarImg").src = publicUrl;
+            notify("Profile photo updated successfully!", "success");
         }
 
         async function fetchCategoriesAndServices() {
@@ -1280,7 +1366,6 @@
             renderOrdersTable(list, "allOrdersTableBody");
         }
 
-        // SEQUENTIAL GLOBAL ORDER NUMBER RENDERING
         function renderOrdersTable(items, targetId) {
             const body = document.getElementById(targetId);
             if (!items || items.length === 0) {
@@ -1300,7 +1385,6 @@
             `).join("");
         }
 
-        // SERVICES CATALOG - MODERN MOBILE CARDS
         function renderServicesCatalog(items) {
             const container = document.getElementById("servicesCardsContainer");
             if (!items || items.length === 0) {
@@ -1388,13 +1472,15 @@
             `).join("");
         }
 
-        // DIRECT LIVE CHAT MESSENGER LOGIC
+        /* LIVE CHAT MESSENGER */
         async function loadChatMessages() {
-            const { data } = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from("chat_messages")
                 .select("*")
                 .eq("user_id", currentUser.id)
                 .order("created_at", { ascending: true });
+
+            if (error) return;
 
             const box = document.getElementById("chatMessagesBox");
             if (!data || data.length === 0) return;
@@ -1438,17 +1524,11 @@
 
         async function updateUserProfile() {
             const name = document.getElementById("profFullName").value.trim();
-            const pass = document.getElementById("profNewPass").value;
-
             if (name) {
-                await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
+                const { error } = await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
+                if (error) return notify(error.message, "error");
             }
-            if (pass) {
-                if (pass.length < 6) return notify("Password min 6 chars", "error");
-                await supabaseClient.auth.updateUser({ password: pass });
-            }
-
-            notify("Profile updated!", "success");
+            notify("Profile updated successfully!", "success");
             fetchUserProfile();
         }
 
