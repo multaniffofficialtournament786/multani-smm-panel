@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MULTANI SMM PANEL</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 15px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2, h3 {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 60px auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .btn-outline:hover {
+            background: #334155;
+            color: #fff;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding: 15px 20px;
+            background: var(--card-bg);
+        }
+
+        .balance-badge {
+            background: #064e3b;
+            color: #34d399;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            border: 1px solid #059669;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: capitalize;
+            font-size: 0.75rem;
+        }
+
+        .status-pending { background: #854d0e; color: #fef08a; }
+        .status-completed { background: #065f46; color: #a7f3d0; }
+        .status-processing, .status-in_progress { background: #1e40af; color: #bfdbfe; }
+        .status-cancelled, .status-failed { background: #991b1b; color: #fecaca; }
+
+        .hidden { display: none !important; }
+        .price-display {
+            font-size: 1.1rem;
+            color: #38bdf8;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH SECTION -->
+    <div id="authSection" class="auth-container">
+        <div class="card">
+            <h2 id="authTitle" style="text-align: center;">Multani SMM Login</h2>
+            <form id="authForm">
+                <div class="form-group" id="fullNameGroup" style="display: none;">
+                    <label>Full Name</label>
+                    <input type="text" id="authName" placeholder="Muhammad Nadeem">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="authEmail" required placeholder="user@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="authPassword" required placeholder="Minimum 6 characters">
+                </div>
+                <button type="submit" class="btn" id="authSubmitBtn">Login</button>
+                <button type="button" class="btn btn-outline" id="toggleAuthBtn">Don't have an account? Sign up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboardSection" class="hidden">
+        <header class="navbar">
+            <div style="font-weight: 700; font-size: 1.1rem;">MULTANI SMM</div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="balance-badge" id="userBalance">$0.0000</span>
+                <button class="btn btn-outline" id="logoutBtn" style="width: auto; margin: 0; padding: 6px 12px; font-size: 0.85rem;">Logout</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('newOrderTab')">New Order</button>
+                <button class="tab-btn" onclick="switchTab('orderHistoryTab')">Order History</button>
+                <button class="tab-btn" onclick="switchTab('depositTab')">Add Funds (Easypaisa/JazzCash)</button>
+            </div>
+
+            <!-- TAB 1: NEW ORDER -->
+            <div id="newOrderTab" class="card tab-content">
+                <h3>Place an Order</h3>
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="orderCategory" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Service</label>
+                        <select id="orderService" required disabled>
+                            <option value="">Select Category First</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Link / Username</label>
+                        <input type="text" id="orderLink" required placeholder="https://tiktok.com/@username/video/...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="orderQuantity" required min="1" placeholder="e.g. 1000">
+                        <small id="serviceLimits" style="color: var(--text-muted); font-size: 0.8rem;"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Total Price (USD)</label>
+                        <div class="price-display" id="calculatedCharge">$0.0000</div>
+                    </div>
+
+                    <button type="submit" class="btn" id="placeOrderBtn">Submit Order</button>
+                </form>
+            </div>
+
+            <!-- TAB 2: ORDER HISTORY -->
+            <div id="orderHistoryTab" class="card tab-content hidden">
+                <h3>Your Orders</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Service</th>
+                                <th>Link</th>
+                                <th>Qty</th>
+                                <th>Cost</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderHistoryBody">
+                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: DEPOSITS -->
+            <div id="depositTab" class="card tab-content hidden">
+                <h3>Deposit Funds</h3>
+                <div style="background: #0f172a; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;">
+                    <p style="font-weight: 600; margin-bottom: 5px; color: #38bdf8;">Manual Payment Details:</p>
+                    <p>• <strong>Easypaisa:</strong> 03186815926 (M Nadeem)</p>
+                    <p>• <strong>JazzCash:</strong> 03017573729 (Muhammad Nadeem)</p>
+                    <p style="margin-top: 8px; color: var(--text-muted); font-size: 0.8rem;">After sending payment, enter the details below. Admin will verify and credit your balance within minutes.</p>
+                </div>
+
+                <form id="depositForm">
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select id="depositMethod" required>
+                            <option value="Easypaisa">Easypaisa</option>
+                            <option value="JazzCash">JazzCash</option>
+                            <option value="Bank">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amount in USD ($)</label>
+                        <input type="number" step="0.01" id="depositAmount" required placeholder="e.g. 5.00">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Transaction ID / TRX ID</label>
+                        <input type="text" id="depositTrx" required placeholder="e.g. 8192847192">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Your Account Number / Sender Details</label>
+                        <input type="text" id="depositSender" required placeholder="03XXXXXXXXX">
+                    </div>
+
+                    <button type="submit" class="btn">Submit Deposit Proof</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SUPABASE CLIENT CONFIGURATION
+        const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
+        const SUPABASE_KEY = "Sb_publishable_ZZ965dE5E0pkrTRLpE4Xpw_kB7yiQpW";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUser = null;
+        let isSignUpMode = false;
+        let allServices = [];
+
+        // DOM ELEMENTS
+        const authSection = document.getElementById("authSection");
+        const dashboardSection = document.getElementById("dashboardSection");
+        const authForm = document.getElementById("authForm");
+        const authTitle = document.getElementById("authTitle");
+        const authSubmitBtn = document.getElementById("authSubmitBtn");
+        const toggleAuthBtn = document.getElementById("toggleAuthBtn");
+        const fullNameGroup = document.getElementById("fullNameGroup");
+        const userBalanceEl = document.getElementById("userBalance");
+
+        // CHECK AUTH ON LOAD
+        async function initAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                showDashboard();
+            } else {
+                showAuth();
+            }
+        }
+        initAuth();
+
+        // TOGGLE LOGIN / SIGNUP
+        toggleAuthBtn.addEventListener("click", () => {
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                authTitle.innerText = "Create Multi-SMM Account";
+                authSubmitBtn.innerText = "Register";
+                fullNameGroup.style.display = "block";
+                toggleAuthBtn.innerText = "Already have an account? Login";
+            } else {
+                authTitle.innerText = "Multani SMM Login";
+                authSubmitBtn.innerText = "Login";
+                fullNameGroup.style.display = "none";
+                toggleAuthBtn.innerText = "Don't have an account? Sign up";
+            }
+        });
+
+        // HANDLE AUTH SUBMIT
+        authForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("authEmail").value.trim();
+            const password = document.getElementById("authPassword").value;
+            const fullName = document.getElementById("authName").value.trim();
+
+            if (isSignUpMode) {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { full_name: fullName } }
+                });
+                if (error) return alert("Signup Error: " + error.message);
+                alert("Account created successfully!");
+                currentUser = data.user;
+                showDashboard();
+            } else {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) return alert("Login Error: " + error.message);
+                currentUser = data.user;
+                showDashboard();
+            }
+        });
+
+        // LOGOUT
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+            await supabase.auth.signOut();
+            location.reload();
+        });
+
+        function showAuth() {
+            authSection.classList.remove("hidden");
+            dashboardSection.classList.add("hidden");
+        }
+
+        async function showDashboard() {
+            authSection.classList.add("hidden");
+            dashboardSection.classList.remove("hidden");
+            loadUserProfile();
+            loadCategoriesAndServices();
+            loadOrderHistory();
+        }
+
+        // LOAD LIVE BALANCE
+        async function loadUserProfile() {
+            const { data, error } = await supabase
+                .from("profiles")
+                .select("balance")
+                .eq("id", currentUser.id)
+                .single();
+
+            if (!error && data) {
+                userBalanceEl.innerText = `$${parseFloat(data.balance).toFixed(4)}`;
+            }
+        }
+
+        // LOAD CATEGORIES & SERVICES
+        async function loadCategoriesAndServices() {
+            const { data: categories } = await supabase
+                .from("categories")
+                .select("*")
+                .eq("is_active", true)
+                .order("sort_order");
+
+            const { data: services } = await supabase
+                .from("services")
+                .select("*")
+                .eq("is_active", true);
+
+            allServices = services || [];
+
+            const categorySelect = document.getElementById("orderCategory");
+            categorySelect.innerHTML = '<option value="">Select Category</option>';
+            if (categories) {
+                categories.forEach(cat => {
+                    const opt = document.createElement("option");
+                    opt.value = cat.id;
+                    opt.textContent = cat.name;
+                    categorySelect.appendChild(opt);
+                });
+            }
+        }
+
+        // ON CATEGORY CHANGE -> POPULATE SERVICES
+        const orderCategory = document.getElementById("orderCategory");
+        const orderService = document.getElementById("orderService");
+        const orderQuantity = document.getElementById("orderQuantity");
+        const calculatedCharge = document.getElementById("calculatedCharge");
+        const serviceLimits = document.getElementById("serviceLimits");
+
+        orderCategory.addEventListener("change", () => {
+            const catId = orderCategory.value;
+            orderService.innerHTML = '<option value="">Select Service</option>';
+            orderService.disabled = true;
+            serviceLimits.innerText = "";
+            calculatedCharge.innerText = "$0.0000";
+
+            if (!catId) return;
+
+            const filtered = allServices.filter(s => s.category_id === catId);
+            filtered.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.id;
+                opt.textContent = `${s.name} - $${parseFloat(s.rate_per_1k).toFixed(4)}/1k`;
+                orderService.appendChild(opt);
+            });
+            orderService.disabled = false;
+        });
+
+        // CALCULATE DYNAMIC PRICE
+        function updatePrice() {
+            const sId = orderService.value;
+            const qty = parseInt(orderQuantity.value) || 0;
+            const selected = allServices.find(s => s.id === sId);
+
+            if (selected) {
+                serviceLimits.innerText = `Min: ${selected.min_quantity} | Max: ${selected.max_quantity}`;
+                const total = (qty / 1000) * parseFloat(selected.rate_per_1k);
+                calculatedCharge.innerText = `$${total.toFixed(4)}`;
+            } else {
+                calculatedCharge.innerText = "$0.0000";
+            }
+        }
+
+        orderService.addEventListener("change", updatePrice);
+        orderQuantity.addEventListener("input", updatePrice);
+
+        // PLACE ORDER
+        document.getElementById("orderForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const sId = orderService.value;
+            const targetLink = document.getElementById("orderLink").value.trim();
+            const qty = parseInt(orderQuantity.value);
+            const selected = allServices.find(s => s.id === sId);
+
+            if (!selected) return alert("Please select a service.");
+            if (qty < selected.min_quantity || qty > selected.max_quantity) {
+                return alert(`Quantity must be between ${selected.min_quantity} and ${selected.max_quantity}`);
+            }
+
+            const totalCharge = (qty / 1000) * parseFloat(selected.rate_per_1k);
+            const idempotencyKey = `${currentUser.id}_${Date.now()}`;
+
+            // Create Order in DB
+            const { data, error } = await supabase
+                .from("orders")
+                .insert({
+                    user_id: currentUser.id,
+                    service_id: sId,
+                    target_link: targetLink,
+                    quantity: qty,
+                    charge: totalCharge,
+                    status: 'pending',
+                    idempotency_key: idempotencyKey
+                })
+                .select()
+                .single();
+
+            if (error) return alert("Failed to place order: " + error.message);
+
+            // Deduct balance atomically
+            const { error: deductError } = await supabase.rpc("process_order_deduction", {
+                p_user_id: currentUser.id,
+                p_order_id: data.id,
+                p_charge: totalCharge
+            });
+
+            if (deductError) {
+                // Mark order failed if balance insufficient
+                await supabase.from("orders").update({ status: 'failed' }).eq("id", data.id);
+                return alert("Order Error: " + deductError.message);
+            }
+
+            alert("Order placed successfully!");
+            document.getElementById("orderForm").reset();
+            calculatedCharge.innerText = "$0.0000";
+            loadUserProfile();
+            loadOrderHistory();
+            switchTab("orderHistoryTab");
+        });
+
+        // LOAD ORDERS
+        async function loadOrderHistory() {
+            const tbody = document.getElementById("orderHistoryBody");
+            const { data: orders, error } = await supabase
+                .from("orders")
+                .select("*, services(name)")
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false });
+
+            if (error || !orders || orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = orders.map(o => `
+                <tr>
+                    <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                    <td>${o.services ? o.services.name : 'Unknown Service'}</td>
+                    <td><a href="${o.target_link}" target="_blank" style="color: #38bdf8;">Link</a></td>
+                    <td>${o.quantity}</td>
+                    <td>$${parseFloat(o.charge).toFixed(4)}</td>
+                    <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                </tr>
+            `).join("");
+        }
+
+        // SUBMIT DEPOSIT
+        document.getElementById("depositForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const method = document.getElementById("depositMethod").value;
+            const amount = parseFloat(document.getElementById("depositAmount").value);
+            const trx = document.getElementById("depositTrx").value.trim();
+            const sender = document.getElementById("depositSender").value.trim();
+
+            const { error } = await supabase
+                .from("deposits")
+                .insert({
+                    user_id: currentUser.id,
+                    payment_method: method,
+                    amount: amount,
+                    transaction_id: trx,
+                    sender_account: sender,
+                    status: 'pending'
+                });
+
+            if (error) return alert("Deposit failed: " + error.message);
+
+            alert("Deposit request submitted! Once approved by admin, funds will reflect in your balance.");
+            document.getElementById("depositForm").reset();
+        });
+
+        // TAB SWITCHER
+        function switchTab(tabId) {
+            document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
+            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+            document.getElementById(tabId).classList.remove("hidden");
+            event.target.classList.add("active");
+            if (tabId === "orderHistoryTab") loadOrderHistory();
+        }
+    </script>
+</body>
+</html>
