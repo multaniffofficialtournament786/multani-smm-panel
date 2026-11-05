@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MULTANI SMM PANEL</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Stable Supabase CDN -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.8/dist/umd/supabase.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -14,15 +15,13 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: #334155;
-            --success: #10b981;
-            --danger: #ef4444;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
@@ -48,14 +47,33 @@
             margin-bottom: 20px;
         }
 
-        h2, h3 {
-            margin-bottom: 15px;
-            font-weight: 600;
+        .auth-container {
+            max-width: 420px;
+            margin: 40px auto;
+            width: 90%;
         }
 
-        .auth-container {
-            max-width: 400px;
-            margin: 60px auto;
+        .auth-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .switch-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .switch-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
         }
 
         .form-group {
@@ -69,9 +87,9 @@
             color: var(--text-muted);
         }
 
-        input, select, textarea {
+        input, select {
             width: 100%;
-            padding: 10px 14px;
+            padding: 12px 14px;
             background: #0f172a;
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -80,12 +98,12 @@
             outline: none;
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus, select:focus {
             border-color: var(--primary);
         }
 
         .btn {
-            display: inline-block;
+            display: block;
             width: 100%;
             padding: 12px;
             background: var(--primary);
@@ -95,23 +113,11 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            margin-top: 10px;
         }
 
         .btn:hover {
             background: var(--primary-hover);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            margin-top: 10px;
-        }
-
-        .btn-outline:hover {
-            background: #334155;
-            color: #fff;
         }
 
         .navbar {
@@ -181,8 +187,7 @@
 
         .status-pending { background: #854d0e; color: #fef08a; }
         .status-completed { background: #065f46; color: #a7f3d0; }
-        .status-processing, .status-in_progress { background: #1e40af; color: #bfdbfe; }
-        .status-cancelled, .status-failed { background: #991b1b; color: #fecaca; }
+        .status-failed { background: #991b1b; color: #fecaca; }
 
         .hidden { display: none !important; }
         .price-display {
@@ -195,25 +200,46 @@
 </head>
 <body>
 
-    <!-- AUTH SECTION -->
+    <!-- AUTH WRAPPER -->
     <div id="authSection" class="auth-container">
-        <div class="card">
-            <h2 id="authTitle" style="text-align: center;">Multani SMM Login</h2>
-            <form id="authForm">
-                <div class="form-group" id="fullNameGroup" style="display: none;">
-                    <label>Full Name</label>
-                    <input type="text" id="authName" placeholder="Muhammad Nadeem">
-                </div>
+        <div class="auth-switch">
+            <button type="button" class="switch-btn active" id="tabLoginBtn" onclick="showAuthTab('login')">Login</button>
+            <button type="button" class="switch-btn" id="tabRegisterBtn" onclick="showAuthTab('register')">Sign Up (Register)</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="loginCard" class="card">
+            <h2 style="margin-bottom: 15px; text-align: center;">Multani SMM Login</h2>
+            <form onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" id="authEmail" required placeholder="user@gmail.com">
+                    <input type="email" id="loginEmail" required placeholder="user@gmail.com">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="authPassword" required placeholder="Minimum 6 characters">
+                    <input type="password" id="loginPassword" required placeholder="Minimum 6 characters">
                 </div>
-                <button type="submit" class="btn" id="authSubmitBtn">Login</button>
-                <button type="button" class="btn btn-outline" id="toggleAuthBtn">Don't have an account? Sign up</button>
+                <button type="submit" class="btn" id="btnLogin">Login</button>
+            </form>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="registerCard" class="card hidden">
+            <h2 style="margin-bottom: 15px; text-align: center;">Create SMM Account</h2>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" required placeholder="M Nadeem">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" required placeholder="user@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
+                </div>
+                <button type="submit" class="btn" id="btnRegister">Register Now</button>
             </form>
         </div>
     </div>
@@ -224,31 +250,31 @@
             <div style="font-weight: 700; font-size: 1.1rem;">MULTANI SMM</div>
             <div style="display: flex; align-items: center; gap: 12px;">
                 <span class="balance-badge" id="userBalance">$0.0000</span>
-                <button class="btn btn-outline" id="logoutBtn" style="width: auto; margin: 0; padding: 6px 12px; font-size: 0.85rem;">Logout</button>
+                <button class="switch-btn" onclick="handleLogout()" style="padding: 6px 12px; font-size: 0.85rem;">Logout</button>
             </div>
         </header>
 
         <div class="container">
             <div class="nav-tabs">
-                <button class="tab-btn active" onclick="switchTab('newOrderTab')">New Order</button>
-                <button class="tab-btn" onclick="switchTab('orderHistoryTab')">Order History</button>
-                <button class="tab-btn" onclick="switchTab('depositTab')">Add Funds (Easypaisa/JazzCash)</button>
+                <button class="tab-btn active" onclick="switchNav('newOrderTab', this)">New Order</button>
+                <button class="tab-btn" onclick="switchNav('orderHistoryTab', this)">Order History</button>
+                <button class="tab-btn" onclick="switchNav('depositTab', this)">Add Funds</button>
             </div>
 
-            <!-- TAB 1: NEW ORDER -->
+            <!-- TAB 1: ORDER -->
             <div id="newOrderTab" class="card tab-content">
                 <h3>Place an Order</h3>
-                <form id="orderForm">
+                <form onsubmit="handlePlaceOrder(event)">
                     <div class="form-group">
                         <label>Category</label>
-                        <select id="orderCategory" required>
+                        <select id="orderCategory" required onchange="onCategorySelect()">
                             <option value="">Select Category</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Service</label>
-                        <select id="orderService" required disabled>
+                        <select id="orderService" required disabled onchange="updatePrice()">
                             <option value="">Select Category First</option>
                         </select>
                     </div>
@@ -260,7 +286,7 @@
 
                     <div class="form-group">
                         <label>Quantity</label>
-                        <input type="number" id="orderQuantity" required min="1" placeholder="e.g. 1000">
+                        <input type="number" id="orderQuantity" required min="1" placeholder="e.g. 1000" oninput="updatePrice()">
                         <small id="serviceLimits" style="color: var(--text-muted); font-size: 0.8rem;"></small>
                     </div>
 
@@ -269,11 +295,11 @@
                         <div class="price-display" id="calculatedCharge">$0.0000</div>
                     </div>
 
-                    <button type="submit" class="btn" id="placeOrderBtn">Submit Order</button>
+                    <button type="submit" class="btn" id="btnPlaceOrder">Submit Order</button>
                 </form>
             </div>
 
-            <!-- TAB 2: ORDER HISTORY -->
+            <!-- TAB 2: HISTORY -->
             <div id="orderHistoryTab" class="card tab-content hidden">
                 <h3>Your Orders</h3>
                 <div style="overflow-x: auto;">
@@ -289,7 +315,7 @@
                             </tr>
                         </thead>
                         <tbody id="orderHistoryBody">
-                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading orders...</td></tr>
+                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -297,15 +323,14 @@
 
             <!-- TAB 3: DEPOSITS -->
             <div id="depositTab" class="card tab-content hidden">
-                <h3>Deposit Funds</h3>
+                <h3>Deposit Funds (Easypaisa / JazzCash)</h3>
                 <div style="background: #0f172a; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;">
-                    <p style="font-weight: 600; margin-bottom: 5px; color: #38bdf8;">Manual Payment Details:</p>
+                    <p style="font-weight: 600; margin-bottom: 5px; color: #38bdf8;">Manual Accounts:</p>
                     <p>• <strong>Easypaisa:</strong> 03186815926 (M Nadeem)</p>
                     <p>• <strong>JazzCash:</strong> 03017573729 (Muhammad Nadeem)</p>
-                    <p style="margin-top: 8px; color: var(--text-muted); font-size: 0.8rem;">After sending payment, enter the details below. Admin will verify and credit your balance within minutes.</p>
                 </div>
 
-                <form id="depositForm">
+                <form onsubmit="handleDeposit(event)">
                     <div class="form-group">
                         <label>Payment Method</label>
                         <select id="depositMethod" required>
@@ -321,12 +346,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Transaction ID / TRX ID</label>
-                        <input type="text" id="depositTrx" required placeholder="e.g. 8192847192">
+                        <label>Transaction ID / TRX</label>
+                        <input type="text" id="depositTrx" required placeholder="e.g. 98127391">
                     </div>
 
                     <div class="form-group">
-                        <label>Your Account Number / Sender Details</label>
+                        <label>Sender Account / Number</label>
                         <input type="text" id="depositSender" required placeholder="03XXXXXXXXX">
                     </div>
 
@@ -339,282 +364,272 @@
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "Sb_publishable_ZZ965dE5E0pkrTRLpE4Xpw_kB7yiQpW";
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let supabaseClient = null;
+
+        // Init Supabase
+        if (window.supabase) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
 
         let currentUser = null;
-        let isSignUpMode = false;
         let allServices = [];
 
-        const authSection = document.getElementById("authSection");
-        const dashboardSection = document.getElementById("dashboardSection");
-        const authForm = document.getElementById("authForm");
-        const authTitle = document.getElementById("authTitle");
-        const authSubmitBtn = document.getElementById("authSubmitBtn");
-        const toggleAuthBtn = document.getElementById("toggleAuthBtn");
-        const fullNameGroup = document.getElementById("fullNameGroup");
-        const userBalanceEl = document.getElementById("userBalance");
+        // Tab Switch (Login / Register)
+        function showAuthTab(tab) {
+            const loginCard = document.getElementById("loginCard");
+            const registerCard = document.getElementById("registerCard");
+            const tabLoginBtn = document.getElementById("tabLoginBtn");
+            const tabRegisterBtn = document.getElementById("tabRegisterBtn");
 
-        async function initAuth() {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    currentUser = session.user;
-                    showDashboard();
-                } else {
-                    showAuth();
-                }
-            } catch (err) {
-                console.error("Auth check error:", err);
-            }
-        }
-        initAuth();
-
-        toggleAuthBtn.addEventListener("click", () => {
-            isSignUpMode = !isSignUpMode;
-            if (isSignUpMode) {
-                authTitle.innerText = "Create Multani SMM Account";
-                authSubmitBtn.innerText = "Register";
-                fullNameGroup.style.display = "block";
-                toggleAuthBtn.innerText = "Already have an account? Login";
+            if (tab === 'login') {
+                loginCard.classList.remove("hidden");
+                registerCard.classList.add("hidden");
+                tabLoginBtn.classList.add("active");
+                tabRegisterBtn.classList.remove("active");
             } else {
-                authTitle.innerText = "Multani SMM Login";
-                authSubmitBtn.innerText = "Login";
-                fullNameGroup.style.display = "none";
-                toggleAuthBtn.innerText = "Don't have an account? Sign up";
+                loginCard.classList.add("hidden");
+                registerCard.classList.remove("hidden");
+                tabLoginBtn.classList.remove("active");
+                tabRegisterBtn.classList.add("active");
             }
-        });
-
-        authForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const email = document.getElementById("authEmail").value.trim();
-            const password = document.getElementById("authPassword").value;
-            const fullName = document.getElementById("authName").value.trim();
-
-            authSubmitBtn.disabled = true;
-
-            try {
-                if (isSignUpMode) {
-                    authSubmitBtn.innerText = "Processing...";
-                    const { data, error } = await supabase.auth.signUp({
-                        email: email,
-                        password: password,
-                        options: { data: { full_name: fullName } }
-                    });
-
-                    if (error) {
-                        alert("Signup Error: " + error.message);
-                        authSubmitBtn.disabled = false;
-                        authSubmitBtn.innerText = "Register";
-                        return;
-                    }
-
-                    if (data.session) {
-                        alert("Account ban gaya!");
-                        currentUser = data.user;
-                        showDashboard();
-                    } else {
-                        const { data: logData, error: logErr } = await supabase.auth.signInWithPassword({
-                            email: email,
-                            password: password
-                        });
-                        if (logErr) {
-                            alert("Account create ho gaya! Ab Login tab par ja kar email aur password se login karein.");
-                            toggleAuthBtn.click();
-                        } else {
-                            currentUser = logData.user;
-                            showDashboard();
-                        }
-                    }
-                } else {
-                    authSubmitBtn.innerText = "Logging in...";
-                    const { data, error } = await supabase.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-
-                    if (error) {
-                        alert("Login Error: " + error.message);
-                        authSubmitBtn.disabled = false;
-                        authSubmitBtn.innerText = "Login";
-                        return;
-                    }
-
-                    currentUser = data.user;
-                    showDashboard();
-                }
-            } catch (err) {
-                alert("Network / System Error: " + err.message);
-            } finally {
-                authSubmitBtn.disabled = false;
-                authSubmitBtn.innerText = isSignUpMode ? "Register" : "Login";
-            }
-        });
-
-        document.getElementById("logoutBtn").addEventListener("click", async () => {
-            await supabase.auth.signOut();
-            location.reload();
-        });
-
-        function showAuth() {
-            authSection.classList.remove("hidden");
-            dashboardSection.classList.add("hidden");
         }
 
-        async function showDashboard() {
-            authSection.classList.add("hidden");
-            dashboardSection.classList.remove("hidden");
+        // Auto Check Login
+        window.addEventListener("DOMContentLoaded", async () => {
+            if (!supabaseClient) return;
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                openDashboard();
+            }
+        });
+
+        // Register Handler
+        async function handleRegister(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnRegister");
+            const name = document.getElementById("regName").value.trim();
+            const email = document.getElementById("regEmail").value.trim();
+            const pass = document.getElementById("regPassword").value;
+
+            btn.disabled = true;
+            btn.innerText = "Registering...";
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: pass,
+                options: { data: { full_name: name } }
+            });
+
+            btn.disabled = false;
+            btn.innerText = "Register Now";
+
+            if (error) {
+                alert("Signup Failed: " + error.message);
+                return;
+            }
+
+            if (data.session) {
+                alert("Account ban gaya!");
+                currentUser = data.user;
+                openDashboard();
+            } else {
+                // Direct Login fallback
+                const { data: logData, error: logErr } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: pass
+                });
+
+                if (logErr) {
+                    alert("Account ban gaya hai! Ab Login tab par ja kar login karein.");
+                    showAuthTab('login');
+                    document.getElementById("loginEmail").value = email;
+                } else {
+                    currentUser = logData.user;
+                    openDashboard();
+                }
+            }
+        }
+
+        // Login Handler
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnLogin");
+            const email = document.getElementById("loginEmail").value.trim();
+            const pass = document.getElementById("loginPassword").value;
+
+            btn.disabled = true;
+            btn.innerText = "Logging in...";
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: pass
+            });
+
+            btn.disabled = false;
+            btn.innerText = "Login";
+
+            if (error) {
+                alert("Login Failed: " + error.message);
+                return;
+            }
+
+            currentUser = data.user;
+            openDashboard();
+        }
+
+        function handleLogout() {
+            supabaseClient.auth.signOut().then(() => {
+                location.reload();
+            });
+        }
+
+        function openDashboard() {
+            document.getElementById("authSection").classList.add("hidden");
+            document.getElementById("dashboardSection").classList.remove("hidden");
             loadUserProfile();
-            loadCategoriesAndServices();
-            loadOrderHistory();
+            loadServices();
+            loadOrders();
         }
 
         async function loadUserProfile() {
-            const { data } = await supabase
+            const { data } = await supabaseClient
                 .from("profiles")
                 .select("balance")
                 .eq("id", currentUser.id)
                 .single();
 
             if (data) {
-                userBalanceEl.innerText = `$${parseFloat(data.balance).toFixed(4)}`;
+                document.getElementById("userBalance").innerText = `$${parseFloat(data.balance).toFixed(4)}`;
             }
         }
 
-        async function loadCategoriesAndServices() {
-            const { data: categories } = await supabase
+        async function loadServices() {
+            const { data: cats } = await supabaseClient
                 .from("categories")
                 .select("*")
                 .eq("is_active", true)
                 .order("sort_order");
 
-            const { data: services } = await supabase
+            const { data: srvs } = await supabaseClient
                 .from("services")
                 .select("*")
                 .eq("is_active", true);
 
-            allServices = services || [];
+            allServices = srvs || [];
 
-            const categorySelect = document.getElementById("orderCategory");
-            categorySelect.innerHTML = '<option value="">Select Category</option>';
-            if (categories) {
-                categories.forEach(cat => {
+            const catSelect = document.getElementById("orderCategory");
+            catSelect.innerHTML = '<option value="">Select Category</option>';
+            if (cats) {
+                cats.forEach(c => {
                     const opt = document.createElement("option");
-                    opt.value = cat.id;
-                    opt.textContent = cat.name;
-                    categorySelect.appendChild(opt);
+                    opt.value = c.id;
+                    opt.textContent = c.name;
+                    catSelect.appendChild(opt);
                 });
             }
         }
 
-        const orderCategory = document.getElementById("orderCategory");
-        const orderService = document.getElementById("orderService");
-        const orderQuantity = document.getElementById("orderQuantity");
-        const calculatedCharge = document.getElementById("calculatedCharge");
-        const serviceLimits = document.getElementById("serviceLimits");
-
-        orderCategory.addEventListener("change", () => {
-            const catId = orderCategory.value;
-            orderService.innerHTML = '<option value="">Select Service</option>';
-            orderService.disabled = true;
-            serviceLimits.innerText = "";
-            calculatedCharge.innerText = "$0.0000";
+        function onCategorySelect() {
+            const catId = document.getElementById("orderCategory").value;
+            const srvSelect = document.getElementById("orderService");
+            srvSelect.innerHTML = '<option value="">Select Service</option>';
+            srvSelect.disabled = true;
+            document.getElementById("serviceLimits").innerText = "";
+            document.getElementById("calculatedCharge").innerText = "$0.0000";
 
             if (!catId) return;
 
-            const filtered = allServices.filter(s => s.category_id === catId);
-            filtered.forEach(s => {
+            const list = allServices.filter(s => s.category_id === catId);
+            list.forEach(s => {
                 const opt = document.createElement("option");
                 opt.value = s.id;
                 opt.textContent = `${s.name} - $${parseFloat(s.rate_per_1k).toFixed(4)}/1k`;
-                orderService.appendChild(opt);
+                srvSelect.appendChild(opt);
             });
-            orderService.disabled = false;
-        });
+            srvSelect.disabled = false;
+        }
 
         function updatePrice() {
-            const sId = orderService.value;
-            const qty = parseInt(orderQuantity.value) || 0;
-            const selected = allServices.find(s => s.id === sId);
+            const sId = document.getElementById("orderService").value;
+            const qty = parseInt(document.getElementById("orderQuantity").value) || 0;
+            const item = allServices.find(s => s.id === sId);
 
-            if (selected) {
-                serviceLimits.innerText = `Min: ${selected.min_quantity} | Max: ${selected.max_quantity}`;
-                const total = (qty / 1000) * parseFloat(selected.rate_per_1k);
-                calculatedCharge.innerText = `$${total.toFixed(4)}`;
+            if (item) {
+                document.getElementById("serviceLimits").innerText = `Min: ${item.min_quantity} | Max: ${item.max_quantity}`;
+                const cost = (qty / 1000) * parseFloat(item.rate_per_1k);
+                document.getElementById("calculatedCharge").innerText = `$${cost.toFixed(4)}`;
             } else {
-                calculatedCharge.innerText = "$0.0000";
+                document.getElementById("calculatedCharge").innerText = "$0.0000";
             }
         }
 
-        orderService.addEventListener("change", updatePrice);
-        orderQuantity.addEventListener("input", updatePrice);
-
-        document.getElementById("orderForm").addEventListener("submit", async (e) => {
+        async function handlePlaceOrder(e) {
             e.preventDefault();
-            const sId = orderService.value;
-            const targetLink = document.getElementById("orderLink").value.trim();
-            const qty = parseInt(orderQuantity.value);
-            const selected = allServices.find(s => s.id === sId);
+            const sId = document.getElementById("orderService").value;
+            const link = document.getElementById("orderLink").value.trim();
+            const qty = parseInt(document.getElementById("orderQuantity").value);
+            const item = allServices.find(s => s.id === sId);
 
-            if (!selected) return alert("Please select a service.");
-            if (qty < selected.min_quantity || qty > selected.max_quantity) {
-                return alert(`Quantity must be between ${selected.min_quantity} and ${selected.max_quantity}`);
+            if (!item) return alert("Select service.");
+            if (qty < item.min_quantity || qty > item.max_quantity) {
+                return alert(`Quantity must be between ${item.min_quantity} and ${item.max_quantity}`);
             }
 
-            const totalCharge = (qty / 1000) * parseFloat(selected.rate_per_1k);
-            const idempotencyKey = `${currentUser.id}_${Date.now()}`;
+            const total = (qty / 1000) * parseFloat(item.rate_per_1k);
 
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from("orders")
                 .insert({
                     user_id: currentUser.id,
                     service_id: sId,
-                    target_link: targetLink,
+                    target_link: link,
                     quantity: qty,
-                    charge: totalCharge,
+                    charge: total,
                     status: 'pending',
-                    idempotency_key: idempotencyKey
+                    idempotency_key: `${currentUser.id}_${Date.now()}`
                 })
                 .select()
                 .single();
 
-            if (error) return alert("Failed to place order: " + error.message);
+            if (error) return alert(error.message);
 
-            const { error: deductError } = await supabase.rpc("process_order_deduction", {
+            const { error: rpcErr } = await supabaseClient.rpc("process_order_deduction", {
                 p_user_id: currentUser.id,
                 p_order_id: data.id,
-                p_charge: totalCharge
+                p_charge: total
             });
 
-            if (deductError) {
-                await supabase.from("orders").update({ status: 'failed' }).eq("id", data.id);
-                return alert("Order Error: " + deductError.message);
+            if (rpcErr) {
+                await supabaseClient.from("orders").update({ status: 'failed' }).eq("id", data.id);
+                return alert("Insufficient Balance or Error: " + rpcErr.message);
             }
 
-            alert("Order placed successfully!");
-            document.getElementById("orderForm").reset();
-            calculatedCharge.innerText = "$0.0000";
+            alert("Order Placed Successfully!");
+            document.getElementById("orderLink").value = "";
+            document.getElementById("orderQuantity").value = "";
+            document.getElementById("calculatedCharge").innerText = "$0.0000";
             loadUserProfile();
-            loadOrderHistory();
-            switchTab("orderHistoryTab");
-        });
+            loadOrders();
+        }
 
-        async function loadOrderHistory() {
+        async function loadOrders() {
             const tbody = document.getElementById("orderHistoryBody");
-            const { data: orders, error } = await supabase
+            const { data } = await supabaseClient
                 .from("orders")
                 .select("*, services(name)")
                 .eq("user_id", currentUser.id)
                 .order("created_at", { ascending: false });
 
-            if (error || !orders || orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders found.</td></tr>';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = orders.map(o => `
+            tbody.innerHTML = data.map(o => `
                 <tr>
                     <td>${new Date(o.created_at).toLocaleDateString()}</td>
-                    <td>${o.services ? o.services.name : 'Unknown Service'}</td>
+                    <td>${o.services ? o.services.name : 'Service'}</td>
                     <td><a href="${o.target_link}" target="_blank" style="color: #38bdf8;">Link</a></td>
                     <td>${o.quantity}</td>
                     <td>$${parseFloat(o.charge).toFixed(4)}</td>
@@ -623,36 +638,36 @@
             `).join("");
         }
 
-        document.getElementById("depositForm").addEventListener("submit", async (e) => {
+        async function handleDeposit(e) {
             e.preventDefault();
             const method = document.getElementById("depositMethod").value;
-            const amount = parseFloat(document.getElementById("depositAmount").value);
+            const amt = parseFloat(document.getElementById("depositAmount").value);
             const trx = document.getElementById("depositTrx").value.trim();
             const sender = document.getElementById("depositSender").value.trim();
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from("deposits")
                 .insert({
                     user_id: currentUser.id,
                     payment_method: method,
-                    amount: amount,
+                    amount: amt,
                     transaction_id: trx,
                     sender_account: sender,
                     status: 'pending'
                 });
 
-            if (error) return alert("Deposit failed: " + error.message);
+            if (error) return alert("Deposit error: " + error.message);
 
-            alert("Deposit request submitted! Once approved by admin, funds will reflect in your balance.");
-            document.getElementById("depositForm").reset();
-        });
+            alert("Deposit request submitted successfully! Admin will approve soon.");
+            e.target.reset();
+        }
 
-        function switchTab(tabId) {
+        function switchNav(id, btn) {
             document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
-            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-            document.getElementById(tabId).classList.remove("hidden");
-            event.target.classList.add("active");
-            if (tabId === "orderHistoryTab") loadOrderHistory();
+            document.querySelectorAll(".nav-tabs .tab-btn").forEach(el => el.classList.remove("active"));
+            document.getElementById(id).classList.remove("hidden");
+            btn.classList.add("active");
+            if (id === 'orderHistoryTab') loadOrders();
         }
     </script>
 </body>
