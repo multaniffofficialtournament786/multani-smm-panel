@@ -337,7 +337,6 @@
     </div>
 
     <script>
-        // SUPABASE CLIENT CONFIGURATION
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "Sb_publishable_ZZ965dE5E0pkrTRLpE4Xpw_kB7yiQpW";
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -346,7 +345,6 @@
         let isSignUpMode = false;
         let allServices = [];
 
-        // DOM ELEMENTS
         const authSection = document.getElementById("authSection");
         const dashboardSection = document.getElementById("dashboardSection");
         const authForm = document.getElementById("authForm");
@@ -356,23 +354,25 @@
         const fullNameGroup = document.getElementById("fullNameGroup");
         const userBalanceEl = document.getElementById("userBalance");
 
-        // CHECK AUTH ON LOAD
         async function initAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                showDashboard();
-            } else {
-                showAuth();
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    currentUser = session.user;
+                    showDashboard();
+                } else {
+                    showAuth();
+                }
+            } catch (err) {
+                console.error("Auth check error:", err);
             }
         }
         initAuth();
 
-        // TOGGLE LOGIN / SIGNUP
         toggleAuthBtn.addEventListener("click", () => {
             isSignUpMode = !isSignUpMode;
             if (isSignUpMode) {
-                authTitle.innerText = "Create Multi-SMM Account";
+                authTitle.innerText = "Create Multani SMM Account";
                 authSubmitBtn.innerText = "Register";
                 fullNameGroup.style.display = "block";
                 toggleAuthBtn.innerText = "Already have an account? Login";
@@ -384,32 +384,72 @@
             }
         });
 
-        // HANDLE AUTH SUBMIT
         authForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("authEmail").value.trim();
             const password = document.getElementById("authPassword").value;
             const fullName = document.getElementById("authName").value.trim();
 
-            if (isSignUpMode) {
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: { data: { full_name: fullName } }
-                });
-                if (error) return alert("Signup Error: " + error.message);
-                alert("Account created successfully!");
-                currentUser = data.user;
-                showDashboard();
-            } else {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) return alert("Login Error: " + error.message);
-                currentUser = data.user;
-                showDashboard();
+            authSubmitBtn.disabled = true;
+
+            try {
+                if (isSignUpMode) {
+                    authSubmitBtn.innerText = "Processing...";
+                    const { data, error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: { data: { full_name: fullName } }
+                    });
+
+                    if (error) {
+                        alert("Signup Error: " + error.message);
+                        authSubmitBtn.disabled = false;
+                        authSubmitBtn.innerText = "Register";
+                        return;
+                    }
+
+                    if (data.session) {
+                        alert("Account ban gaya!");
+                        currentUser = data.user;
+                        showDashboard();
+                    } else {
+                        const { data: logData, error: logErr } = await supabase.auth.signInWithPassword({
+                            email: email,
+                            password: password
+                        });
+                        if (logErr) {
+                            alert("Account create ho gaya! Ab Login tab par ja kar email aur password se login karein.");
+                            toggleAuthBtn.click();
+                        } else {
+                            currentUser = logData.user;
+                            showDashboard();
+                        }
+                    }
+                } else {
+                    authSubmitBtn.innerText = "Logging in...";
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) {
+                        alert("Login Error: " + error.message);
+                        authSubmitBtn.disabled = false;
+                        authSubmitBtn.innerText = "Login";
+                        return;
+                    }
+
+                    currentUser = data.user;
+                    showDashboard();
+                }
+            } catch (err) {
+                alert("Network / System Error: " + err.message);
+            } finally {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.innerText = isSignUpMode ? "Register" : "Login";
             }
         });
 
-        // LOGOUT
         document.getElementById("logoutBtn").addEventListener("click", async () => {
             await supabase.auth.signOut();
             location.reload();
@@ -428,20 +468,18 @@
             loadOrderHistory();
         }
 
-        // LOAD LIVE BALANCE
         async function loadUserProfile() {
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from("profiles")
                 .select("balance")
                 .eq("id", currentUser.id)
                 .single();
 
-            if (!error && data) {
+            if (data) {
                 userBalanceEl.innerText = `$${parseFloat(data.balance).toFixed(4)}`;
             }
         }
 
-        // LOAD CATEGORIES & SERVICES
         async function loadCategoriesAndServices() {
             const { data: categories } = await supabase
                 .from("categories")
@@ -468,7 +506,6 @@
             }
         }
 
-        // ON CATEGORY CHANGE -> POPULATE SERVICES
         const orderCategory = document.getElementById("orderCategory");
         const orderService = document.getElementById("orderService");
         const orderQuantity = document.getElementById("orderQuantity");
@@ -494,7 +531,6 @@
             orderService.disabled = false;
         });
 
-        // CALCULATE DYNAMIC PRICE
         function updatePrice() {
             const sId = orderService.value;
             const qty = parseInt(orderQuantity.value) || 0;
@@ -512,7 +548,6 @@
         orderService.addEventListener("change", updatePrice);
         orderQuantity.addEventListener("input", updatePrice);
 
-        // PLACE ORDER
         document.getElementById("orderForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const sId = orderService.value;
@@ -528,7 +563,6 @@
             const totalCharge = (qty / 1000) * parseFloat(selected.rate_per_1k);
             const idempotencyKey = `${currentUser.id}_${Date.now()}`;
 
-            // Create Order in DB
             const { data, error } = await supabase
                 .from("orders")
                 .insert({
@@ -545,7 +579,6 @@
 
             if (error) return alert("Failed to place order: " + error.message);
 
-            // Deduct balance atomically
             const { error: deductError } = await supabase.rpc("process_order_deduction", {
                 p_user_id: currentUser.id,
                 p_order_id: data.id,
@@ -553,7 +586,6 @@
             });
 
             if (deductError) {
-                // Mark order failed if balance insufficient
                 await supabase.from("orders").update({ status: 'failed' }).eq("id", data.id);
                 return alert("Order Error: " + deductError.message);
             }
@@ -566,7 +598,6 @@
             switchTab("orderHistoryTab");
         });
 
-        // LOAD ORDERS
         async function loadOrderHistory() {
             const tbody = document.getElementById("orderHistoryBody");
             const { data: orders, error } = await supabase
@@ -592,7 +623,6 @@
             `).join("");
         }
 
-        // SUBMIT DEPOSIT
         document.getElementById("depositForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const method = document.getElementById("depositMethod").value;
@@ -617,7 +647,6 @@
             document.getElementById("depositForm").reset();
         });
 
-        // TAB SWITCHER
         function switchTab(tabId) {
             document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
             document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
