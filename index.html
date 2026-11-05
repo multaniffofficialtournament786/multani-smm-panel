@@ -24,9 +24,8 @@
             --accent-blue: #3478F6;
             --text-main: #FFFFFF;
             --text-muted: #9BA8BC;
-            --border-glow: rgba(0, 213, 255, 0.15);
             --border-card: #1f293d;
-            --sidebar-w: 260px;
+            --sidebar-w: 250px;
         }
 
         * {
@@ -43,6 +42,7 @@
             min-height: 100vh;
             display: flex;
             overflow-x: hidden;
+            width: 100%;
         }
 
         h1, h2, h3, h4, .brand-font {
@@ -51,163 +51,131 @@
             letter-spacing: 0.5px;
         }
 
-        /* --- SCROLLBAR --- */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
         ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-orange); }
 
-        /* --- TOAST SYSTEM --- */
+        /* TOAST */
         #toastContainer {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
+            left: 15px;
             z-index: 99999;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            pointer-events: none;
         }
         .toast {
-            min-width: 280px;
-            padding: 14px 18px;
+            padding: 12px 16px;
             background: rgba(14, 17, 24, 0.95);
             border-left: 4px solid var(--accent-cyan);
             border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             color: #fff;
-            font-size: 0.9rem;
-            animation: slideIn 0.3s ease forwards;
+            font-size: 0.85rem;
+            animation: slideIn 0.3s ease;
             backdrop-filter: blur(10px);
             border-top: 1px solid var(--border-card);
             border-right: 1px solid var(--border-card);
             border-bottom: 1px solid var(--border-card);
+            pointer-events: auto;
         }
         .toast.error { border-left-color: var(--accent-orange); }
         .toast.success { border-left-color: #10B981; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* --- AUTH SECTION --- */
+        /* AUTH */
         #authContainer {
             width: 100%;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            background: radial-gradient(circle at top right, rgba(255, 70, 36, 0.12), transparent 40%),
-                        radial-gradient(circle at bottom left, rgba(0, 213, 255, 0.12), transparent 40%);
+            padding: 15px;
         }
         .auth-box {
             width: 100%;
-            max-width: 440px;
+            max-width: 400px;
             background: var(--bg-card);
             border: 1px solid var(--border-card);
-            border-radius: 16px;
-            padding: 30px 25px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            position: relative;
-        }
-        .auth-logo {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .auth-logo h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, #fff, var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            border-radius: 14px;
+            padding: 24px 20px;
         }
         .auth-nav {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             background: var(--bg-base);
             padding: 4px;
-            border-radius: 10px;
+            border-radius: 8px;
             margin-bottom: 20px;
-            border: 1px solid var(--border-card);
         }
         .auth-nav button {
             flex: 1;
-            padding: 10px;
+            padding: 9px;
             background: transparent;
             border: none;
             color: var(--text-muted);
             font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
-            border-radius: 8px;
-            transition: 0.2s;
         }
         .auth-nav button.active {
             background: var(--accent-orange);
             color: #fff;
-            box-shadow: 0 0 15px rgba(255, 70, 36, 0.4);
         }
 
-        /* --- FORM ELEMENTS --- */
-        .form-group { margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
         label {
             display: block;
-            margin-bottom: 6px;
-            font-size: 0.8rem;
+            margin-bottom: 5px;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         input, select, textarea {
             width: 100%;
-            padding: 12px 14px;
+            padding: 11px 12px;
             background: var(--bg-card-sec);
             border: 1px solid var(--border-card);
-            border-radius: 10px;
+            border-radius: 8px;
             color: var(--text-main);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             outline: none;
-            transition: 0.2s;
-            font-family: 'Inter', sans-serif;
         }
         input:focus, select:focus, textarea:focus {
             border-color: var(--accent-cyan);
-            box-shadow: 0 0 10px rgba(0, 213, 255, 0.2);
         }
 
         .btn-vip {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: linear-gradient(135deg, var(--accent-orange), #d93314);
             color: #fff;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
             font-weight: 700;
             font-family: 'Rajdhani', sans-serif;
-            letter-spacing: 1px;
             text-transform: uppercase;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(255, 70, 36, 0.35);
-            transition: 0.2s;
-        }
-        .btn-vip:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 70, 36, 0.5);
         }
 
-        /* --- APP WRAPPER (POST LOGIN) --- */
+        /* POST-AUTH APP */
         #appContainer {
             width: 100%;
             display: flex;
             min-height: 100vh;
         }
 
-        /* --- DESKTOP SIDEBAR --- */
         .sidebar {
             width: var(--sidebar-w);
             background: var(--bg-card);
@@ -222,188 +190,182 @@
             transition: transform 0.3s ease;
         }
         .sidebar-header {
-            padding: 22px 20px;
+            padding: 18px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             border-bottom: 1px solid var(--border-card);
         }
-        .sidebar-header i { font-size: 1.5rem; color: var(--accent-orange); }
-        .sidebar-header h2 { font-size: 1.3rem; font-weight: 800; }
         .sidebar-menu {
             flex: 1;
-            padding: 15px 12px;
+            padding: 12px 8px;
             overflow-y: auto;
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
         }
         .sidebar-menu li a {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 12px 14px;
+            gap: 12px;
+            padding: 10px 12px;
             color: var(--text-muted);
             text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: 0.2s;
+            border-radius: 6px;
+            font-size: 0.85rem;
             cursor: pointer;
         }
-        .sidebar-menu li a i { font-size: 1.1rem; width: 22px; text-align: center; }
-        .sidebar-menu li a:hover {
-            background: var(--bg-card-sec);
-            color: #fff;
-        }
         .sidebar-menu li a.active {
-            background: linear-gradient(90deg, rgba(255, 70, 36, 0.15), rgba(0, 213, 255, 0.05));
+            background: rgba(255, 70, 36, 0.15);
             border-left: 3px solid var(--accent-orange);
             color: #fff;
         }
 
-        /* --- MAIN WRAPPER --- */
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-w);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            padding-bottom: 80px; /* Space for mobile nav */
+            padding-bottom: 75px;
+            width: 100%;
+            overflow-x: hidden;
         }
 
-        /* --- TOP HEADER --- */
+        /* TOP NAVBAR - COMPACT & NO OVERFLOW */
         .top-navbar {
-            height: 70px;
+            height: 60px;
             background: var(--bg-card);
             border-bottom: 1px solid var(--border-card);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 25px;
+            padding: 0 15px;
             position: sticky;
             top: 0;
             z-index: 90;
         }
-        .top-left { display: flex; align-items: center; gap: 15px; }
+        .top-left { display: flex; align-items: center; gap: 10px; }
         .menu-toggle {
             display: none;
             background: transparent;
             border: none;
             color: #fff;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             cursor: pointer;
         }
         .balance-chip {
             background: rgba(0, 213, 255, 0.1);
             border: 1px solid var(--accent-cyan);
-            border-radius: 30px;
-            padding: 6px 14px;
+            border-radius: 20px;
+            padding: 4px 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: var(--accent-cyan);
             font-weight: 700;
             font-family: 'Rajdhani', sans-serif;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
         }
         .top-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
         }
         .user-pill {
             display: flex;
             align-items: center;
-            gap: 10px;
-            cursor: pointer;
+            gap: 6px;
+            max-width: 130px;
         }
         .user-pill img {
-            width: 36px;
-            height: 36px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            border: 2px solid var(--accent-orange);
+            border: 1.5px solid var(--accent-orange);
+            flex-shrink: 0;
+        }
+        .user-name-text {
+            font-weight: 600;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* --- PAGES / VIEWS --- */
         .content-body {
-            padding: 25px;
-            max-width: 1200px;
+            padding: 15px;
+            max-width: 1000px;
             width: 100%;
             margin: 0 auto;
         }
         .page-view { display: none; }
-        .page-view.active { display: block; animation: fadeIn 0.25s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .page-view.active { display: block; }
 
-        /* --- DASHBOARD STATS CARDS --- */
+        /* WELCOME BANNER - SLEEK & COMPACT */
         .vip-banner {
             background: linear-gradient(135deg, #151C29 0%, #0E1118 100%);
             border: 1px solid var(--border-card);
-            border-radius: 16px;
-            padding: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            position: relative;
-            overflow: hidden;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 15px;
         }
-        .vip-banner::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 70, 36, 0.2), transparent 70%);
-            pointer-events: none;
+        .vip-banner h2 {
+            font-size: 1.25rem;
+            margin-bottom: 2px;
         }
+
+        /* STATS GRID - 2 COLUMNS STRICT */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
         }
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border-card);
-            border-radius: 14px;
-            padding: 18px;
+            border-radius: 10px;
+            padding: 12px 10px;
             display: flex;
             align-items: center;
-            gap: 16px;
-            position: relative;
+            gap: 10px;
+            min-width: 0;
         }
         .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
         .stat-val {
-            font-size: 1.5rem;
+            font-size: 1.15rem;
             font-weight: 700;
             font-family: 'Rajdhani', sans-serif;
             color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .stat-title {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
             text-transform: uppercase;
         }
 
-        /* --- CARDS & TABLES --- */
         .vip-card {
             background: var(--bg-card);
             border: 1px solid var(--border-card);
-            border-radius: 16px;
-            padding: 22px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 15px;
+            width: 100%;
         }
         .table-responsive {
             width: 100%;
@@ -412,34 +374,127 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
-            text-align: left;
+            font-size: 0.8rem;
+            white-space: nowrap;
         }
         th, td {
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border-card);
         }
-        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+        th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
+
         .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
             font-weight: 600;
-            text-transform: capitalize;
         }
         .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; }
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
         .badge-failed { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
-        /* --- MOBILE BOTTOM NAVBAR --- */
+        /* SERVICES CARDS VIEW (MOBILE-FIRST) */
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .service-item-card {
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .srv-left { flex: 1; }
+        .srv-name { font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; }
+        .srv-meta { font-size: 0.75rem; color: var(--text-muted); }
+        .srv-right { text-align: right; flex-shrink: 0; }
+        .srv-price { color: var(--accent-cyan); font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+
+        /* DIRECT MESSENGER CHAT BOX */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 220px);
+            min-height: 380px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .chat-header {
+            padding: 12px 16px;
+            background: var(--bg-card-sec);
+            border-bottom: 1px solid var(--border-card);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chat-body {
+            flex: 1;
+            padding: 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        .chat-bubble.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--accent-orange), #d93314);
+            color: #fff;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-bubble.admin {
+            align-self: flex-start;
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            border-bottom-left-radius: 2px;
+        }
+        .chat-time {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+            text-align: right;
+        }
+        .chat-footer {
+            padding: 10px 14px;
+            background: var(--bg-card-sec);
+            border-top: 1px solid var(--border-card);
+            display: flex;
+            gap: 8px;
+        }
+        .chat-footer input {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+        }
+        .chat-footer button {
+            width: 44px;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        /* MOBILE BOTTOM APP BAR */
         .mobile-bottom-nav {
             display: none;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 65px;
+            height: 60px;
             background: rgba(14, 17, 24, 0.95);
             backdrop-filter: blur(12px);
             border-top: 1px solid var(--border-card);
@@ -452,40 +507,38 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
             color: var(--text-muted);
-            text-decoration: none;
             font-size: 0.65rem;
             font-weight: 600;
             cursor: pointer;
         }
-        .mobile-nav-item i { font-size: 1.2rem; }
+        .mobile-nav-item i { font-size: 1.15rem; }
         .mobile-nav-item.active { color: var(--accent-orange); }
 
-        /* --- MODAL DIALOG --- */
+        /* MODAL */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             z-index: 10000;
             display: none;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
         }
         .modal-overlay.active { display: flex; }
         .modal-box {
             background: var(--bg-card);
             border: 1px solid var(--border-card);
-            border-radius: 16px;
-            max-width: 440px;
+            border-radius: 14px;
+            max-width: 400px;
             width: 100%;
-            padding: 24px;
+            padding: 20px;
         }
 
         .hidden { display: none !important; }
 
-        /* --- RESPONSIVE BREAKPOINTS --- */
         @media (max-width: 900px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.mobile-open { transform: translateX(0); }
@@ -497,34 +550,32 @@
 </head>
 <body>
 
-    <!-- TOAST CONTAINER -->
     <div id="toastContainer"></div>
 
     <!-- ORDER CONFIRMATION MODAL -->
     <div id="orderConfirmModal" class="modal-overlay">
         <div class="modal-box">
-            <h3 style="color: var(--accent-cyan); margin-bottom: 15px;"><i class="fa-solid fa-circle-check"></i> Confirm Order</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Please verify details before submission:</p>
-            <div style="background: var(--bg-card-sec); padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.6;">
+            <h3 style="color: var(--accent-cyan); margin-bottom: 12px;"><i class="fa-solid fa-circle-check"></i> Confirm Order</h3>
+            <div style="background: var(--bg-card-sec); padding: 12px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 16px; line-height: 1.6;">
                 <div><strong>Service:</strong> <span id="modalServiceName">-</span></div>
-                <div><strong>Target Link:</strong> <span id="modalTargetLink" style="word-break: break-all;">-</span></div>
+                <div><strong>Target:</strong> <span id="modalTargetLink" style="word-break: break-all;">-</span></div>
                 <div><strong>Quantity:</strong> <span id="modalQuantity">-</span></div>
-                <div><strong>Total Cost:</strong> <span id="modalCost" style="color: var(--accent-orange); font-weight: 700;">-</span></div>
+                <div><strong>Total:</strong> <span id="modalCost" style="color: var(--accent-orange); font-weight: 700;">-</span></div>
             </div>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 8px;">
                 <button class="btn-vip" style="background: var(--bg-card-sec); border: 1px solid var(--border-card);" onclick="closeConfirmModal()">Cancel</button>
                 <button class="btn-vip" id="confirmPlaceOrderBtn" onclick="executeAtomicOrder()">Confirm & Place</button>
             </div>
         </div>
     </div>
 
-    <!-- 1. AUTH SCREEN (LOGIN / SIGNUP) -->
+    <!-- 1. AUTH SCREEN -->
     <div id="authContainer">
         <div class="auth-box">
-            <div class="auth-logo">
-                <i class="fa-solid fa-bolt-lightning" style="font-size: 2.5rem; color: var(--accent-orange); margin-bottom: 10px;"></i>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i class="fa-solid fa-bolt-lightning" style="font-size: 2.2rem; color: var(--accent-orange); margin-bottom: 6px;"></i>
                 <h2>MULTANI SMM</h2>
-                <p style="color: var(--text-muted); font-size: 0.85rem;">VIP Customer & Reseller Portal</p>
+                <p style="color: var(--text-muted); font-size: 0.8rem;">VIP Customer Portal</p>
             </div>
 
             <div class="auth-nav">
@@ -532,7 +583,6 @@
                 <button id="btnTabRegister" onclick="switchAuthTab('register')">Register</button>
             </div>
 
-            <!-- Login Form -->
             <form id="loginForm" onsubmit="handleAuthLogin(event)">
                 <div class="form-group">
                     <label>Email Address</label>
@@ -545,7 +595,6 @@
                 <button type="submit" class="btn-vip" id="loginSubmitBtn">Access Portal</button>
             </form>
 
-            <!-- Register Form -->
             <form id="registerForm" class="hidden" onsubmit="handleAuthRegister(event)">
                 <div class="form-group">
                     <label>Full Name</label>
@@ -564,13 +613,12 @@
         </div>
     </div>
 
-    <!-- 2. MAIN APPLICATION (POST-AUTH) -->
+    <!-- 2. MAIN VIP APP -->
     <div id="appContainer" class="hidden">
         
-        <!-- SIDEBAR -->
         <aside class="sidebar" id="appSidebar">
             <div class="sidebar-header">
-                <i class="fa-solid fa-crown"></i>
+                <i class="fa-solid fa-crown" style="color: var(--accent-orange);"></i>
                 <h2>MULTANI VIP</h2>
             </div>
             <ul class="sidebar-menu">
@@ -581,18 +629,14 @@
                 <li><a onclick="navigateTo('addFundsView', this)"><i class="fa-solid fa-wallet"></i> Add Funds</a></li>
                 <li><a onclick="navigateTo('transactionsView', this)"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a></li>
                 <li><a onclick="navigateTo('referralsView', this)"><i class="fa-solid fa-users"></i> Referrals</a></li>
-                <li><a onclick="navigateTo('notificationsView', this)"><i class="fa-solid fa-bell"></i> Notifications</a></li>
-                <li><a onclick="navigateTo('supportView', this)"><i class="fa-solid fa-headset"></i> Support</a></li>
+                <li><a onclick="navigateTo('supportView', this)"><i class="fa-solid fa-comments"></i> Live Support</a></li>
                 <li><a onclick="navigateTo('profileView', this)"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
-                <li><a onclick="navigateTo('faqView', this)"><i class="fa-solid fa-circle-question"></i> FAQ</a></li>
                 <li style="margin-top: auto;"><a onclick="triggerLogout()" style="color: var(--accent-orange);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
             </ul>
         </aside>
 
-        <!-- MAIN VIEW WRAPPER -->
         <main class="main-content">
             
-            <!-- TOP NAVBAR -->
             <header class="top-navbar">
                 <div class="top-left">
                     <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
@@ -603,8 +647,8 @@
                 </div>
                 <div class="top-right">
                     <div class="user-pill" onclick="navigateTo('profileView')">
-                        <img id="navAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Profile">
-                        <span id="navUserName" style="font-weight: 600; font-size: 0.9rem;">VIP User</span>
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar">
+                        <span class="user-name-text" id="navUserName">VIP User</span>
                     </div>
                 </div>
             </header>
@@ -613,17 +657,13 @@
                 
                 <!-- VIEW 1: DASHBOARD -->
                 <section id="dashboardView" class="page-view active">
+                    <!-- Clean Compact Welcome Banner -->
                     <div class="vip-banner">
-                        <div>
-                            <h2 style="font-size: 1.8rem; margin-bottom: 6px;">Welcome Back, <span id="dashWelcomeName" style="color: var(--accent-cyan);">VIP Member</span></h2>
-                            <p style="color: var(--text-muted); font-size: 0.85rem;">Account Status: <span style="color: #10B981; font-weight: 700;">Active Level 1</span></p>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn-vip" style="padding: 10px 18px;" onclick="navigateTo('newOrderView')"><i class="fa-solid fa-plus"></i> Order</button>
-                            <button class="btn-vip" style="background: var(--bg-card-sec); border: 1px solid var(--border-card); padding: 10px 18px;" onclick="navigateTo('addFundsView')"><i class="fa-solid fa-wallet"></i> Deposit</button>
-                        </div>
+                        <h2>Welcome, <span id="dashWelcomeName" style="color: var(--accent-cyan);">VIP Member</span></h2>
+                        <p style="color: var(--text-muted); font-size: 0.75rem;">Account: <span style="color: #10B981; font-weight: 700;">Active Level 1</span></p>
                     </div>
 
+                    <!-- 2-Column Balanced Stats Grid -->
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-icon" style="background: rgba(52, 120, 246, 0.15); color: var(--accent-blue);"><i class="fa-solid fa-cart-shopping"></i></div>
@@ -655,23 +695,22 @@
                         </div>
                     </div>
 
-                    <!-- Quick Orders Table -->
                     <div class="vip-card">
-                        <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+                        <h3 style="margin-bottom: 12px; font-size: 1.1rem;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
                         <div class="table-responsive">
                             <table>
                                 <thead>
                                     <tr>
+                                        <th>Order #</th>
                                         <th>Date</th>
                                         <th>Service</th>
-                                        <th>Target</th>
                                         <th>Qty</th>
                                         <th>Charge</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="dashRecentOrdersBody">
-                                    <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No recent orders.</td></tr>
+                                    <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders found.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -680,8 +719,8 @@
 
                 <!-- VIEW 2: NEW ORDER -->
                 <section id="newOrderView" class="page-view">
-                    <div class="vip-card" style="max-width: 650px; margin: 0 auto;">
-                        <h2 style="margin-bottom: 20px; color: var(--accent-cyan);"><i class="fa-solid fa-bolt"></i> Place Instant Order</h2>
+                    <div class="vip-card" style="max-width: 550px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 16px; color: var(--accent-cyan); font-size: 1.3rem;"><i class="fa-solid fa-bolt"></i> Place Order</h2>
                         <form id="orderForm" onsubmit="preCheckOrder(event)">
                             <div class="form-group">
                                 <label>Category</label>
@@ -696,18 +735,17 @@
                                 </select>
                             </div>
                             
-                            <!-- Service Details Info Card -->
-                            <div id="serviceDetailsBox" class="vip-card hidden" style="background: var(--bg-card-sec); padding: 14px; margin-bottom: 16px;">
-                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+                            <div id="serviceDetailsBox" class="vip-card hidden" style="background: var(--bg-card-sec); padding: 12px; margin-bottom: 14px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
                                     <span>Rate: <strong id="srvRatePer1k" style="color: var(--accent-cyan);">$0.0000 / 1k</strong></span>
                                     <span>Limits: <strong id="srvLimits" style="color: #fff;">0 - 0</strong></span>
                                 </div>
-                                <p id="srvDescription" style="font-size: 0.85rem; color: var(--text-muted);">-</p>
+                                <p id="srvDescription" style="font-size: 0.8rem; color: var(--text-muted);">-</p>
                             </div>
 
                             <div class="form-group">
                                 <label>Target Link / Username</label>
-                                <input type="text" id="orderTargetLink" required placeholder="https://tiktok.com/@profile or post link">
+                                <input type="text" id="orderTargetLink" required placeholder="https://tiktok.com/@user">
                             </div>
 
                             <div class="form-group">
@@ -715,38 +753,25 @@
                                 <input type="number" id="orderQtyInput" required min="1" placeholder="1000" oninput="calculateOrderCharge()">
                             </div>
 
-                            <div class="vip-card" style="background: var(--bg-card-sec); display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 20px;">
-                                <span style="color: var(--text-muted); font-size: 0.9rem;">Total Calculated Charge:</span>
-                                <span id="orderChargeDisplay" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-orange); font-family: 'Rajdhani', sans-serif;">$0.0000</span>
+                            <div class="vip-card" style="background: var(--bg-card-sec); display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 16px;">
+                                <span style="color: var(--text-muted); font-size: 0.85rem;">Total Price:</span>
+                                <span id="orderChargeDisplay" style="font-size: 1.3rem; font-weight: 700; color: var(--accent-orange); font-family: 'Rajdhani', sans-serif;">$0.0000</span>
                             </div>
 
-                            <button type="submit" class="btn-vip" id="btnSubmitOrder"><i class="fa-solid fa-paper-plane"></i> Review & Submit Order</button>
+                            <button type="submit" class="btn-vip" id="btnSubmitOrder"><i class="fa-solid fa-paper-plane"></i> Review Order</button>
                         </form>
                     </div>
                 </section>
 
-                <!-- VIEW 3: SERVICES CATALOG -->
+                <!-- VIEW 3: SERVICES CATALOG (CARDS FORMAT) -->
                 <section id="servicesView" class="page-view">
                     <div class="vip-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                            <h2>Services Catalog</h2>
-                            <input type="text" id="serviceSearchInput" placeholder="Search services..." oninput="filterServicesCatalog()" style="max-width: 280px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px;">
+                            <h2 style="font-size: 1.25rem;">Services Catalog</h2>
+                            <input type="text" id="serviceSearchInput" placeholder="Search service..." oninput="filterServicesCatalog()" style="max-width: 200px; padding: 8px 10px; font-size: 0.8rem;">
                         </div>
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Service Name</th>
-                                        <th>Rate / 1K</th>
-                                        <th>Min - Max</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="servicesCatalogBody">
-                                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading active services...</td></tr>
-                                </tbody>
-                            </table>
+                        <div class="service-list" id="servicesCardsContainer">
+                            <p style="text-align: center; color: var(--text-muted); padding: 15px;">Loading active services...</p>
                         </div>
                     </div>
                 </section>
@@ -754,22 +779,21 @@
                 <!-- VIEW 4: MY ORDERS -->
                 <section id="ordersView" class="page-view">
                     <div class="vip-card">
-                        <h2 style="margin-bottom: 20px;">Order History</h2>
+                        <h2 style="margin-bottom: 15px; font-size: 1.25rem;">My Orders</h2>
                         <div class="table-responsive">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Order ID</th>
+                                        <th>Order #</th>
                                         <th>Date</th>
                                         <th>Service</th>
-                                        <th>Target</th>
                                         <th>Qty</th>
-                                        <th>Charge</th>
+                                        <th>Cost</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="allOrdersTableBody">
-                                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading orders...</td></tr>
+                                    <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading orders...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -778,14 +802,13 @@
 
                 <!-- VIEW 5: ADD FUNDS -->
                 <section id="addFundsView" class="page-view">
-                    <div class="vip-card" style="max-width: 600px; margin: 0 auto;">
-                        <h2 style="margin-bottom: 15px; color: var(--accent-cyan);"><i class="fa-solid fa-wallet"></i> Deposit Funds</h2>
+                    <div class="vip-card" style="max-width: 500px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 12px; color: var(--accent-cyan); font-size: 1.25rem;"><i class="fa-solid fa-wallet"></i> Deposit Funds</h2>
                         
-                        <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                            <h4 style="color: var(--accent-orange); margin-bottom: 8px;">Official Payment Accounts:</h4>
-                            <p style="font-size: 0.9rem;">• <strong>Easypaisa:</strong> 03186815926 (M Nadeem)</p>
-                            <p style="font-size: 0.9rem;">• <strong>JazzCash:</strong> 03017573729 (Muhammad Nadeem)</p>
-                            <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px;">Note: Manual deposit takes 5-15 minutes for verified clearance.</p>
+                        <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); padding: 12px; border-radius: 10px; margin-bottom: 16px;">
+                            <h4 style="color: var(--accent-orange); margin-bottom: 6px; font-size: 0.9rem;">Official Accounts:</h4>
+                            <p style="font-size: 0.85rem;">• <strong>Easypaisa:</strong> 03186815926 (M Nadeem)</p>
+                            <p style="font-size: 0.85rem;">• <strong>JazzCash:</strong> 03017573729 (Muhammad Nadeem)</p>
                         </div>
 
                         <form id="depositRequestForm" onsubmit="handleDepositSubmit(event)">
@@ -798,18 +821,18 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Amount (USD $)</label>
+                                <label>Amount ($ USD)</label>
                                 <input type="number" step="0.01" id="depAmount" required placeholder="5.00">
                             </div>
                             <div class="form-group">
-                                <label>Transaction ID / TRX ID</label>
-                                <input type="text" id="depTrx" required placeholder="e.g. 9812739812">
+                                <label>TRX / Transaction ID</label>
+                                <input type="text" id="depTrx" required placeholder="8192847192">
                             </div>
                             <div class="form-group">
-                                <label>Sender Account / Number</label>
+                                <label>Sender Number</label>
                                 <input type="text" id="depSender" required placeholder="03XXXXXXXXX">
                             </div>
-                            <button type="submit" class="btn-vip" id="btnDeposit"><i class="fa-solid fa-file-invoice-dollar"></i> Submit Payment Verification</button>
+                            <button type="submit" class="btn-vip" id="btnDeposit"><i class="fa-solid fa-paper-plane"></i> Submit Verification</button>
                         </form>
                     </div>
                 </section>
@@ -817,7 +840,7 @@
                 <!-- VIEW 6: TRANSACTIONS -->
                 <section id="transactionsView" class="page-view">
                     <div class="vip-card">
-                        <h2 style="margin-bottom: 20px;">Transaction Ledger</h2>
+                        <h2 style="margin-bottom: 15px; font-size: 1.25rem;">Transaction Ledger</h2>
                         <div class="table-responsive">
                             <table>
                                 <thead>
@@ -829,7 +852,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="transactionsTableBody">
-                                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No transactions recorded.</td></tr>
+                                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No records found.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -838,123 +861,70 @@
 
                 <!-- VIEW 7: REFERRALS -->
                 <section id="referralsView" class="page-view">
-                    <div class="vip-card" style="max-width: 650px; margin: 0 auto; text-align: center;">
-                        <i class="fa-solid fa-gift" style="font-size: 2.5rem; color: var(--accent-orange); margin-bottom: 12px;"></i>
-                        <h2>Affiliate & Referral System</h2>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Share your link and earn bonus commissions on customer deposits!</p>
+                    <div class="vip-card" style="max-width: 500px; margin: 0 auto; text-align: center;">
+                        <i class="fa-solid fa-gift" style="font-size: 2rem; color: var(--accent-orange); margin-bottom: 8px;"></i>
+                        <h2 style="font-size: 1.25rem;">Affiliate Program</h2>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 15px;">Earn commissions on friend deposits!</p>
                         
                         <div class="form-group" style="text-align: left;">
-                            <label>Your Referral Link</label>
-                            <div style="display: flex; gap: 8px;">
-                                <input type="text" id="refLinkInput" readonly value="Loading link...">
-                                <button class="btn-vip" style="width: auto; padding: 0 16px;" onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i></button>
+                            <label>Your Link</label>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="refLinkInput" readonly value="Loading...">
+                                <button class="btn-vip" style="width: auto; padding: 0 14px;" onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i></button>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 8: NOTIFICATIONS -->
-                <section id="notificationsView" class="page-view">
-                    <div class="vip-card">
-                        <h2>Notifications</h2>
-                        <div id="notificationsContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-                            <p style="color: var(--text-muted);">No new announcements or alerts.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- VIEW 9: SUPPORT -->
+                <!-- VIEW 8: DIRECT LIVE CHAT (REPLACES TRADITIONAL TICKETS) -->
                 <section id="supportView" class="page-view">
-                    <div class="vip-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h2>Help & Support Tickets</h2>
-                            <button class="btn-vip" style="width: auto; padding: 8px 16px;" onclick="document.getElementById('newTicketCard').classList.toggle('hidden')"><i class="fa-solid fa-plus"></i> Open Ticket</button>
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <i class="fa-solid fa-headset" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+                            <div>
+                                <h4 style="font-size: 0.95rem; line-height: 1.1;">Admin Live Chat</h4>
+                                <span style="font-size: 0.7rem; color: #10B981;"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Online Support</span>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-body" id="chatMessagesBox">
+                            <div class="chat-bubble admin">
+                                Hello! How can we assist you today? Leave your order or deposit inquiry here.
+                                <div class="chat-time">Admin</div>
+                            </div>
                         </div>
 
-                        <!-- Ticket Creation Form -->
-                        <div id="newTicketCard" class="vip-card hidden" style="background: var(--bg-card-sec); margin-bottom: 20px;">
-                            <h4 style="margin-bottom: 12px; color: var(--accent-cyan);">Create New Support Ticket</h4>
-                            <form onsubmit="handleTicketSubmit(event)">
-                                <div class="form-group">
-                                    <label>Category</label>
-                                    <select id="ticketCategory" required>
-                                        <option value="Order Issue">Order Issue</option>
-                                        <option value="Payment / Deposit">Payment / Deposit</option>
-                                        <option value="General Inquiry">General Inquiry</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Subject</label>
-                                    <input type="text" id="ticketSubject" required placeholder="Brief description of the problem">
-                                </div>
-                                <div class="form-group">
-                                    <label>Message</label>
-                                    <textarea id="ticketMessage" rows="4" required placeholder="Type your details here..."></textarea>
-                                </div>
-                                <button type="submit" class="btn-vip" style="width: auto; padding: 10px 20px;">Send Ticket</button>
-                            </form>
-                        </div>
-
-                        <!-- Tickets List -->
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Category</th>
-                                        <th>Subject</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="ticketsTableBody">
-                                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No tickets opened yet.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <form class="chat-footer" onsubmit="handleSendDirectChat(event)">
+                            <input type="text" id="directChatMessageInput" required placeholder="Type your message here...">
+                            <button type="submit" class="btn-vip" id="btnSendChat"><i class="fa-solid fa-paper-plane"></i></button>
+                        </form>
                     </div>
                 </section>
 
-                <!-- VIEW 10: PROFILE -->
+                <!-- VIEW 9: PROFILE -->
                 <section id="profileView" class="page-view">
-                    <div class="vip-card" style="max-width: 600px; margin: 0 auto;">
-                        <h2 style="margin-bottom: 20px; color: var(--accent-cyan);"><i class="fa-solid fa-user-shield"></i> Profile Management</h2>
+                    <div class="vip-card" style="max-width: 500px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 16px; color: var(--accent-cyan); font-size: 1.25rem;"><i class="fa-solid fa-user-gear"></i> Profile</h2>
                         <div class="form-group">
                             <label>Full Name</label>
                             <input type="text" id="profFullName" placeholder="Your name">
                         </div>
                         <div class="form-group">
-                            <label>Email Address</label>
+                            <label>Email</label>
                             <input type="email" id="profEmail" readonly disabled style="opacity: 0.6;">
                         </div>
                         <div class="form-group">
-                            <label>Change Password</label>
-                            <input type="password" id="profNewPass" placeholder="Enter new password (optional)">
+                            <label>New Password (Optional)</label>
+                            <input type="password" id="profNewPass" placeholder="••••••••">
                         </div>
-                        <button class="btn-vip" onclick="updateUserProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
-                    </div>
-                </section>
-
-                <!-- VIEW 11: FAQ -->
-                <section id="faqView" class="page-view">
-                    <div class="vip-card">
-                        <h2 style="margin-bottom: 15px;">Frequently Asked Questions</h2>
-                        <div style="display: flex; flex-direction: column; gap: 15px; font-size: 0.9rem;">
-                            <div style="background: var(--bg-card-sec); padding: 14px; border-radius: 8px;">
-                                <strong style="color: var(--accent-cyan);">Q: How long does deposit take?</strong>
-                                <p style="color: var(--text-muted); margin-top: 4px;">Manual payments are verified and approved in 5 to 15 minutes.</p>
-                            </div>
-                            <div style="background: var(--bg-card-sec); padding: 14px; border-radius: 8px;">
-                                <strong style="color: var(--accent-cyan);">Q: What if my order is cancelled?</strong>
-                                <p style="color: var(--text-muted); margin-top: 4px;">If an order fails or gets cancelled, the amount is refunded back to your wallet balance automatically.</p>
-                            </div>
-                        </div>
+                        <button class="btn-vip" onclick="updateUserProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
                     </div>
                 </section>
 
             </div>
         </main>
 
-        <!-- MOBILE BOTTOM APP BAR -->
+        <!-- MOBILE BOTTOM NAVIGATION -->
         <nav class="mobile-bottom-nav">
             <div class="mobile-nav-item active" onclick="navigateTo('dashboardView')">
                 <i class="fa-solid fa-chart-pie"></i>
@@ -972,14 +942,14 @@
                 <i class="fa-solid fa-box-archive"></i>
                 <span>Orders</span>
             </div>
-            <div class="mobile-nav-item" onclick="navigateTo('addFundsView')">
-                <i class="fa-solid fa-wallet"></i>
-                <span>Funds</span>
+            <div class="mobile-nav-item" onclick="navigateTo('supportView')">
+                <i class="fa-solid fa-comments"></i>
+                <span>Support</span>
             </div>
         </nav>
     </div>
 
-    <!-- CORE SCRIPT LOGIC -->
+    <!-- JAVASCRIPT CORE -->
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
@@ -995,25 +965,19 @@
         let allCategories = [];
         let stagedOrderData = null;
 
-        // TOAST ENGINE
         function notify(msg, type = "info") {
             const container = document.getElementById("toastContainer");
             const toast = document.createElement("div");
             toast.className = `toast ${type}`;
-            
-            let icon = "fa-circle-info";
-            if (type === "success") icon = "fa-circle-check";
-            if (type === "error") icon = "fa-triangle-exclamation";
-            
+            let icon = type === "success" ? "fa-circle-check" : type === "error" ? "fa-triangle-exclamation" : "fa-circle-info";
             toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 3000);
         }
 
-        // INITIAL CHECK
         window.addEventListener("DOMContentLoaded", async () => {
             if (!supabaseClient) return;
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -1025,7 +989,6 @@
             }
         });
 
-        // AUTH TAB SWITCH
         function switchAuthTab(type) {
             const loginForm = document.getElementById("loginForm");
             const regForm = document.getElementById("registerForm");
@@ -1050,7 +1013,6 @@
             document.getElementById("appContainer").classList.add("hidden");
         }
 
-        // LOGIN
         async function handleAuthLogin(e) {
             e.preventDefault();
             const btn = document.getElementById("loginSubmitBtn");
@@ -1058,7 +1020,7 @@
             const password = document.getElementById("loginPass").value;
 
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Logging in...`;
 
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             btn.disabled = false;
@@ -1071,7 +1033,6 @@
             initCustomerApp();
         }
 
-        // REGISTER
         async function handleAuthRegister(e) {
             e.preventDefault();
             const btn = document.getElementById("registerSubmitBtn");
@@ -1080,7 +1041,7 @@
             const password = document.getElementById("regPass").value;
 
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Registering...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Creating...`;
 
             const { data, error } = await supabaseClient.auth.signUp({
                 email,
@@ -1094,11 +1055,10 @@
             if (error) return notify(error.message, "error");
 
             if (data.session) {
-                notify("Account created successfully!", "success");
+                notify("Account created!", "success");
                 currentUser = data.user;
                 initCustomerApp();
             } else {
-                // Try immediate login fallback
                 const { data: logData, error: logErr } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (logErr) {
                     notify("Registration completed. Please log in.", "success");
@@ -1111,13 +1071,11 @@
             }
         }
 
-        // LOGOUT
         async function triggerLogout() {
             await supabaseClient.auth.signOut();
             location.reload();
         }
 
-        // INIT APP POST AUTH
         async function initCustomerApp() {
             document.getElementById("authContainer").classList.add("hidden");
             document.getElementById("appContainer").classList.remove("hidden");
@@ -1126,10 +1084,10 @@
             await fetchCategoriesAndServices();
             loadDashboardStats();
             loadTransactions();
-            loadTickets();
+            loadChatMessages();
+            subscribeRealtimeChat();
         }
 
-        // FETCH USER PROFILE
         async function fetchUserProfile() {
             const { data, error } = await supabaseClient
                 .from("profiles")
@@ -1146,13 +1104,11 @@
                 document.getElementById("profFullName").value = data.full_name || "";
                 document.getElementById("profEmail").value = data.email || currentUser.email;
 
-                // Referral link
                 const refCode = data.referral_code || "VIP";
                 document.getElementById("refLinkInput").value = `${window.location.origin}?ref=${refCode}`;
             }
         }
 
-        // FETCH SERVICES & CATEGORIES
         async function fetchCategoriesAndServices() {
             const { data: categories } = await supabaseClient
                 .from("categories")
@@ -1168,7 +1124,6 @@
             allCategories = categories || [];
             allServices = services || [];
 
-            // Populate Category Select
             const catSelect = document.getElementById("orderCatSelect");
             catSelect.innerHTML = '<option value="">Select Category</option>';
             allCategories.forEach(c => {
@@ -1181,7 +1136,6 @@
             renderServicesCatalog(allServices);
         }
 
-        // CATEGORY CHANGE -> POPULATE SERVICE SELECT
         function handleCategoryChange() {
             const catId = document.getElementById("orderCatSelect").value;
             const srvSelect = document.getElementById("orderServiceSelect");
@@ -1204,7 +1158,6 @@
             srvSelect.disabled = false;
         }
 
-        // SERVICE SELECTION HANDLER
         function handleServiceSelection() {
             const sId = document.getElementById("orderServiceSelect").value;
             const box = document.getElementById("serviceDetailsBox");
@@ -1217,13 +1170,12 @@
             if (srv) {
                 document.getElementById("srvRatePer1k").innerText = `$${parseFloat(srv.rate_per_1k).toFixed(4)} / 1k`;
                 document.getElementById("srvLimits").innerText = `${srv.min_quantity} - ${srv.max_quantity}`;
-                document.getElementById("srvDescription").innerText = srv.description || "High-quality delivery guaranteed.";
+                document.getElementById("srvDescription").innerText = srv.description || "Instant Delivery guaranteed.";
                 box.classList.remove("hidden");
                 calculateOrderCharge();
             }
         }
 
-        // CALCULATE CHARGE
         function calculateOrderCharge() {
             const sId = document.getElementById("orderServiceSelect").value;
             const qty = parseInt(document.getElementById("orderQtyInput").value) || 0;
@@ -1237,7 +1189,6 @@
             }
         }
 
-        // PRE-CHECK & OPEN CONFIRM MODAL
         function preCheckOrder(e) {
             e.preventDefault();
             const sId = document.getElementById("orderServiceSelect").value;
@@ -1247,12 +1198,12 @@
 
             if (!srv) return notify("Please select a service", "error");
             if (qty < srv.min_quantity || qty > srv.max_quantity) {
-                return notify(`Quantity must be between ${srv.min_quantity} and ${srv.max_quantity}`, "error");
+                return notify(`Quantity must be ${srv.min_quantity} - ${srv.max_quantity}`, "error");
             }
 
             const total = (qty / 1000) * parseFloat(srv.rate_per_1k);
             if (parseFloat(userProfile.balance || 0) < total) {
-                return notify("Insufficient wallet balance. Please add funds.", "error");
+                return notify("Insufficient wallet balance. Add funds first.", "error");
             }
 
             stagedOrderData = {
@@ -1276,12 +1227,11 @@
             stagedOrderData = null;
         }
 
-        // EXECUTE SERVER-SIDE ATOMIC ORDER
         async function executeAtomicOrder() {
             if (!stagedOrderData) return;
             const btn = document.getElementById("confirmPlaceOrderBtn");
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Placing...`;
 
             const idempotencyKey = `${currentUser.id}_${Date.now()}`;
 
@@ -1300,7 +1250,7 @@
                 return notify(data ? data.message : error.message, "error");
             }
 
-            notify("VIP Order placed successfully!", "success");
+            notify(`Order #${data.order_number} placed successfully!`, "success");
             document.getElementById("orderForm").reset();
             document.getElementById("serviceDetailsBox").classList.add("hidden");
             document.getElementById("orderChargeDisplay").innerText = "$0.0000";
@@ -1311,7 +1261,6 @@
             navigateTo("ordersView");
         }
 
-        // LOAD DASHBOARD STATS & ORDERS
         async function loadDashboardStats() {
             const { data: orders } = await supabaseClient
                 .from("orders")
@@ -1327,24 +1276,23 @@
             const spent = list.reduce((acc, curr) => acc + parseFloat(curr.charge || 0), 0);
             document.getElementById("statTotalSpent").innerText = `$${spent.toFixed(4)}`;
 
-            // Populate tables
             renderOrdersTable(list.slice(0, 5), "dashRecentOrdersBody");
             renderOrdersTable(list, "allOrdersTableBody");
         }
 
+        // SEQUENTIAL GLOBAL ORDER NUMBER RENDERING
         function renderOrdersTable(items, targetId) {
             const body = document.getElementById(targetId);
             if (!items || items.length === 0) {
-                body.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No orders found.</td></tr>`;
+                body.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>`;
                 return;
             }
 
             body.innerHTML = items.map(o => `
                 <tr>
-                    <td>#${o.id.substring(0, 8)}</td>
+                    <td><strong>#${o.order_number || o.id.substring(0, 6)}</strong></td>
                     <td>${new Date(o.created_at).toLocaleDateString()}</td>
-                    <td>${o.services ? o.services.name : 'VIP Service'}</td>
-                    <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan);">Link</a></td>
+                    <td>${o.services ? o.services.name : 'Service'}</td>
                     <td>${o.quantity}</td>
                     <td>$${parseFloat(o.charge).toFixed(4)}</td>
                     <td><span class="badge badge-${o.status}">${o.status}</span></td>
@@ -1352,22 +1300,25 @@
             `).join("");
         }
 
-        // SERVICES CATALOG
+        // SERVICES CATALOG - MODERN MOBILE CARDS
         function renderServicesCatalog(items) {
-            const body = document.getElementById("servicesCatalogBody");
+            const container = document.getElementById("servicesCardsContainer");
             if (!items || items.length === 0) {
-                body.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No services available.</td></tr>`;
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 15px;">No services found.</p>`;
                 return;
             }
 
-            body.innerHTML = items.map((s, idx) => `
-                <tr>
-                    <td>#${idx + 1}</td>
-                    <td><strong>${s.name}</strong></td>
-                    <td style="color: var(--accent-cyan); font-weight: 700;">$${parseFloat(s.rate_per_1k).toFixed(4)}</td>
-                    <td>${s.min_quantity} - ${s.max_quantity}</td>
-                    <td><button class="btn-vip" style="width: auto; padding: 4px 10px; font-size: 0.75rem;" onclick="quickOrderService('${s.category_id}', '${s.id}')">Order</button></td>
-                </tr>
+            container.innerHTML = items.map(s => `
+                <div class="service-item-card">
+                    <div class="srv-left">
+                        <div class="srv-name">${s.name}</div>
+                        <div class="srv-meta">Min: ${s.min_quantity} | Max: ${s.max_quantity}</div>
+                    </div>
+                    <div class="srv-right">
+                        <div class="srv-price">$${parseFloat(s.rate_per_1k).toFixed(4)}</div>
+                        <button class="btn-vip" style="width: auto; padding: 4px 12px; font-size: 0.75rem;" onclick="quickOrderService('${s.category_id}', '${s.id}')">Order</button>
+                    </div>
+                </div>
             `).join("");
         }
 
@@ -1385,7 +1336,6 @@
             handleServiceSelection();
         }
 
-        // DEPOSIT HANDLER
         async function handleDepositSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById("btnDeposit");
@@ -1407,15 +1357,14 @@
             });
 
             btn.disabled = false;
-            btn.innerHTML = `<i class="fa-solid fa-file-invoice-dollar"></i> Submit Payment Verification`;
+            btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Verification`;
 
             if (error) return notify(error.message, "error");
 
-            notify("Deposit submitted! Admin will verify shortly.", "success");
+            notify("Deposit submitted! Admin will verify soon.", "success");
             document.getElementById("depositRequestForm").reset();
         }
 
-        // TRANSACTIONS
         async function loadTransactions() {
             const { data } = await supabaseClient
                 .from("transactions")
@@ -1425,7 +1374,7 @@
 
             const body = document.getElementById("transactionsTableBody");
             if (!data || data.length === 0) {
-                body.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No transactions found.</td></tr>`;
+                body.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No records found.</td></tr>`;
                 return;
             }
 
@@ -1439,58 +1388,54 @@
             `).join("");
         }
 
-        // SUPPORT TICKETS
-        async function loadTickets() {
+        // DIRECT LIVE CHAT MESSENGER LOGIC
+        async function loadChatMessages() {
             const { data } = await supabaseClient
-                .from("tickets")
+                .from("chat_messages")
                 .select("*")
                 .eq("user_id", currentUser.id)
-                .order("created_at", { ascending: false });
+                .order("created_at", { ascending: true });
 
-            const body = document.getElementById("ticketsTableBody");
-            if (!data || data.length === 0) {
-                body.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No support tickets opened.</td></tr>`;
-                return;
-            }
+            const box = document.getElementById("chatMessagesBox");
+            if (!data || data.length === 0) return;
 
-            body.innerHTML = data.map(tk => `
-                <tr>
-                    <td>${new Date(tk.created_at).toLocaleDateString()}</td>
-                    <td>${tk.category}</td>
-                    <td>${tk.subject}</td>
-                    <td><span class="badge badge-${tk.status}">${tk.status}</span></td>
-                </tr>
+            box.innerHTML = data.map(m => `
+                <div class="chat-bubble ${m.sender_type}">
+                    ${m.message}
+                    <div class="chat-time">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                </div>
             `).join("");
+            box.scrollTop = box.scrollHeight;
         }
 
-        async function handleTicketSubmit(e) {
+        async function handleSendDirectChat(e) {
             e.preventDefault();
-            const cat = document.getElementById("ticketCategory").value;
-            const sub = document.getElementById("ticketSubject").value.trim();
-            const msg = document.getElementById("ticketMessage").value.trim();
+            const input = document.getElementById("directChatMessageInput");
+            const msg = input.value.trim();
+            if (!msg) return;
 
-            const { data: ticket, error } = await supabaseClient.from("tickets").insert({
+            input.value = "";
+            const { error } = await supabaseClient.from("chat_messages").insert({
                 user_id: currentUser.id,
-                category: cat,
-                subject: sub,
-                status: 'open'
-            }).select().single();
-
-            if (error) return notify(error.message, "error");
-
-            await supabaseClient.from("ticket_messages").insert({
-                ticket_id: ticket.id,
-                sender_id: currentUser.id,
-                message: msg,
-                is_admin: false
+                sender_type: 'user',
+                message: msg
             });
 
-            notify("Support ticket submitted!", "success");
-            document.getElementById("newTicketCard").classList.add("hidden");
-            loadTickets();
+            if (error) return notify(error.message, "error");
+            loadChatMessages();
         }
 
-        // PROFILE UPDATE
+        function subscribeRealtimeChat() {
+            supabaseClient
+                .channel('chat_realtime')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
+                    if (payload.new && payload.new.user_id === currentUser.id) {
+                        loadChatMessages();
+                    }
+                })
+                .subscribe();
+        }
+
         async function updateUserProfile() {
             const name = document.getElementById("profFullName").value.trim();
             const pass = document.getElementById("profNewPass").value;
@@ -1499,11 +1444,11 @@
                 await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
             }
             if (pass) {
-                if (pass.length < 6) return notify("Password must be at least 6 characters", "error");
+                if (pass.length < 6) return notify("Password min 6 chars", "error");
                 await supabaseClient.auth.updateUser({ password: pass });
             }
 
-            notify("Profile settings updated!", "success");
+            notify("Profile updated!", "success");
             fetchUserProfile();
         }
 
@@ -1511,10 +1456,9 @@
             const input = document.getElementById("refLinkInput");
             input.select();
             navigator.clipboard.writeText(input.value);
-            notify("Referral link copied to clipboard!", "success");
+            notify("Link copied!", "success");
         }
 
-        // NAVIGATION SWITCHER
         function navigateTo(viewId, element) {
             document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
             document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
@@ -1525,7 +1469,6 @@
 
             if (element) element.classList.add("active");
 
-            // Close mobile sidebar if open
             document.getElementById("appSidebar").classList.remove("mobile-open");
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
