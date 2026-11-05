@@ -2,540 +2,1200 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MULTANI SMM PANEL</title>
-    <!-- Stable Supabase CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MULTANI SMM PANEL | VIP Reseller Platform</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
+            --bg-base: #06070A;
+            --bg-card: #0E1118;
+            --bg-card-sec: #151C29;
+            --accent-orange: #FF4624;
+            --accent-cyan: #00D5FF;
+            --accent-blue: #3478F6;
+            --text-main: #FFFFFF;
+            --text-muted: #9BA8BC;
+            --border-glow: rgba(0, 213, 255, 0.15);
+            --border-card: #1f293d;
+            --sidebar-w: 260px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-base);
             color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, .brand-font {
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-orange); }
+
+        /* --- TOAST SYSTEM --- */
+        #toastContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
             flex-direction: column;
+            gap: 10px;
         }
+        .toast {
+            min-width: 280px;
+            padding: 14px 18px;
+            background: rgba(14, 17, 24, 0.95);
+            border-left: 4px solid var(--accent-cyan);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease forwards;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-card);
+            border-right: 1px solid var(--border-card);
+            border-bottom: 1px solid var(--border-card);
+        }
+        .toast.error { border-left-color: var(--accent-orange); }
+        .toast.success { border-left-color: #10B981; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px 15px;
+        /* --- AUTH SECTION --- */
+        #authContainer {
             width: 100%;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
-            margin-bottom: 20px;
+            background: radial-gradient(circle at top right, rgba(255, 70, 36, 0.12), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(0, 213, 255, 0.12), transparent 40%);
         }
-
-        .auth-container {
-            max-width: 420px;
-            margin: 40px auto;
-            width: 90%;
+        .auth-box {
+            width: 100%;
+            max-width: 440px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            position: relative;
         }
-
-        .auth-switch {
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .auth-logo h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #fff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .auth-nav {
             display: flex;
             gap: 10px;
+            background: var(--bg-base);
+            padding: 4px;
+            border-radius: 10px;
             margin-bottom: 20px;
+            border: 1px solid var(--border-card);
         }
-
-        .switch-btn {
+        .auth-nav button {
             flex: 1;
             padding: 10px;
             background: transparent;
-            border: 1px solid var(--border);
+            border: none;
             color: var(--text-muted);
-            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
         }
-
-        .switch-btn.active {
-            background: var(--primary);
+        .auth-nav button.active {
+            background: var(--accent-orange);
             color: #fff;
-            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 70, 36, 0.4);
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
+        /* --- FORM ELEMENTS --- */
+        .form-group { margin-bottom: 16px; }
         label {
             display: block;
             margin-bottom: 6px;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px 14px;
-            background: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: #fff;
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            color: var(--text-main);
             font-size: 0.95rem;
             outline: none;
+            transition: 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 213, 255, 0.2);
         }
 
-        input:focus, select:focus {
-            border-color: var(--primary);
-        }
-
-        .btn {
-            display: block;
+        .btn-vip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             width: 100%;
-            padding: 12px;
-            background: var(--primary);
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-orange), #d93314);
             color: #fff;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
+            font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             cursor: pointer;
-            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(255, 70, 36, 0.35);
+            transition: 0.2s;
+        }
+        .btn-vip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 70, 36, 0.5);
         }
 
-        .btn:hover {
-            background: var(--primary-hover);
+        /* --- APP WRAPPER (POST LOGIN) --- */
+        #appContainer {
+            width: 100%;
+            display: flex;
+            min-height: 100vh;
         }
 
-        .navbar {
+        /* --- DESKTOP SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-card);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-header {
+            padding: 22px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-card);
+        }
+        .sidebar-header i { font-size: 1.5rem; color: var(--accent-orange); }
+        .sidebar-header h2 { font-size: 1.3rem; font-weight: 800; }
+        .sidebar-menu {
+            flex: 1;
+            padding: 15px 12px;
+            overflow-y: auto;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .sidebar-menu li a i { font-size: 1.1rem; width: 22px; text-align: center; }
+        .sidebar-menu li a:hover {
+            background: var(--bg-card-sec);
+            color: #fff;
+        }
+        .sidebar-menu li a.active {
+            background: linear-gradient(90deg, rgba(255, 70, 36, 0.15), rgba(0, 213, 255, 0.05));
+            border-left: 3px solid var(--accent-orange);
+            color: #fff;
+        }
+
+        /* --- MAIN WRAPPER --- */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-w);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 80px; /* Space for mobile nav */
+        }
+
+        /* --- TOP HEADER --- */
+        .top-navbar {
+            height: 70px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-card);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+        .top-left { display: flex; align-items: center; gap: 15px; }
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+        .balance-chip {
+            background: rgba(0, 213, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 30px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+        }
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .user-pill img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-orange);
+        }
+
+        /* --- PAGES / VIEWS --- */
+        .content-body {
+            padding: 25px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .page-view { display: none; }
+        .page-view.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- DASHBOARD STATS CARDS --- */
+        .vip-banner {
+            background: linear-gradient(135deg, #151C29 0%, #0E1118 100%);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding: 15px 20px;
-            background: var(--card-bg);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
         }
-
-        .balance-badge {
-            background: #064e3b;
-            color: #34d399;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            border: 1px solid #059669;
+        .vip-banner::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 70, 36, 0.2), transparent 70%);
+            pointer-events: none;
         }
-
-        .nav-tabs {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 18px;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .stat-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Rajdhani', sans-serif;
+            color: #fff;
+        }
+        .stat-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* --- CARDS & TABLES --- */
+        .vip-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 22px;
             margin-bottom: 20px;
+        }
+        .table-responsive {
+            width: 100%;
             overflow-x: auto;
         }
-
-        .tab-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: #fff;
-            border-color: var(--primary);
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
-        }
-
-        th, td {
             text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
         }
-
-        th {
-            color: var(--text-muted);
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-card);
         }
-
-        .status-badge {
+        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+        .badge {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            text-transform: capitalize;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
         }
+        .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; }
+        .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+        .badge-failed { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
-        .status-pending { background: #854d0e; color: #fef08a; }
-        .status-completed { background: #065f46; color: #a7f3d0; }
-        .status-failed { background: #991b1b; color: #fecaca; }
+        /* --- MOBILE BOTTOM NAVBAR --- */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: rgba(14, 17, 24, 0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-card);
+            z-index: 1000;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .mobile-nav-item i { font-size: 1.2rem; }
+        .mobile-nav-item.active { color: var(--accent-orange); }
+
+        /* --- MODAL DIALOG --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            max-width: 440px;
+            width: 100%;
+            padding: 24px;
+        }
 
         .hidden { display: none !important; }
-        .price-display {
-            font-size: 1.1rem;
-            color: #38bdf8;
-            font-weight: 600;
-            margin-top: 5px;
+
+        /* --- RESPONSIVE BREAKPOINTS --- */
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .mobile-bottom-nav { display: flex; }
         }
     </style>
 </head>
 <body>
 
-    <!-- AUTH WRAPPER -->
-    <div id="authSection" class="auth-container">
-        <div class="auth-switch">
-            <button type="button" class="switch-btn active" id="tabLoginBtn" onclick="showAuthTab('login')">Login</button>
-            <button type="button" class="switch-btn" id="tabRegisterBtn" onclick="showAuthTab('register')">Sign Up (Register)</button>
-        </div>
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer"></div>
 
-        <!-- LOGIN FORM -->
-        <div id="loginCard" class="card">
-            <h2 style="margin-bottom: 15px; text-align: center;">Multani SMM Login</h2>
-            <form onsubmit="handleLogin(event)">
+    <!-- ORDER CONFIRMATION MODAL -->
+    <div id="orderConfirmModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="color: var(--accent-cyan); margin-bottom: 15px;"><i class="fa-solid fa-circle-check"></i> Confirm Order</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Please verify details before submission:</p>
+            <div style="background: var(--bg-card-sec); padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; line-height: 1.6;">
+                <div><strong>Service:</strong> <span id="modalServiceName">-</span></div>
+                <div><strong>Target Link:</strong> <span id="modalTargetLink" style="word-break: break-all;">-</span></div>
+                <div><strong>Quantity:</strong> <span id="modalQuantity">-</span></div>
+                <div><strong>Total Cost:</strong> <span id="modalCost" style="color: var(--accent-orange); font-weight: 700;">-</span></div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-vip" style="background: var(--bg-card-sec); border: 1px solid var(--border-card);" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn-vip" id="confirmPlaceOrderBtn" onclick="executeAtomicOrder()">Confirm & Place</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. AUTH SCREEN (LOGIN / SIGNUP) -->
+    <div id="authContainer">
+        <div class="auth-box">
+            <div class="auth-logo">
+                <i class="fa-solid fa-bolt-lightning" style="font-size: 2.5rem; color: var(--accent-orange); margin-bottom: 10px;"></i>
+                <h2>MULTANI SMM</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">VIP Customer & Reseller Portal</p>
+            </div>
+
+            <div class="auth-nav">
+                <button class="active" id="btnTabLogin" onclick="switchAuthTab('login')">Login</button>
+                <button id="btnTabRegister" onclick="switchAuthTab('register')">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleAuthLogin(event)">
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" id="loginEmail" required placeholder="user@gmail.com">
+                    <input type="email" id="loginEmail" required placeholder="name@domain.com">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="loginPassword" required placeholder="Minimum 6 characters">
+                    <input type="password" id="loginPass" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn" id="btnLogin">Login</button>
+                <button type="submit" class="btn-vip" id="loginSubmitBtn">Access Portal</button>
             </form>
-        </div>
 
-        <!-- REGISTER FORM -->
-        <div id="registerCard" class="card hidden">
-            <h2 style="margin-bottom: 15px; text-align: center;">Create SMM Account</h2>
-            <form onsubmit="handleRegister(event)">
+            <!-- Register Form -->
+            <form id="registerForm" class="hidden" onsubmit="handleAuthRegister(event)">
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" id="regName" required placeholder="M Nadeem">
+                    <input type="text" id="regName" required placeholder="Muhammad Nadeem">
                 </div>
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" id="regEmail" required placeholder="user@gmail.com">
+                    <input type="email" id="regEmail" required placeholder="name@domain.com">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
+                    <input type="password" id="regPass" required placeholder="Minimum 6 characters">
                 </div>
-                <button type="submit" class="btn" id="btnRegister">Register Now</button>
+                <button type="submit" class="btn-vip" id="registerSubmitBtn">Create VIP Account</button>
             </form>
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD -->
-    <div id="dashboardSection" class="hidden">
-        <header class="navbar">
-            <div style="font-weight: 700; font-size: 1.1rem;">MULTANI SMM</div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <span class="balance-badge" id="userBalance">$0.0000</span>
-                <button class="switch-btn" onclick="handleLogout()" style="padding: 6px 12px; font-size: 0.85rem;">Logout</button>
+    <!-- 2. MAIN APPLICATION (POST-AUTH) -->
+    <div id="appContainer" class="hidden">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-crown"></i>
+                <h2>MULTANI VIP</h2>
             </div>
-        </header>
+            <ul class="sidebar-menu">
+                <li><a class="active" onclick="navigateTo('dashboardView', this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a onclick="navigateTo('newOrderView', this)"><i class="fa-solid fa-cart-plus"></i> New Order</a></li>
+                <li><a onclick="navigateTo('servicesView', this)"><i class="fa-solid fa-list-check"></i> Services</a></li>
+                <li><a onclick="navigateTo('ordersView', this)"><i class="fa-solid fa-box-archive"></i> My Orders</a></li>
+                <li><a onclick="navigateTo('addFundsView', this)"><i class="fa-solid fa-wallet"></i> Add Funds</a></li>
+                <li><a onclick="navigateTo('transactionsView', this)"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a></li>
+                <li><a onclick="navigateTo('referralsView', this)"><i class="fa-solid fa-users"></i> Referrals</a></li>
+                <li><a onclick="navigateTo('notificationsView', this)"><i class="fa-solid fa-bell"></i> Notifications</a></li>
+                <li><a onclick="navigateTo('supportView', this)"><i class="fa-solid fa-headset"></i> Support</a></li>
+                <li><a onclick="navigateTo('profileView', this)"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
+                <li><a onclick="navigateTo('faqView', this)"><i class="fa-solid fa-circle-question"></i> FAQ</a></li>
+                <li style="margin-top: auto;"><a onclick="triggerLogout()" style="color: var(--accent-orange);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
 
-        <div class="container">
-            <div class="nav-tabs">
-                <button class="tab-btn active" onclick="switchNav('newOrderTab', this)">New Order</button>
-                <button class="tab-btn" onclick="switchNav('orderHistoryTab', this)">Order History</button>
-                <button class="tab-btn" onclick="switchNav('depositTab', this)">Add Funds</button>
-            </div>
-
-            <!-- TAB 1: ORDER -->
-            <div id="newOrderTab" class="card tab-content">
-                <h3>Place an Order</h3>
-                <form onsubmit="handlePlaceOrder(event)">
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="orderCategory" required onchange="onCategorySelect()">
-                            <option value="">Select Category</option>
-                        </select>
+        <!-- MAIN VIEW WRAPPER -->
+        <main class="main-content">
+            
+            <!-- TOP NAVBAR -->
+            <header class="top-navbar">
+                <div class="top-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                    <div class="balance-chip">
+                        <i class="fa-solid fa-wallet"></i>
+                        <span id="navWalletBalance">$0.0000</span>
                     </div>
-
-                    <div class="form-group">
-                        <label>Service</label>
-                        <select id="orderService" required disabled onchange="updatePrice()">
-                            <option value="">Select Category First</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Target Link / Username</label>
-                        <input type="text" id="orderLink" required placeholder="https://tiktok.com/@username/video/...">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" id="orderQuantity" required min="1" placeholder="e.g. 1000" oninput="updatePrice()">
-                        <small id="serviceLimits" style="color: var(--text-muted); font-size: 0.8rem;"></small>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Total Price (USD)</label>
-                        <div class="price-display" id="calculatedCharge">$0.0000</div>
-                    </div>
-
-                    <button type="submit" class="btn" id="btnPlaceOrder">Submit Order</button>
-                </form>
-            </div>
-
-            <!-- TAB 2: HISTORY -->
-            <div id="orderHistoryTab" class="card tab-content hidden">
-                <h3>Your Orders</h3>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Service</th>
-                                <th>Link</th>
-                                <th>Qty</th>
-                                <th>Cost</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orderHistoryBody">
-                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>
-                        </tbody>
-                    </table>
                 </div>
-            </div>
-
-            <!-- TAB 3: DEPOSITS -->
-            <div id="depositTab" class="card tab-content hidden">
-                <h3>Deposit Funds (Easypaisa / JazzCash)</h3>
-                <div style="background: #0f172a; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem;">
-                    <p style="font-weight: 600; margin-bottom: 5px; color: #38bdf8;">Manual Accounts:</p>
-                    <p>• <strong>Easypaisa:</strong> 03186815926 (M Nadeem)</p>
-                    <p>• <strong>JazzCash:</strong> 03017573729 (Muhammad Nadeem)</p>
+                <div class="top-right">
+                    <div class="user-pill" onclick="navigateTo('profileView')">
+                        <img id="navAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Profile">
+                        <span id="navUserName" style="font-weight: 600; font-size: 0.9rem;">VIP User</span>
+                    </div>
                 </div>
+            </header>
 
-                <form onsubmit="handleDeposit(event)">
-                    <div class="form-group">
-                        <label>Payment Method</label>
-                        <select id="depositMethod" required>
-                            <option value="Easypaisa">Easypaisa</option>
-                            <option value="JazzCash">JazzCash</option>
-                            <option value="Bank">Bank Transfer</option>
-                        </select>
+            <div class="content-body">
+                
+                <!-- VIEW 1: DASHBOARD -->
+                <section id="dashboardView" class="page-view active">
+                    <div class="vip-banner">
+                        <div>
+                            <h2 style="font-size: 1.8rem; margin-bottom: 6px;">Welcome Back, <span id="dashWelcomeName" style="color: var(--accent-cyan);">VIP Member</span></h2>
+                            <p style="color: var(--text-muted); font-size: 0.85rem;">Account Status: <span style="color: #10B981; font-weight: 700;">Active Level 1</span></p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-vip" style="padding: 10px 18px;" onclick="navigateTo('newOrderView')"><i class="fa-solid fa-plus"></i> Order</button>
+                            <button class="btn-vip" style="background: var(--bg-card-sec); border: 1px solid var(--border-card); padding: 10px 18px;" onclick="navigateTo('addFundsView')"><i class="fa-solid fa-wallet"></i> Deposit</button>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Amount in USD ($)</label>
-                        <input type="number" step="0.01" id="depositAmount" required placeholder="e.g. 5.00">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(52, 120, 246, 0.15); color: var(--accent-blue);"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div>
+                                <div class="stat-val" id="statTotalOrders">0</div>
+                                <div class="stat-title">Total Orders</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #10B981;"><i class="fa-solid fa-circle-check"></i></div>
+                            <div>
+                                <div class="stat-val" id="statCompletedOrders">0</div>
+                                <div class="stat-title">Completed</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(234, 179, 8, 0.15); color: #EAB308;"><i class="fa-solid fa-hourglass-half"></i></div>
+                            <div>
+                                <div class="stat-val" id="statPendingOrders">0</div>
+                                <div class="stat-title">Pending</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: rgba(255, 70, 36, 0.15); color: var(--accent-orange);"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                            <div>
+                                <div class="stat-val" id="statTotalSpent">$0.0000</div>
+                                <div class="stat-title">Total Spent</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Transaction ID / TRX</label>
-                        <input type="text" id="depositTrx" required placeholder="e.g. 98127391">
+                    <!-- Quick Orders Table -->
+                    <div class="vip-card">
+                        <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Service</th>
+                                        <th>Target</th>
+                                        <th>Qty</th>
+                                        <th>Charge</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashRecentOrdersBody">
+                                    <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No recent orders.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                </section>
 
-                    <div class="form-group">
-                        <label>Sender Account / Number</label>
-                        <input type="text" id="depositSender" required placeholder="03XXXXXXXXX">
+                <!-- VIEW 2: NEW ORDER -->
+                <section id="newOrderView" class="page-view">
+                    <div class="vip-card" style="max-width: 650px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 20px; color: var(--accent-cyan);"><i class="fa-solid fa-bolt"></i> Place Instant Order</h2>
+                        <form id="orderForm" onsubmit="preCheckOrder(event)">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="orderCatSelect" required onchange="handleCategoryChange()">
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Service</label>
+                                <select id="orderServiceSelect" required disabled onchange="handleServiceSelection()">
+                                    <option value="">Select Category First</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Service Details Info Card -->
+                            <div id="serviceDetailsBox" class="vip-card hidden" style="background: var(--bg-card-sec); padding: 14px; margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">
+                                    <span>Rate: <strong id="srvRatePer1k" style="color: var(--accent-cyan);">$0.0000 / 1k</strong></span>
+                                    <span>Limits: <strong id="srvLimits" style="color: #fff;">0 - 0</strong></span>
+                                </div>
+                                <p id="srvDescription" style="font-size: 0.85rem; color: var(--text-muted);">-</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Target Link / Username</label>
+                                <input type="text" id="orderTargetLink" required placeholder="https://tiktok.com/@profile or post link">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input type="number" id="orderQtyInput" required min="1" placeholder="1000" oninput="calculateOrderCharge()">
+                            </div>
+
+                            <div class="vip-card" style="background: var(--bg-card-sec); display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 20px;">
+                                <span style="color: var(--text-muted); font-size: 0.9rem;">Total Calculated Charge:</span>
+                                <span id="orderChargeDisplay" style="font-size: 1.4rem; font-weight: 700; color: var(--accent-orange); font-family: 'Rajdhani', sans-serif;">$0.0000</span>
+                            </div>
+
+                            <button type="submit" class="btn-vip" id="btnSubmitOrder"><i class="fa-solid fa-paper-plane"></i> Review & Submit Order</button>
+                        </form>
                     </div>
+                </section>
 
-                    <button type="submit" class="btn">Submit Deposit Proof</button>
-                </form>
+                <!-- VIEW 3: SERVICES CATALOG -->
+                <section id="servicesView" class="page-view">
+                    <div class="vip-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                            <h2>Services Catalog</h2>
+                            <input type="text" id="serviceSearchInput" placeholder="Search services..." oninput="filterServicesCatalog()" style="max-width: 280px;">
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Service Name</th>
+                                        <th>Rate / 1K</th>
+                                        <th>Min - Max</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="servicesCatalogBody">
+                                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading active services...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 4: MY ORDERS -->
+                <section id="ordersView" class="page-view">
+                    <div class="vip-card">
+                        <h2 style="margin-bottom: 20px;">Order History</h2>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Service</th>
+                                        <th>Target</th>
+                                        <th>Qty</th>
+                                        <th>Charge</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allOrdersTableBody">
+                                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading orders...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 5: ADD FUNDS -->
+                <section id="addFundsView" class="page-view">
+                    <div class="vip-card" style="max-width: 600px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 15px; color: var(--accent-cyan);"><i class="fa-solid fa-wallet"></i> Deposit Funds</h2>
+                        
+                        <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <h4 style="color: var(--accent-orange); margin-bottom: 8px;">Official Payment Accounts:</h4>
+                            <p style="font-size: 0.9rem;">• <strong>Easypaisa:</strong> 03186815926 (M Nadeem)</p>
+                            <p style="font-size: 0.9rem;">• <strong>JazzCash:</strong> 03017573729 (Muhammad Nadeem)</p>
+                            <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px;">Note: Manual deposit takes 5-15 minutes for verified clearance.</p>
+                        </div>
+
+                        <form id="depositRequestForm" onsubmit="handleDepositSubmit(event)">
+                            <div class="form-group">
+                                <label>Payment Method</label>
+                                <select id="depMethod" required>
+                                    <option value="Easypaisa">Easypaisa</option>
+                                    <option value="JazzCash">JazzCash</option>
+                                    <option value="Bank">Bank Transfer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (USD $)</label>
+                                <input type="number" step="0.01" id="depAmount" required placeholder="5.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Transaction ID / TRX ID</label>
+                                <input type="text" id="depTrx" required placeholder="e.g. 9812739812">
+                            </div>
+                            <div class="form-group">
+                                <label>Sender Account / Number</label>
+                                <input type="text" id="depSender" required placeholder="03XXXXXXXXX">
+                            </div>
+                            <button type="submit" class="btn-vip" id="btnDeposit"><i class="fa-solid fa-file-invoice-dollar"></i> Submit Payment Verification</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- VIEW 6: TRANSACTIONS -->
+                <section id="transactionsView" class="page-view">
+                    <div class="vip-card">
+                        <h2 style="margin-bottom: 20px;">Transaction Ledger</h2>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTableBody">
+                                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No transactions recorded.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 7: REFERRALS -->
+                <section id="referralsView" class="page-view">
+                    <div class="vip-card" style="max-width: 650px; margin: 0 auto; text-align: center;">
+                        <i class="fa-solid fa-gift" style="font-size: 2.5rem; color: var(--accent-orange); margin-bottom: 12px;"></i>
+                        <h2>Affiliate & Referral System</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Share your link and earn bonus commissions on customer deposits!</p>
+                        
+                        <div class="form-group" style="text-align: left;">
+                            <label>Your Referral Link</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="refLinkInput" readonly value="Loading link...">
+                                <button class="btn-vip" style="width: auto; padding: 0 16px;" onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 8: NOTIFICATIONS -->
+                <section id="notificationsView" class="page-view">
+                    <div class="vip-card">
+                        <h2>Notifications</h2>
+                        <div id="notificationsContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                            <p style="color: var(--text-muted);">No new announcements or alerts.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 9: SUPPORT -->
+                <section id="supportView" class="page-view">
+                    <div class="vip-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2>Help & Support Tickets</h2>
+                            <button class="btn-vip" style="width: auto; padding: 8px 16px;" onclick="document.getElementById('newTicketCard').classList.toggle('hidden')"><i class="fa-solid fa-plus"></i> Open Ticket</button>
+                        </div>
+
+                        <!-- Ticket Creation Form -->
+                        <div id="newTicketCard" class="vip-card hidden" style="background: var(--bg-card-sec); margin-bottom: 20px;">
+                            <h4 style="margin-bottom: 12px; color: var(--accent-cyan);">Create New Support Ticket</h4>
+                            <form onsubmit="handleTicketSubmit(event)">
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="ticketCategory" required>
+                                        <option value="Order Issue">Order Issue</option>
+                                        <option value="Payment / Deposit">Payment / Deposit</option>
+                                        <option value="General Inquiry">General Inquiry</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <input type="text" id="ticketSubject" required placeholder="Brief description of the problem">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea id="ticketMessage" rows="4" required placeholder="Type your details here..."></textarea>
+                                </div>
+                                <button type="submit" class="btn-vip" style="width: auto; padding: 10px 20px;">Send Ticket</button>
+                            </form>
+                        </div>
+
+                        <!-- Tickets List -->
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Category</th>
+                                        <th>Subject</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ticketsTableBody">
+                                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No tickets opened yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 10: PROFILE -->
+                <section id="profileView" class="page-view">
+                    <div class="vip-card" style="max-width: 600px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 20px; color: var(--accent-cyan);"><i class="fa-solid fa-user-shield"></i> Profile Management</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="profFullName" placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="profEmail" readonly disabled style="opacity: 0.6;">
+                        </div>
+                        <div class="form-group">
+                            <label>Change Password</label>
+                            <input type="password" id="profNewPass" placeholder="Enter new password (optional)">
+                        </div>
+                        <button class="btn-vip" onclick="updateUserProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+                    </div>
+                </section>
+
+                <!-- VIEW 11: FAQ -->
+                <section id="faqView" class="page-view">
+                    <div class="vip-card">
+                        <h2 style="margin-bottom: 15px;">Frequently Asked Questions</h2>
+                        <div style="display: flex; flex-direction: column; gap: 15px; font-size: 0.9rem;">
+                            <div style="background: var(--bg-card-sec); padding: 14px; border-radius: 8px;">
+                                <strong style="color: var(--accent-cyan);">Q: How long does deposit take?</strong>
+                                <p style="color: var(--text-muted); margin-top: 4px;">Manual payments are verified and approved in 5 to 15 minutes.</p>
+                            </div>
+                            <div style="background: var(--bg-card-sec); padding: 14px; border-radius: 8px;">
+                                <strong style="color: var(--accent-cyan);">Q: What if my order is cancelled?</strong>
+                                <p style="color: var(--text-muted); margin-top: 4px;">If an order fails or gets cancelled, the amount is refunded back to your wallet balance automatically.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
             </div>
-        </div>
+        </main>
+
+        <!-- MOBILE BOTTOM APP BAR -->
+        <nav class="mobile-bottom-nav">
+            <div class="mobile-nav-item active" onclick="navigateTo('dashboardView')">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Home</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateTo('newOrderView')">
+                <i class="fa-solid fa-cart-plus"></i>
+                <span>Order</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateTo('servicesView')">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Services</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateTo('ordersView')">
+                <i class="fa-solid fa-box-archive"></i>
+                <span>Orders</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateTo('addFundsView')">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Funds</span>
+            </div>
+        </nav>
     </div>
 
+    <!-- CORE SCRIPT LOGIC -->
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
+        
         let supabaseClient = null;
-
         if (window.supabase) {
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         }
 
         let currentUser = null;
+        let userProfile = null;
         let allServices = [];
+        let allCategories = [];
+        let stagedOrderData = null;
 
-        function showAuthTab(tab) {
-            const loginCard = document.getElementById("loginCard");
-            const registerCard = document.getElementById("registerCard");
-            const tabLoginBtn = document.getElementById("tabLoginBtn");
-            const tabRegisterBtn = document.getElementById("tabRegisterBtn");
-
-            if (tab === 'login') {
-                loginCard.classList.remove("hidden");
-                registerCard.classList.add("hidden");
-                tabLoginBtn.classList.add("active");
-                tabRegisterBtn.classList.remove("active");
-            } else {
-                loginCard.classList.add("hidden");
-                registerCard.classList.remove("hidden");
-                tabLoginBtn.classList.remove("active");
-                tabRegisterBtn.classList.add("active");
-            }
+        // TOAST ENGINE
+        function notify(msg, type = "info") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            
+            let icon = "fa-circle-info";
+            if (type === "success") icon = "fa-circle-check";
+            if (type === "error") icon = "fa-triangle-exclamation";
+            
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
 
+        // INITIAL CHECK
         window.addEventListener("DOMContentLoaded", async () => {
             if (!supabaseClient) return;
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
-                openDashboard();
+                initCustomerApp();
+            } else {
+                showAuthScreen();
             }
         });
 
-        async function handleRegister(e) {
+        // AUTH TAB SWITCH
+        function switchAuthTab(type) {
+            const loginForm = document.getElementById("loginForm");
+            const regForm = document.getElementById("registerForm");
+            const bLogin = document.getElementById("btnTabLogin");
+            const bReg = document.getElementById("btnTabRegister");
+
+            if (type === 'login') {
+                loginForm.classList.remove("hidden");
+                regForm.classList.add("hidden");
+                bLogin.classList.add("active");
+                bReg.classList.remove("active");
+            } else {
+                loginForm.classList.add("hidden");
+                regForm.classList.remove("hidden");
+                bLogin.classList.remove("active");
+                bReg.classList.add("active");
+            }
+        }
+
+        function showAuthScreen() {
+            document.getElementById("authContainer").classList.remove("hidden");
+            document.getElementById("appContainer").classList.add("hidden");
+        }
+
+        // LOGIN
+        async function handleAuthLogin(e) {
             e.preventDefault();
-            const btn = document.getElementById("btnRegister");
-            const name = document.getElementById("regName").value.trim();
-            const email = document.getElementById("regEmail").value.trim();
-            const pass = document.getElementById("regPassword").value;
+            const btn = document.getElementById("loginSubmitBtn");
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPass").value;
 
             btn.disabled = true;
-            btn.innerText = "Registering...";
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            btn.disabled = false;
+            btn.innerHTML = `Access Portal`;
+
+            if (error) return notify(error.message, "error");
+
+            notify("Welcome to Multani VIP Panel!", "success");
+            currentUser = data.user;
+            initCustomerApp();
+        }
+
+        // REGISTER
+        async function handleAuthRegister(e) {
+            e.preventDefault();
+            const btn = document.getElementById("registerSubmitBtn");
+            const name = document.getElementById("regName").value.trim();
+            const email = document.getElementById("regEmail").value.trim();
+            const password = document.getElementById("regPass").value;
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Registering...`;
 
             const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: pass,
+                email,
+                password,
                 options: { data: { full_name: name } }
             });
 
             btn.disabled = false;
-            btn.innerText = "Register Now";
+            btn.innerHTML = `Create VIP Account`;
 
-            if (error) {
-                alert("Signup Failed: " + error.message);
-                return;
-            }
+            if (error) return notify(error.message, "error");
 
             if (data.session) {
-                alert("Account ban gaya!");
+                notify("Account created successfully!", "success");
                 currentUser = data.user;
-                openDashboard();
+                initCustomerApp();
             } else {
-                const { data: logData, error: logErr } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: pass
-                });
-
+                // Try immediate login fallback
+                const { data: logData, error: logErr } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (logErr) {
-                    alert("Account create ho gaya! Login tab se login karein.");
-                    showAuthTab('login');
+                    notify("Registration completed. Please log in.", "success");
+                    switchAuthTab('login');
                     document.getElementById("loginEmail").value = email;
                 } else {
                     currentUser = logData.user;
-                    openDashboard();
+                    initCustomerApp();
                 }
             }
         }
 
-        async function handleLogin(e) {
-            e.preventDefault();
-            const btn = document.getElementById("btnLogin");
-            const email = document.getElementById("loginEmail").value.trim();
-            const pass = document.getElementById("loginPassword").value;
-
-            btn.disabled = true;
-            btn.innerText = "Logging in...";
-
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: pass
-            });
-
-            btn.disabled = false;
-            btn.innerText = "Login";
-
-            if (error) {
-                alert("Login Failed: " + error.message);
-                return;
-            }
-
-            currentUser = data.user;
-            openDashboard();
+        // LOGOUT
+        async function triggerLogout() {
+            await supabaseClient.auth.signOut();
+            location.reload();
         }
 
-        function handleLogout() {
-            supabaseClient.auth.signOut().then(() => {
-                location.reload();
-            });
+        // INIT APP POST AUTH
+        async function initCustomerApp() {
+            document.getElementById("authContainer").classList.add("hidden");
+            document.getElementById("appContainer").classList.remove("hidden");
+
+            await fetchUserProfile();
+            await fetchCategoriesAndServices();
+            loadDashboardStats();
+            loadTransactions();
+            loadTickets();
         }
 
-        function openDashboard() {
-            document.getElementById("authSection").classList.add("hidden");
-            document.getElementById("dashboardSection").classList.remove("hidden");
-            loadUserProfile();
-            loadServices();
-            loadOrders();
-        }
-
-        async function loadUserProfile() {
-            const { data } = await supabaseClient
+        // FETCH USER PROFILE
+        async function fetchUserProfile() {
+            const { data, error } = await supabaseClient
                 .from("profiles")
-                .select("balance")
+                .select("*")
                 .eq("id", currentUser.id)
                 .single();
 
-            if (data) {
-                document.getElementById("userBalance").innerText = `$${parseFloat(data.balance).toFixed(4)}`;
+            if (!error && data) {
+                userProfile = data;
+                const formattedBal = `$${parseFloat(data.balance || 0).toFixed(4)}`;
+                document.getElementById("navWalletBalance").innerText = formattedBal;
+                document.getElementById("navUserName").innerText = data.full_name || "VIP User";
+                document.getElementById("dashWelcomeName").innerText = data.full_name || "VIP Member";
+                document.getElementById("profFullName").value = data.full_name || "";
+                document.getElementById("profEmail").value = data.email || currentUser.email;
+
+                // Referral link
+                const refCode = data.referral_code || "VIP";
+                document.getElementById("refLinkInput").value = `${window.location.origin}?ref=${refCode}`;
             }
         }
 
-        async function loadServices() {
-            const { data: cats } = await supabaseClient
+        // FETCH SERVICES & CATEGORIES
+        async function fetchCategoriesAndServices() {
+            const { data: categories } = await supabaseClient
                 .from("categories")
                 .select("*")
                 .eq("is_active", true)
                 .order("sort_order");
 
-            const { data: srvs } = await supabaseClient
+            const { data: services } = await supabaseClient
                 .from("services")
                 .select("*")
                 .eq("is_active", true);
 
-            allServices = srvs || [];
+            allCategories = categories || [];
+            allServices = services || [];
 
-            const catSelect = document.getElementById("orderCategory");
+            // Populate Category Select
+            const catSelect = document.getElementById("orderCatSelect");
             catSelect.innerHTML = '<option value="">Select Category</option>';
-            if (cats) {
-                cats.forEach(c => {
-                    const opt = document.createElement("option");
-                    opt.value = c.id;
-                    opt.textContent = c.name;
-                    catSelect.appendChild(opt);
-                });
-            }
+            allCategories.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.textContent = c.name;
+                catSelect.appendChild(opt);
+            });
+
+            renderServicesCatalog(allServices);
         }
 
-        function onCategorySelect() {
-            const catId = document.getElementById("orderCategory").value;
-            const srvSelect = document.getElementById("orderService");
+        // CATEGORY CHANGE -> POPULATE SERVICE SELECT
+        function handleCategoryChange() {
+            const catId = document.getElementById("orderCatSelect").value;
+            const srvSelect = document.getElementById("orderServiceSelect");
+            const box = document.getElementById("serviceDetailsBox");
+
             srvSelect.innerHTML = '<option value="">Select Service</option>';
             srvSelect.disabled = true;
-            document.getElementById("serviceLimits").innerText = "";
-            document.getElementById("calculatedCharge").innerText = "$0.0000";
+            box.classList.add("hidden");
+            document.getElementById("orderChargeDisplay").innerText = "$0.0000";
 
             if (!catId) return;
 
-            const list = allServices.filter(s => s.category_id === catId);
-            list.forEach(s => {
+            const filtered = allServices.filter(s => s.category_id === catId);
+            filtered.forEach(s => {
                 const opt = document.createElement("option");
                 opt.value = s.id;
                 opt.textContent = `${s.name} - $${parseFloat(s.rate_per_1k).toFixed(4)}/1k`;
@@ -544,124 +1204,334 @@
             srvSelect.disabled = false;
         }
 
-        function updatePrice() {
-            const sId = document.getElementById("orderService").value;
-            const qty = parseInt(document.getElementById("orderQuantity").value) || 0;
-            const item = allServices.find(s => s.id === sId);
+        // SERVICE SELECTION HANDLER
+        function handleServiceSelection() {
+            const sId = document.getElementById("orderServiceSelect").value;
+            const box = document.getElementById("serviceDetailsBox");
+            if (!sId) {
+                box.classList.add("hidden");
+                return;
+            }
 
-            if (item) {
-                document.getElementById("serviceLimits").innerText = `Min: ${item.min_quantity} | Max: ${item.max_quantity}`;
-                const cost = (qty / 1000) * parseFloat(item.rate_per_1k);
-                document.getElementById("calculatedCharge").innerText = `$${cost.toFixed(4)}`;
-            } else {
-                document.getElementById("calculatedCharge").innerText = "$0.0000";
+            const srv = allServices.find(s => s.id === sId);
+            if (srv) {
+                document.getElementById("srvRatePer1k").innerText = `$${parseFloat(srv.rate_per_1k).toFixed(4)} / 1k`;
+                document.getElementById("srvLimits").innerText = `${srv.min_quantity} - ${srv.max_quantity}`;
+                document.getElementById("srvDescription").innerText = srv.description || "High-quality delivery guaranteed.";
+                box.classList.remove("hidden");
+                calculateOrderCharge();
             }
         }
 
-        async function handlePlaceOrder(e) {
-            e.preventDefault();
-            const sId = document.getElementById("orderService").value;
-            const link = document.getElementById("orderLink").value.trim();
-            const qty = parseInt(document.getElementById("orderQuantity").value);
-            const item = allServices.find(s => s.id === sId);
+        // CALCULATE CHARGE
+        function calculateOrderCharge() {
+            const sId = document.getElementById("orderServiceSelect").value;
+            const qty = parseInt(document.getElementById("orderQtyInput").value) || 0;
+            const srv = allServices.find(s => s.id === sId);
 
-            if (!item) return alert("Select service.");
-            if (qty < item.min_quantity || qty > item.max_quantity) {
-                return alert(`Quantity must be between ${item.min_quantity} and ${item.max_quantity}`);
+            if (srv && qty > 0) {
+                const cost = (qty / 1000) * parseFloat(srv.rate_per_1k);
+                document.getElementById("orderChargeDisplay").innerText = `$${cost.toFixed(4)}`;
+            } else {
+                document.getElementById("orderChargeDisplay").innerText = "$0.0000";
+            }
+        }
+
+        // PRE-CHECK & OPEN CONFIRM MODAL
+        function preCheckOrder(e) {
+            e.preventDefault();
+            const sId = document.getElementById("orderServiceSelect").value;
+            const link = document.getElementById("orderTargetLink").value.trim();
+            const qty = parseInt(document.getElementById("orderQtyInput").value);
+            const srv = allServices.find(s => s.id === sId);
+
+            if (!srv) return notify("Please select a service", "error");
+            if (qty < srv.min_quantity || qty > srv.max_quantity) {
+                return notify(`Quantity must be between ${srv.min_quantity} and ${srv.max_quantity}`, "error");
             }
 
-            const total = (qty / 1000) * parseFloat(item.rate_per_1k);
+            const total = (qty / 1000) * parseFloat(srv.rate_per_1k);
+            if (parseFloat(userProfile.balance || 0) < total) {
+                return notify("Insufficient wallet balance. Please add funds.", "error");
+            }
 
-            const { data, error } = await supabaseClient
-                .from("orders")
-                .insert({
-                    user_id: currentUser.id,
-                    service_id: sId,
-                    target_link: link,
-                    quantity: qty,
-                    charge: total,
-                    status: 'pending',
-                    idempotency_key: `${currentUser.id}_${Date.now()}`
-                })
-                .select()
-                .single();
+            stagedOrderData = {
+                service_id: sId,
+                service_name: srv.name,
+                target_link: link,
+                quantity: qty,
+                charge: total
+            };
 
-            if (error) return alert(error.message);
+            document.getElementById("modalServiceName").innerText = srv.name;
+            document.getElementById("modalTargetLink").innerText = link;
+            document.getElementById("modalQuantity").innerText = qty;
+            document.getElementById("modalCost").innerText = `$${total.toFixed(4)}`;
 
-            const { error: rpcErr } = await supabaseClient.rpc("process_order_deduction", {
-                p_user_id: currentUser.id,
-                p_order_id: data.id,
-                p_charge: total
+            document.getElementById("orderConfirmModal").classList.add("active");
+        }
+
+        function closeConfirmModal() {
+            document.getElementById("orderConfirmModal").classList.remove("active");
+            stagedOrderData = null;
+        }
+
+        // EXECUTE SERVER-SIDE ATOMIC ORDER
+        async function executeAtomicOrder() {
+            if (!stagedOrderData) return;
+            const btn = document.getElementById("confirmPlaceOrderBtn");
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+
+            const idempotencyKey = `${currentUser.id}_${Date.now()}`;
+
+            const { data, error } = await supabaseClient.rpc("place_order_atomic", {
+                p_service_id: stagedOrderData.service_id,
+                p_target_link: stagedOrderData.target_link,
+                p_quantity: stagedOrderData.quantity,
+                p_idempotency_key: idempotencyKey
             });
 
-            if (rpcErr) {
-                await supabaseClient.from("orders").update({ status: 'failed' }).eq("id", data.id);
-                return alert("Insufficient Balance or Error: " + rpcErr.message);
+            btn.disabled = false;
+            btn.innerHTML = `Confirm & Place`;
+            closeConfirmModal();
+
+            if (error || !data.success) {
+                return notify(data ? data.message : error.message, "error");
             }
 
-            alert("Order Placed Successfully!");
-            document.getElementById("orderLink").value = "";
-            document.getElementById("orderQuantity").value = "";
-            document.getElementById("calculatedCharge").innerText = "$0.0000";
-            loadUserProfile();
-            loadOrders();
+            notify("VIP Order placed successfully!", "success");
+            document.getElementById("orderForm").reset();
+            document.getElementById("serviceDetailsBox").classList.add("hidden");
+            document.getElementById("orderChargeDisplay").innerText = "$0.0000";
+
+            await fetchUserProfile();
+            loadDashboardStats();
+            loadTransactions();
+            navigateTo("ordersView");
         }
 
-        async function loadOrders() {
-            const tbody = document.getElementById("orderHistoryBody");
-            const { data } = await supabaseClient
+        // LOAD DASHBOARD STATS & ORDERS
+        async function loadDashboardStats() {
+            const { data: orders } = await supabaseClient
                 .from("orders")
                 .select("*, services(name)")
                 .eq("user_id", currentUser.id)
                 .order("created_at", { ascending: false });
 
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>';
+            const list = orders || [];
+            document.getElementById("statTotalOrders").innerText = list.length;
+            document.getElementById("statCompletedOrders").innerText = list.filter(o => o.status === 'completed').length;
+            document.getElementById("statPendingOrders").innerText = list.filter(o => o.status === 'pending').length;
+
+            const spent = list.reduce((acc, curr) => acc + parseFloat(curr.charge || 0), 0);
+            document.getElementById("statTotalSpent").innerText = `$${spent.toFixed(4)}`;
+
+            // Populate tables
+            renderOrdersTable(list.slice(0, 5), "dashRecentOrdersBody");
+            renderOrdersTable(list, "allOrdersTableBody");
+        }
+
+        function renderOrdersTable(items, targetId) {
+            const body = document.getElementById(targetId);
+            if (!items || items.length === 0) {
+                body.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No orders found.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = data.map(o => `
+            body.innerHTML = items.map(o => `
                 <tr>
+                    <td>#${o.id.substring(0, 8)}</td>
                     <td>${new Date(o.created_at).toLocaleDateString()}</td>
-                    <td>${o.services ? o.services.name : 'Service'}</td>
-                    <td><a href="${o.target_link}" target="_blank" style="color: #38bdf8;">Link</a></td>
+                    <td>${o.services ? o.services.name : 'VIP Service'}</td>
+                    <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan);">Link</a></td>
                     <td>${o.quantity}</td>
                     <td>$${parseFloat(o.charge).toFixed(4)}</td>
-                    <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                    <td><span class="badge badge-${o.status}">${o.status}</span></td>
                 </tr>
             `).join("");
         }
 
-        async function handleDeposit(e) {
-            e.preventDefault();
-            const method = document.getElementById("depositMethod").value;
-            const amt = parseFloat(document.getElementById("depositAmount").value);
-            const trx = document.getElementById("depositTrx").value.trim();
-            const sender = document.getElementById("depositSender").value.trim();
+        // SERVICES CATALOG
+        function renderServicesCatalog(items) {
+            const body = document.getElementById("servicesCatalogBody");
+            if (!items || items.length === 0) {
+                body.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No services available.</td></tr>`;
+                return;
+            }
 
-            const { error } = await supabaseClient
-                .from("deposits")
-                .insert({
-                    user_id: currentUser.id,
-                    payment_method: method,
-                    amount: amt,
-                    transaction_id: trx,
-                    sender_account: sender,
-                    status: 'pending'
-                });
-
-            if (error) return alert("Deposit error: " + error.message);
-
-            alert("Deposit request submitted successfully! Admin will approve soon.");
-            e.target.reset();
+            body.innerHTML = items.map((s, idx) => `
+                <tr>
+                    <td>#${idx + 1}</td>
+                    <td><strong>${s.name}</strong></td>
+                    <td style="color: var(--accent-cyan); font-weight: 700;">$${parseFloat(s.rate_per_1k).toFixed(4)}</td>
+                    <td>${s.min_quantity} - ${s.max_quantity}</td>
+                    <td><button class="btn-vip" style="width: auto; padding: 4px 10px; font-size: 0.75rem;" onclick="quickOrderService('${s.category_id}', '${s.id}')">Order</button></td>
+                </tr>
+            `).join("");
         }
 
-        function switchNav(id, btn) {
-            document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
-            document.querySelectorAll(".nav-tabs .tab-btn").forEach(el => el.classList.remove("active"));
-            document.getElementById(id).classList.remove("hidden");
-            btn.classList.add("active");
-            if (id === 'orderHistoryTab') loadOrders();
+        function filterServicesCatalog() {
+            const q = document.getElementById("serviceSearchInput").value.toLowerCase();
+            const filtered = allServices.filter(s => s.name.toLowerCase().includes(q));
+            renderServicesCatalog(filtered);
+        }
+
+        function quickOrderService(catId, srvId) {
+            navigateTo('newOrderView');
+            document.getElementById("orderCatSelect").value = catId;
+            handleCategoryChange();
+            document.getElementById("orderServiceSelect").value = srvId;
+            handleServiceSelection();
+        }
+
+        // DEPOSIT HANDLER
+        async function handleDepositSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnDeposit");
+            const method = document.getElementById("depMethod").value;
+            const amount = parseFloat(document.getElementById("depAmount").value);
+            const trx = document.getElementById("depTrx").value.trim();
+            const sender = document.getElementById("depSender").value.trim();
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+
+            const { error } = await supabaseClient.from("deposits").insert({
+                user_id: currentUser.id,
+                payment_method: method,
+                amount,
+                transaction_id: trx,
+                sender_account: sender,
+                status: 'pending'
+            });
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-file-invoice-dollar"></i> Submit Payment Verification`;
+
+            if (error) return notify(error.message, "error");
+
+            notify("Deposit submitted! Admin will verify shortly.", "success");
+            document.getElementById("depositRequestForm").reset();
+        }
+
+        // TRANSACTIONS
+        async function loadTransactions() {
+            const { data } = await supabaseClient
+                .from("transactions")
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false });
+
+            const body = document.getElementById("transactionsTableBody");
+            if (!data || data.length === 0) {
+                body.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No transactions found.</td></tr>`;
+                return;
+            }
+
+            body.innerHTML = data.map(t => `
+                <tr>
+                    <td>${new Date(t.created_at).toLocaleDateString()}</td>
+                    <td><span class="badge badge-completed">${t.type}</span></td>
+                    <td>${t.description}</td>
+                    <td style="color: ${t.amount < 0 ? 'var(--accent-orange)' : '#10B981'}; font-weight: 700;">$${parseFloat(t.amount).toFixed(4)}</td>
+                </tr>
+            `).join("");
+        }
+
+        // SUPPORT TICKETS
+        async function loadTickets() {
+            const { data } = await supabaseClient
+                .from("tickets")
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false });
+
+            const body = document.getElementById("ticketsTableBody");
+            if (!data || data.length === 0) {
+                body.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No support tickets opened.</td></tr>`;
+                return;
+            }
+
+            body.innerHTML = data.map(tk => `
+                <tr>
+                    <td>${new Date(tk.created_at).toLocaleDateString()}</td>
+                    <td>${tk.category}</td>
+                    <td>${tk.subject}</td>
+                    <td><span class="badge badge-${tk.status}">${tk.status}</span></td>
+                </tr>
+            `).join("");
+        }
+
+        async function handleTicketSubmit(e) {
+            e.preventDefault();
+            const cat = document.getElementById("ticketCategory").value;
+            const sub = document.getElementById("ticketSubject").value.trim();
+            const msg = document.getElementById("ticketMessage").value.trim();
+
+            const { data: ticket, error } = await supabaseClient.from("tickets").insert({
+                user_id: currentUser.id,
+                category: cat,
+                subject: sub,
+                status: 'open'
+            }).select().single();
+
+            if (error) return notify(error.message, "error");
+
+            await supabaseClient.from("ticket_messages").insert({
+                ticket_id: ticket.id,
+                sender_id: currentUser.id,
+                message: msg,
+                is_admin: false
+            });
+
+            notify("Support ticket submitted!", "success");
+            document.getElementById("newTicketCard").classList.add("hidden");
+            loadTickets();
+        }
+
+        // PROFILE UPDATE
+        async function updateUserProfile() {
+            const name = document.getElementById("profFullName").value.trim();
+            const pass = document.getElementById("profNewPass").value;
+
+            if (name) {
+                await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
+            }
+            if (pass) {
+                if (pass.length < 6) return notify("Password must be at least 6 characters", "error");
+                await supabaseClient.auth.updateUser({ password: pass });
+            }
+
+            notify("Profile settings updated!", "success");
+            fetchUserProfile();
+        }
+
+        function copyReferralLink() {
+            const input = document.getElementById("refLinkInput");
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            notify("Referral link copied to clipboard!", "success");
+        }
+
+        // NAVIGATION SWITCHER
+        function navigateTo(viewId, element) {
+            document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
+            document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
+            document.querySelectorAll(".mobile-nav-item").forEach(m => m.classList.remove("active"));
+
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.add("active");
+
+            if (element) element.classList.add("active");
+
+            // Close mobile sidebar if open
+            document.getElementById("appSidebar").classList.remove("mobile-open");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("mobile-open");
         }
     </script>
 </body>
