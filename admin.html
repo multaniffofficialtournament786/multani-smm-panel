@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MULTANI SMM PANEL</title>
+    <title>MULTANI SMM PANEL | VIP Customer Panel</title>
     
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Supabase CDN Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
 
     <style>
@@ -23,18 +25,19 @@
             --text-main: #FFFFFF;
             --text-muted: #9BA8BC;
             --border-card: #1f293d;
+            --sidebar-w: 260px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; width: 100%; padding-bottom: 70px; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; width: 100%; padding-bottom: 75px; }
         h1, h2, h3, h4, .brand-font { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* SCROLLING ANNOUNCEMENT TICKER */
+        /* 1. SCROLLING ANNOUNCEMENT TICKER */
         .announcement-bar {
-            background: linear-gradient(90deg, #151C29, #1f293d);
+            background: linear-gradient(90deg, #101622, #182233);
             border-bottom: 1px solid var(--accent-orange);
             color: #fff;
-            padding: 6px 10px;
+            padding: 6px 12px;
             font-size: 0.78rem;
             display: flex;
             align-items: center;
@@ -42,16 +45,16 @@
             white-space: nowrap;
             position: sticky;
             top: 0;
-            z-index: 1001;
+            z-index: 1002;
         }
         .announcement-badge {
             background: var(--accent-orange);
             color: #fff;
-            padding: 2px 6px;
+            padding: 2px 7px;
             border-radius: 4px;
             font-weight: 700;
             font-size: 0.65rem;
-            margin-right: 8px;
+            margin-right: 10px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -61,8 +64,8 @@
             display: inline-block;
             white-space: nowrap;
             padding-left: 100%;
-            animation: marquee 22s linear infinite;
-            font-weight: 500;
+            animation: marquee 24s linear infinite;
+            font-weight: 600;
             color: var(--accent-cyan);
         }
         @keyframes marquee {
@@ -70,27 +73,31 @@
             100% { transform: translate(-100%, 0); }
         }
 
-        /* Top Navbar */
+        /* 2. TOP NAVBAR */
         .top-navbar {
+            height: 60px;
             background: var(--bg-card);
             border-bottom: 1px solid var(--border-card);
-            padding: 10px 15px;
+            padding: 0 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
-            top: 33px;
-            z-index: 999;
+            top: 31px;
+            z-index: 1000;
         }
-        .balance-badge {
+        .nav-left { display: flex; align-items: center; gap: 10px; }
+        .menu-toggle { background: transparent; border: none; color: #fff; font-size: 1.35rem; cursor: pointer; padding: 4px; }
+        
+        .wallet-badge {
             background: var(--bg-card-sec);
             border: 1px solid var(--border-card);
             border-radius: 20px;
-            padding: 4px 10px;
+            padding: 5px 10px;
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: var(--accent-cyan);
         }
@@ -104,22 +111,112 @@
             font-weight: 700;
             outline: none;
         }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .user-avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1.5px solid var(--accent-orange);
+            object-fit: cover;
+        }
+        .user-name-mini {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #fff;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-        /* Views Layout */
-        .app-view { display: none; padding: 15px; max-width: 600px; width: 100%; margin: 0 auto; }
+        /* 3. SIDEBAR DRAWER (FULL ORIGINAL OPTIONS) */
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1999; display: none; }
+        .sidebar-overlay.active { display: block; }
+        .sidebar {
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            width: var(--sidebar-w);
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-card);
+            z-index: 2000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-card);
+        }
+        .sidebar-menu { list-style: none; padding: 10px 8px; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; flex: 1; }
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background: rgba(255, 70, 36, 0.15);
+            color: #fff;
+            border-left: 3px solid var(--accent-orange);
+        }
+
+        /* Content Layout */
+        .content-body { padding: 14px; max-width: 650px; width: 100%; margin: 0 auto; }
+        .app-view { display: none; }
         .app-view.active { display: block; }
-        .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 18px; margin-bottom: 15px; }
+
+        .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+        
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .stat-box { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+        .stat-box i { font-size: 1.2rem; padding: 9px; border-radius: 8px; }
+        .stat-box .stat-val { font-size: 1.05rem; font-weight: 700; font-family: 'Rajdhani'; }
+        .stat-box .stat-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
 
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 5px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 10px 12px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; color: var(--text-main); font-size: 0.88rem; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent-cyan); }
 
-        .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 11px; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; }
+        .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 11px; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; }
+        .btn-vip.btn-sec { background: var(--bg-card-sec); border: 1px solid var(--border-card); color: var(--text-main); }
 
-        /* Bottom Nav */
+        /* Tables & Lists */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
+        th, td { padding: 9px 12px; border-bottom: 1px solid var(--border-card); }
+        th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+        .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; }
+        .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+
+        /* Chat */
+        .chat-box { background: var(--bg-card-sec); border-radius: 10px; height: 350px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .bubble-admin { align-self: flex-start; background: #1f293d; color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
+        .bubble-user { align-self: flex-end; background: var(--accent-orange); color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
+
+        /* Profile Elements */
+        .profile-avatar-wrap { text-align: center; margin-bottom: 16px; }
+        .profile-avatar-img { width: 85px; height: 85px; border-radius: 50%; border: 2.5px solid var(--accent-cyan); object-fit: cover; }
+
+        /* 4. MOBILE BOTTOM NAVIGATION (ORIGINAL 5 BUTTONS) */
         .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(14, 17, 24, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; display: flex; justify-content: space-around; align-items: center; }
-        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; flex: 1; height: 100%; }
         .mobile-nav-item i { font-size: 1.15rem; }
         .mobile-nav-item.active { color: var(--accent-orange); }
 
@@ -127,111 +224,294 @@
         .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.96); border-left: 4px solid var(--accent-cyan); border-radius: 8px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; }
         .toast.error { border-left-color: var(--accent-orange); }
         .toast.success { border-left-color: var(--accent-green); }
-        
-        .chat-box { background: var(--bg-card-sec); border-radius: 10px; height: 350px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .bubble-admin { align-self: flex-start; background: #1f293d; color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
-        .bubble-user { align-self: flex-end; background: var(--accent-orange); color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
     </style>
 </head>
 <body>
 
     <div id="toastContainer"></div>
 
-    <!-- 1. SCROLLING ANNOUNCEMENT TICKER -->
+    <!-- 1. LIVE SCROLLING ANNOUNCEMENT BAR -->
     <div class="announcement-bar">
         <div class="announcement-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
         <div class="announcement-ticker" id="scrollingAnnouncementText">
-            Welcome to MULTANI SMM PANEL! All services active with instant speed.
+            Welcome to MULTANI SMM PANEL! All services active with instant speed. Binance USDT Rate: 1$ = 290 PKR.
         </div>
     </div>
 
-    <!-- 2. TOP NAVBAR -->
+    <!-- 2. TOP NAVBAR (WITH 3-LINE BUTTON & PROFILE AVATAR) -->
     <header class="top-navbar">
-        <div class="balance-badge">
-            <i class="fa-solid fa-wallet"></i>
-            <span id="headerBalanceDisplay">Rs 0.00</span>
+        <div class="nav-left">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <div class="wallet-badge">
+                <i class="fa-solid fa-wallet"></i>
+                <span id="headerBalanceDisplay">Rs 0.00</span>
+            </div>
+            <!-- Multi-Currency Selector -->
+            <select class="currency-select" id="currencySelect" onchange="handleCurrencyChange(this.value)">
+                <option value="PKR">🇵🇰 PKR (Rs)</option>
+                <option value="USD">🇺🇸 USD ($)</option>
+                <option value="INR">🇮🇳 INR (₹)</option>
+                <option value="AED">🇦🇪 AED</option>
+                <option value="SAR">🇸🇦 SAR</option>
+            </select>
         </div>
         
-        <!-- Multi-Currency Switcher -->
-        <select class="currency-select" id="currencySelect" onchange="handleCurrencyChange(this.value)">
-            <option value="PKR">🇵🇰 PKR (Rs)</option>
-            <option value="USD">🇺🇸 USD ($)</option>
-            <option value="INR">🇮🇳 INR (₹)</option>
-            <option value="AED">🇦🇪 AED</option>
-            <option value="SAR">🇸🇦 SAR</option>
-        </select>
+        <div class="nav-right" onclick="switchTab('viewProfile')">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-mini">
+            <span class="user-name-mini" id="navUserName">M Nadeem</span>
+        </div>
     </header>
 
-    <!-- VIEW 1: NEW ORDER -->
-    <div id="viewOrder" class="app-view active">
-        <div class="vip-card">
-            <h2 style="margin-bottom: 14px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-bolt"></i> Place Order</h2>
-            <form onsubmit="handlePlaceOrder(event)">
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="orderCatSelect" onchange="handleCategoryFilter(this.value)" required>
-                        <option value="">Select Category</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Service</label>
-                    <select id="orderServiceSelect" onchange="handleServiceSelect(this.value)" required>
-                        <option value="">Select Service</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Target Link / Username</label>
-                    <input type="text" id="orderTargetLink" required placeholder="https://tiktok.com/@username/video/...">
-                </div>
-                <div class="form-group">
-                    <label>Quantity</label>
-                    <input type="number" id="orderQuantity" required oninput="calculateTotalCharge()" placeholder="1000">
-                    <small id="qtyLimitHint" style="color: var(--text-muted); font-size: 0.7rem;"></small>
-                </div>
-                <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.8rem; color: var(--text-muted);">Total Price:</span>
-                    <span style="font-size: 1.15rem; font-weight: 700; color: var(--accent-orange); font-family: 'Rajdhani';" id="orderTotalDisplay">Rs 0.00</span>
-                </div>
-                <button type="submit" class="btn-vip" id="btnPlaceOrder"><i class="fa-solid fa-cart-shopping"></i> Confirm Order</button>
-            </form>
+    <!-- 3. SIDEBAR DRAWER (ALL 9 ORIGINAL OPTIONS) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebarDrawer">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-crown" style="color: var(--accent-orange); font-size: 1.3rem;"></i>
+            <h2>MULTANI VIP</h2>
         </div>
-    </div>
+        <ul class="sidebar-menu">
+            <li><a class="active" onclick="switchTab('viewDashboard', this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+            <li><a onclick="switchTab('viewOrder', this)"><i class="fa-solid fa-cart-shopping"></i> New Order</a></li>
+            <li><a onclick="switchTab('viewServices', this)"><i class="fa-solid fa-list"></i> Services</a></li>
+            <li><a onclick="switchTab('viewOrdersList', this)"><i class="fa-solid fa-box-archive"></i> My Orders</a></li>
+            <li><a onclick="switchTab('viewAddFunds', this)"><i class="fa-solid fa-wallet"></i> Add Funds</a></li>
+            <li><a onclick="switchTab('viewTransactions', this)"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a></li>
+            <li><a onclick="switchTab('viewReferrals', this)"><i class="fa-solid fa-users"></i> Referrals</a></li>
+            <li><a onclick="switchTab('viewSupport', this)"><i class="fa-solid fa-comments"></i> Live Support</a></li>
+            <li><a onclick="switchTab('viewProfile', this)"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
+        </ul>
+    </aside>
 
-    <!-- VIEW 2: ORDERS HISTORY -->
-    <div id="viewOrdersList" class="app-view">
-        <div class="vip-card">
-            <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-boxes-stacked"></i> My Orders</h2>
-            <div id="customerOrdersList" style="display: flex; flex-direction: column; gap: 8px;">
-                <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading orders...</p>
+    <div class="content-body">
+        
+        <!-- VIEW 1: DASHBOARD -->
+        <div id="viewDashboard" class="app-view active">
+            <div class="vip-card">
+                <h2 style="font-size: 1.15rem; color: var(--accent-cyan); margin-bottom: 4px;" id="dashWelcomeName">WELCOME, M NADEEM</h2>
+                <p style="font-size: 0.75rem; color: #10B981; font-weight: 600;">Account: Active Level 1</p>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <i class="fa-solid fa-cart-shopping" style="background: rgba(0,213,255,0.1); color: var(--accent-cyan);"></i>
+                    <div>
+                        <div class="stat-val" id="dashTotalOrders">0</div>
+                        <div class="stat-lbl">Total Orders</div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fa-solid fa-check-double" style="background: rgba(16,185,129,0.1); color: #10B981;"></i>
+                    <div>
+                        <div class="stat-val" id="dashCompletedOrders">0</div>
+                        <div class="stat-lbl">Completed</div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fa-solid fa-hourglass-half" style="background: rgba(234,179,8,0.1); color: #EAB308;"></i>
+                    <div>
+                        <div class="stat-val" id="dashPendingOrders">0</div>
+                        <div class="stat-lbl">Pending</div>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <i class="fa-solid fa-money-bill-transfer" style="background: rgba(255,70,36,0.1); color: var(--accent-orange);"></i>
+                    <div>
+                        <div class="stat-val" id="dashTotalSpent">Rs 0.00</div>
+                        <div class="stat-lbl">Total Spent</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vip-card">
+                <h3 style="font-size: 0.95rem; margin-bottom: 10px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th>Order #</th><th>Date</th><th>Service</th><th>Qty</th><th>Charge</th></tr>
+                        </thead>
+                        <tbody id="dashRecentOrdersBody">
+                            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- VIEW 3: LIVE SUPPORT CHAT -->
-    <div id="viewSupport" class="app-view">
-        <div class="vip-card">
-            <h2 style="margin-bottom: 10px; font-size: 1.15rem; color: var(--accent-orange);"><i class="fa-solid fa-headset"></i> Live Support</h2>
-            <div class="chat-box" id="customerChatWindow">
-                <div class="bubble-admin">Hello! Need help with your order or deposit? Send a message here.</div>
+        <!-- VIEW 2: NEW ORDER -->
+        <div id="viewOrder" class="app-view">
+            <div class="vip-card">
+                <h2 style="margin-bottom: 14px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-bolt"></i> Place Order</h2>
+                <form onsubmit="handlePlaceOrder(event)">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="orderCatSelect" onchange="handleCategoryFilter(this.value)" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Service</label>
+                        <select id="orderServiceSelect" onchange="handleServiceSelect(this.value)" required>
+                            <option value="">Select Service</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Link / Username</label>
+                        <input type="text" id="orderTargetLink" required placeholder="https://tiktok.com/@username/video/...">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="orderQuantity" required oninput="calculateTotalCharge()" placeholder="1000">
+                        <small id="qtyLimitHint" style="color: var(--text-muted); font-size: 0.7rem;"></small>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Total Price:</span>
+                        <span style="font-size: 1.15rem; font-weight: 700; color: var(--accent-orange); font-family: 'Rajdhani';" id="orderTotalDisplay">Rs 0.00</span>
+                    </div>
+                    <button type="submit" class="btn-vip" id="btnPlaceOrder"><i class="fa-solid fa-cart-shopping"></i> Confirm Order</button>
+                </form>
             </div>
-            <form style="display: flex; gap: 6px;" onsubmit="handleSendCustomerChat(event)">
-                <input type="text" id="customerChatInput" placeholder="Type message..." required>
-                <button type="submit" class="btn-vip" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-paper-plane"></i></button>
-            </form>
         </div>
+
+        <!-- VIEW 3: SERVICES LIST -->
+        <div id="viewServices" class="app-view">
+            <div class="vip-card">
+                <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-list-check"></i> Available Services</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th>Name</th><th>Rate/1K</th><th>Min/Max</th></tr>
+                        </thead>
+                        <tbody id="servicesListBody">
+                            <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Loading services...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: MY ORDERS -->
+        <div id="viewOrdersList" class="app-view">
+            <div class="vip-card">
+                <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-boxes-stacked"></i> My Order History</h2>
+                <div id="customerOrdersList" style="display: flex; flex-direction: column; gap: 8px;">
+                    <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading orders...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: ADD FUNDS (DEPOSIT) -->
+        <div id="viewAddFunds" class="app-view">
+            <div class="vip-card">
+                <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: #10B981;"><i class="fa-solid fa-money-bill-transfer"></i> Deposit Funds</h2>
+                
+                <div style="background: rgba(0,0,0,0.3); border: 1px dashed var(--accent-cyan); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
+                    <div><strong>Easypaisa / JazzCash Account:</strong></div>
+                    <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.95rem; margin-top: 3px;">03186815926 / 03017573729</div>
+                    <small style="color: var(--text-muted);">Binance Rate: 1$ = 290 PKR</small>
+                </div>
+
+                <form onsubmit="handleDepositSubmit(event)">
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select id="depMethod" required>
+                            <option value="Easypaisa">Easypaisa</option>
+                            <option value="JazzCash">JazzCash</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount Paid (PKR)</label>
+                        <input type="number" id="depAmountPKR" required placeholder="e.g. 1000" oninput="calculateDepositUSD()">
+                        <small id="depUSDHint" style="color: #10B981; font-weight: 600;"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Sender Account / Number</label>
+                        <input type="text" id="depSenderNum" required placeholder="03XXXXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Transaction ID (TRX ID)</label>
+                        <input type="text" id="depTrxId" required placeholder="e.g. 9845789123">
+                    </div>
+                    <button type="submit" class="btn-vip" id="btnDepositSubmit">Submit Deposit Request</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- VIEW 6: TRANSACTIONS -->
+        <div id="viewTransactions" class="app-view">
+            <div class="vip-card">
+                <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-clock-rotate-left"></i> Wallet Transactions</h2>
+                <div id="transactionsListContainer" class="table-responsive">
+                    <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading wallet history...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 7: REFERRALS -->
+        <div id="viewReferrals" class="app-view">
+            <div class="vip-card">
+                <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-users"></i> Affiliate & Referrals</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Share your link and earn 5% bonus on friend deposits!</p>
+                <div class="form-group">
+                    <label>Your Referral Link</label>
+                    <input type="text" readonly id="referralLinkInput" value="https://multaniffofficialtournament786.github.io/multani-smm-panel/?ref=vip">
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 8: LIVE SUPPORT CHAT -->
+        <div id="viewSupport" class="app-view">
+            <div class="vip-card">
+                <h2 style="margin-bottom: 10px; font-size: 1.15rem; color: var(--accent-orange);"><i class="fa-solid fa-headset"></i> Live Support Chat</h2>
+                <div class="chat-box" id="customerChatWindow">
+                    <div class="bubble-admin">Assalam-o-Alaikum! Leave your question or TRX ID here. Admin will reply live.</div>
+                </div>
+                <form style="display: flex; gap: 6px;" onsubmit="handleSendCustomerChat(event)">
+                    <input type="text" id="customerChatInput" placeholder="Type message..." required>
+                    <button type="submit" class="btn-vip" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+
+        <!-- VIEW 9: PROFILE -->
+        <div id="viewProfile" class="app-view">
+            <div class="vip-card">
+                <h2 style="margin-bottom: 14px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-id-card"></i> Account Profile</h2>
+                <div class="profile-avatar-wrap">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="profilePageAvatar" class="profile-avatar-img">
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="profFullName" placeholder="Your Name">
+                </div>
+                <div class="form-group">
+                    <label>Account Email (Fixed)</label>
+                    <input type="email" id="profEmail" readonly style="opacity: 0.7;">
+                </div>
+                <button type="button" class="btn-vip" onclick="handleSaveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- MOBILE BOTTOM NAVIGATION -->
+    <!-- 4. BOTTOM NAVIGATION BAR (ORIGINAL 5 BUTTONS RESTORED) -->
     <nav class="mobile-bottom-nav">
-        <div class="mobile-nav-item active" onclick="switchCustomerTab('viewOrder', this)">
+        <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Home</span>
+        </div>
+        <div class="mobile-nav-item" id="btnNavOrder" onclick="switchTab('viewOrder', this)">
             <i class="fa-solid fa-cart-shopping"></i>
             <span>Order</span>
         </div>
-        <div class="mobile-nav-item" onclick="switchCustomerTab('viewOrdersList', this)">
-            <i class="fa-solid fa-list-check"></i>
-            <span>History</span>
+        <div class="mobile-nav-item" id="btnNavServices" onclick="switchTab('viewServices', this)">
+            <i class="fa-solid fa-list"></i>
+            <span>Services</span>
         </div>
-        <div class="mobile-nav-item" onclick="switchCustomerTab('viewSupport', this)">
+        <div class="mobile-nav-item" id="btnNavOrders" onclick="switchTab('viewOrdersList', this)">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            <span>Orders</span>
+        </div>
+        <div class="mobile-nav-item" id="btnNavSupport" onclick="switchTab('viewSupport', this)">
             <i class="fa-solid fa-headset"></i>
             <span>Support</span>
         </div>
@@ -247,7 +527,7 @@
         let allServices = [];
         let selectedService = null;
 
-        // MULTI-CURRENCY CONVERSION SYSTEM (Binance Rate: 1$ = 290 PKR)
+        // MULTI-CURRENCY CONVERSION (Binance Rate: 1$ = 290 PKR)
         const CURRENCIES = {
             PKR: { symbol: "Rs ", rate: 290.00 },
             USD: { symbol: "$", rate: 1.00 },
@@ -268,6 +548,7 @@
             localStorage.setItem("app_currency", curr);
             updateWalletDisplay();
             renderServiceDropdown(document.getElementById("orderCatSelect").value);
+            renderServicesPageTable();
             calculateTotalCharge();
         }
 
@@ -277,41 +558,72 @@
             toast.className = `toast ${type}`;
             toast.innerText = msg;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        function toggleSidebar() {
+            document.getElementById("sidebarDrawer").classList.toggle("open");
+            document.getElementById("sidebarOverlay").classList.toggle("active");
+        }
+
+        function switchTab(viewId, element) {
+            document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
+            document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
+            document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
+
+            const target = document.getElementById(viewId);
+            if (target) target.classList.add("active");
+
+            // Sync Bottom Bar Active Class
+            if (viewId === 'viewDashboard') document.getElementById("btnNavHome").classList.add("active");
+            else if (viewId === 'viewOrder') document.getElementById("btnNavOrder").classList.add("active");
+            else if (viewId === 'viewServices') document.getElementById("btnNavServices").classList.add("active");
+            else if (viewId === 'viewOrdersList') document.getElementById("btnNavOrders").classList.add("active");
+            else if (viewId === 'viewSupport') document.getElementById("btnNavSupport").classList.add("active");
+
+            document.getElementById("sidebarDrawer").classList.remove("open");
+            document.getElementById("sidebarOverlay").classList.remove("active");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         window.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("currencySelect").value = activeCurrency;
             await loadSiteAnnouncement();
-            
+
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
                 await loadUserProfile();
                 loadCustomerOrders();
                 loadCustomerChat();
+                loadTransactions();
             }
             await loadServicesAndCategories();
         });
 
-        // 1. LOAD LIVE ANNOUNCEMENT FROM SUPABASE
+        // 1. LIVE NOTICE TICKER
         async function loadSiteAnnouncement() {
-            const { data } = await supabaseClient
-                .from("site_settings")
-                .select("value")
-                .eq("key", "announcement")
-                .single();
-
+            const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
             if (data && data.value) {
                 document.getElementById("scrollingAnnouncementText").innerText = data.value;
             }
         }
 
-        // 2. LOAD PROFILE & BALANCE
+        // 2. USER PROFILE & STATS
         async function loadUserProfile() {
             const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).single();
             if (data) {
                 currentUserProfile = data;
+                const name = data.full_name || 'M Nadeem';
+                document.getElementById("dashWelcomeName").innerText = `WELCOME, ${name.toUpperCase()}`;
+                document.getElementById("navUserName").innerText = name;
+                document.getElementById("profFullName").value = name;
+                document.getElementById("profEmail").value = data.email || currentUser.email || '';
+                
+                if (data.avatar_url) {
+                    document.getElementById("navAvatarImg").src = data.avatar_url;
+                    document.getElementById("profilePageAvatar").src = data.avatar_url;
+                }
                 updateWalletDisplay();
             }
         }
@@ -322,10 +634,21 @@
             document.getElementById("headerBalanceDisplay").innerText = formatPrice(balUSD);
         }
 
-        // 3. LOAD SERVICES & CATEGORIES (WITH MULTI-CURRENCY DISPLAY)
+        async function handleSaveProfile() {
+            const name = document.getElementById("profFullName").value.trim();
+            if (!name) return notify("Please enter your name", "error");
+
+            const { error } = await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
+            if (error) return notify(error.message, "error");
+
+            notify("Profile updated successfully!", "success");
+            loadUserProfile();
+        }
+
+        // 3. SERVICES & CATEGORIES
         async function loadServicesAndCategories() {
             const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
-            const { data: srvs } = await supabaseClient.from("services").select("*").eq("is_active", true);
+            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").eq("is_active", true);
 
             allServices = srvs || [];
 
@@ -334,6 +657,7 @@
             if (cats) {
                 cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
             }
+            renderServicesPageTable();
         }
 
         function handleCategoryFilter(catId) {
@@ -347,9 +671,23 @@
 
             const filtered = allServices.filter(s => s.category_id === catId);
             filtered.forEach(s => {
-                const priceFormatted = formatPrice(parseFloat(s.rate_per_1k));
-                srvSelect.innerHTML += `<option value="${s.id}">${s.name} - (${priceFormatted}/1k)</option>`;
+                srvSelect.innerHTML += `<option value="${s.id}">${s.name} - (${formatPrice(parseFloat(s.rate_per_1k))}/1k)</option>`;
             });
+        }
+
+        function renderServicesPageTable() {
+            const body = document.getElementById("servicesListBody");
+            if (!allServices || allServices.length === 0) {
+                body.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No services available.</td></tr>`;
+                return;
+            }
+            body.innerHTML = allServices.map(s => `
+                <tr>
+                    <td><strong>${s.name}</strong></td>
+                    <td style="color: var(--accent-orange); font-weight: 700;">${formatPrice(parseFloat(s.rate_per_1k))}</td>
+                    <td>${s.min_quantity} - ${s.max_quantity}</td>
+                </tr>
+            `).join("");
         }
 
         function handleServiceSelect(srvId) {
@@ -370,6 +708,7 @@
             document.getElementById("orderTotalDisplay").innerText = formatPrice(chargeUSD);
         }
 
+        // 4. ORDER PLACEMENT
         async function handlePlaceOrder(e) {
             e.preventDefault();
             if (!currentUser) return notify("Please login first!", "error");
@@ -416,32 +755,123 @@
             loadCustomerOrders();
         }
 
-        // 4. CUSTOMER ORDERS
+        // 5. ORDERS & DASHBOARD STATS
         async function loadCustomerOrders() {
             if (!currentUser) return;
             const { data } = await supabaseClient.from("orders").select("*, services(name)").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-            const list = document.getElementById("customerOrdersList");
-            if (!data || data.length === 0) {
-                list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No orders placed yet.</p>`;
-                return;
+            
+            const orders = data || [];
+            document.getElementById("dashTotalOrders").innerText = orders.length;
+            document.getElementById("dashCompletedOrders").innerText = orders.filter(o => o.status === 'completed').length;
+            document.getElementById("dashPendingOrders").innerText = orders.filter(o => o.status === 'pending').length;
+            
+            const totalSpentUSD = orders.reduce((acc, curr) => acc + parseFloat(curr.charge || 0), 0);
+            document.getElementById("dashTotalSpent").innerText = formatPrice(totalSpentUSD);
+
+            // Recent Table
+            const recentBody = document.getElementById("dashRecentOrdersBody");
+            if (orders.length === 0) {
+                recentBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>`;
+            } else {
+                recentBody.innerHTML = orders.slice(0, 5).map(o => `
+                    <tr>
+                        <td><strong>#${o.order_number || o.id.substring(0,4)}</strong></td>
+                        <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                        <td>${o.services ? o.services.name : 'Service'}</td>
+                        <td>${o.quantity}</td>
+                        <td style="color: var(--accent-orange); font-weight:700;">${formatPrice(parseFloat(o.charge))}</td>
+                    </tr>
+                `).join("");
             }
 
-            list.innerHTML = data.map(o => `
-                <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                        <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong>
-                        <span style="color: ${o.status==='completed'?'#10B981':'#EAB308'}; font-weight:700;">${o.status.toUpperCase()}</span>
+            // Orders list view
+            const list = document.getElementById("customerOrdersList");
+            if (orders.length === 0) {
+                list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No orders placed yet.</p>`;
+            } else {
+                list.innerHTML = orders.map(o => `
+                    <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                            <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong>
+                            <span class="badge ${o.status==='completed'?'badge-completed':'badge-pending'}">${o.status.toUpperCase()}</span>
+                        </div>
+                        <div style="font-size: 0.78rem;">${o.services ? o.services.name : 'Service'}</div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
+                            <span>Qty: ${o.quantity}</span>
+                            <strong style="color: #fff;">${formatPrice(parseFloat(o.charge))}</strong>
+                        </div>
                     </div>
-                    <div style="font-size: 0.78rem;">${o.services ? o.services.name : 'Service'}</div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
-                        <span>Qty: ${o.quantity}</span>
-                        <strong style="color: #fff;">${formatPrice(parseFloat(o.charge))}</strong>
-                    </div>
-                </div>
-            `).join("");
+                `).join("");
+            }
         }
 
-        // 5. CHAT
+        // 6. DEPOSITS
+        function calculateDepositUSD() {
+            const pkr = parseFloat(document.getElementById("depAmountPKR").value) || 0;
+            const usd = (pkr / 290.00).toFixed(4);
+            document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
+        }
+
+        async function handleDepositSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) return notify("Please login first!", "error");
+
+            const pkr = parseFloat(document.getElementById("depAmountPKR").value);
+            const usd = pkr / 290.00;
+            const method = document.getElementById("depMethod").value;
+            const sender = document.getElementById("depSenderNum").value.trim();
+            const trx = document.getElementById("depTrxId").value.trim();
+
+            const btn = document.getElementById("btnDepositSubmit");
+            btn.disabled = true;
+            btn.innerText = "Submitting...";
+
+            const { error } = await supabaseClient.from("deposits").insert({
+                user_id: currentUser.id,
+                amount: usd,
+                payment_method: method,
+                sender_account: sender,
+                transaction_id: trx,
+                status: 'pending'
+            });
+
+            btn.disabled = false;
+            btn.innerText = "Submit Deposit Request";
+
+            if (error) return notify("Failed: " + error.message, "error");
+
+            notify("Deposit submitted! Admin will verify and approve.", "success");
+            document.getElementById("depAmountPKR").value = "";
+            document.getElementById("depSenderNum").value = "";
+            document.getElementById("depTrxId").value = "";
+            document.getElementById("depUSDHint").innerText = "";
+        }
+
+        // 7. TRANSACTIONS
+        async function loadTransactions() {
+            if (!currentUser) return;
+            const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false });
+            const container = document.getElementById("transactionsListContainer");
+            if (!data || data.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No transactions yet.</p>`;
+                return;
+            }
+            container.innerHTML = `
+                <table>
+                    <thead><tr><th>Date</th><th>Type</th><th>Desc</th><th>Amount</th></tr></thead>
+                    <tbody>${data.map(t => `
+                        <tr>
+                            <td>${new Date(t.created_at).toLocaleDateString()}</td>
+                            <td><span class="badge badge-completed">${t.type}</span></td>
+                            <td>${t.description}</td>
+                            <td style="color:${t.amount<0?'var(--accent-orange)':'#10B981'}; font-weight:700;">${formatPrice(parseFloat(t.amount))}</td>
+                        </tr>
+                    `).join("")}</tbody>
+                </table>
+            `;
+        }
+
+        // 8. CHAT
         async function loadCustomerChat() {
             if (!currentUser) return;
             const { data } = await supabaseClient.from("chat_messages").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true });
@@ -464,14 +894,6 @@
             input.value = "";
             await supabaseClient.from("chat_messages").insert({ user_id: currentUser.id, sender_type: 'user', message: msg });
             loadCustomerChat();
-        }
-
-        function switchCustomerTab(viewId, element) {
-            document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
-            document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
-            document.getElementById(viewId).classList.add("active");
-            if (element) element.classList.add("active");
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
