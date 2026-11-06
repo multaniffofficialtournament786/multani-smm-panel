@@ -754,91 +754,44 @@
             document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
-        function parseJwtPayload(token) {
-            try {
-                if (!token || !token.includes('.')) return null;
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function getHashParams() {
-            const hash = window.location.hash;
-            if (!hash || !hash.includes("access_token=")) return null;
-            const cleanHash = hash.startsWith("#") ? hash.substring(1) : hash;
-            const params = new URLSearchParams(cleanHash);
-            return {
-                access_token: params.get("access_token"),
-                refresh_token: params.get("refresh_token") || ""
-            };
-        }
-
+        // ================= AUTH INITIALIZATION & AUTO SYNC =================
         async function initMultaniApp() {
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
             
+            // 1. Direct load public data immediately (Categories & Services)
             loadSiteAnnouncement();
             loadServicesAndCategories();
 
-            const hashData = getHashParams();
-            if (hashData && hashData.access_token) {
-                const jwt = parseJwtPayload(hashData.access_token);
-                if (jwt) {
-                    currentUser = {
-                        id: jwt.sub,
-                        email: jwt.email,
-                        user_metadata: jwt.user_metadata || {}
-                    };
-                    localStorage.setItem("multani_vip_session", JSON.stringify({
-                        user: currentUser,
-                        access_token: hashData.access_token
-                    }));
-                    window.history.replaceState(null, null, window.location.pathname);
+            if (!supabaseClient) {
+                showAuthScreen();
+                return;
+            }
+
+            try {
+                // Supabase official session check (handles both Google OAuth redirect & email session)
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session && session.user) {
+                    currentUser = session.user;
                     showPanelScreen();
-                    
-                    if (supabaseClient) {
-                        supabaseClient.auth.setSession({
-                            access_token: hashData.access_token,
-                            refresh_token: hashData.refresh_token || ""
-                        }).catch(() => {});
+                    if (window.location.hash) {
+                        window.history.replaceState(null, null, window.location.pathname);
                     }
-                    
                     await postLoginSuccess(currentUser);
                     return;
                 }
+            } catch (err) {
+                console.warn("Session check error:", err);
             }
 
+            // Fallback: Check local user
             const savedStr = localStorage.getItem("multani_vip_session");
             if (savedStr) {
                 try {
                     const saved = JSON.parse(savedStr);
                     if (saved && saved.user) {
                         currentUser = saved.user;
-                        showPanelScreen();
-                        if (saved.access_token && supabaseClient) {
-                            supabaseClient.auth.setSession({
-                                access_token: saved.access_token,
-                                refresh_token: ""
-                            }).catch(() => {});
-                        }
-                        await postLoginSuccess(currentUser);
-                        return;
-                    }
-                } catch (e) {}
-            }
-
-            if (supabaseClient) {
-                try {
-                    const { data: { session } } = await supabaseClient.auth.getSession();
-                    if (session && session.user) {
-                        currentUser = session.user;
-                        localStorage.setItem("multani_vip_session", JSON.stringify({ user: currentUser }));
                         showPanelScreen();
                         await postLoginSuccess(currentUser);
                         return;
@@ -851,11 +804,18 @@
 
         if (supabaseClient) {
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                if (session && session.user) {
+                if (event === 'SIGNED_IN' && session && session.user) {
                     currentUser = session.user;
                     localStorage.setItem("multani_vip_session", JSON.stringify({ user: currentUser }));
                     showPanelScreen();
+                    if (window.location.hash) {
+                        window.history.replaceState(null, null, window.location.pathname);
+                    }
                     await postLoginSuccess(currentUser);
+                } else if (event === 'SIGNED_OUT') {
+                    currentUser = null;
+                    currentUserProfile = null;
+                    showAuthScreen();
                 }
             });
         }
@@ -865,10 +825,10 @@
         async function postLoginSuccess(user) {
             await ensureUserProfile(user);
             await loadUserProfile();
-            loadServicesAndCategories();
             loadCustomerOrders();
             loadCustomerChat();
             loadTransactions();
+            loadServicesAndCategories();
         }
 
         function switchAuthTab(mode) {
@@ -969,7 +929,7 @@
                         avatar_url: resolvedAvatar,
                         balance: 0.0000
                     });
-                } else if (resolvedAvatar) {
+                } else if (resolvedAvatar && !existing.avatar_url) {
                     await supabaseClient.from("profiles").update({ avatar_url: resolvedAvatar }).eq("id", user.id);
                 }
             } catch (err) {
@@ -977,19 +937,33 @@
             }
         }
 
+        // ================= FULL LOGOUT WIPE (FIXES LOOP) =================
         function askCustomerLogout() {
             toggleSidebar();
             showVipModal("CONFIRM LOGOUT", "Are you sure you want to sign out?", "fa-solid fa-arrow-right-from-bracket", async () => {
-                localStorage.removeItem("multani_vip_session");
-                if (supabaseClient) await supabaseClient.auth.signOut().catch(() => {});
+                try {
+                    if (supabaseClient) {
+                        await supabaseClient.auth.signOut();
+                    }
+                } catch (e) {}
+
+                // Clear all stored sessions & tokens
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.hash = "";
+
                 currentUser = null;
                 currentUserProfile = null;
-                notify("Logged out!", "info");
+                
+                notify("Logged out successfully!", "info");
                 showAuthScreen();
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 400);
             });
         }
 
-        // ================= FIX 2: SAFE TAB SWITCH & AUTO REFRESH =================
         function switchTab(viewId, element) {
             document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
             document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
@@ -1038,7 +1012,6 @@
             } catch (e) {}
         }
 
-        // ================= FIX 5: USER PROFILE WITH FIXED GMAIL & WHATSAPP =================
         async function loadUserProfile() {
             if (!currentUser) return;
             try {
@@ -1056,7 +1029,7 @@
                 document.getElementById("navUserName").innerText = name;
                 document.getElementById("profFullName").value = name;
                 
-                // Show Gmail guaranteed
+                // Show fixed account email guaranteed
                 const emailInput = document.getElementById("profEmail");
                 if (emailInput) emailInput.value = userEmail;
 
@@ -1110,22 +1083,21 @@
             }
         }
 
-        // ================= FIX 1: SERVICES & CATEGORIES FETCH & DISPLAY =================
+        // ================= CATEGORIES & SERVICES (DIRECT PUBLIC FETCH) =================
         async function loadServicesAndCategories() {
             if (!supabaseClient) return;
             try {
-                const { data: cats, error: catErr } = await supabaseClient
+                const { data: cats } = await supabaseClient
                     .from("categories")
                     .select("*")
                     .order("name", { ascending: true });
 
-                const { data: srvs, error: srvErr } = await supabaseClient
+                const { data: srvs } = await supabaseClient
                     .from("services")
                     .select("*")
                     .order("created_at", { ascending: false });
 
                 allCategories = (cats && cats.length > 0) ? cats : [];
-                // Do not hide services if is_active is null or undefined
                 allServices = (srvs || []).filter(s => s.is_active !== false && s.is_active !== 'false');
 
                 const catSelect = document.getElementById("orderCatSelect");
@@ -1166,7 +1138,6 @@
                 return;
             }
 
-            // Safe match: supports string, number and UUID
             const filtered = allServices.filter(s => String(s.category_id).trim() === String(catId).trim());
             
             if (filtered.length === 0) {
@@ -1278,7 +1249,7 @@
             loadCustomerOrders();
         }
 
-        // ================= FIX 2: ORDERS FETCH WITH SAFE FALLBACK =================
+        // ================= ORDERS LIST (NEVER STUCK) =================
         async function loadCustomerOrders() {
             if (!currentUser || !supabaseClient) return;
             const recentBody = document.getElementById("dashRecentOrdersBody");
@@ -1352,7 +1323,7 @@
             document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
         }
 
-        // ================= FIX 4: DEPOSIT SUBMIT WITH INSTANT POPUP & WALLET TRANSACTION =================
+        // ================= DEPOSIT SUBMIT WITH INSTANT RESET & WALLET SYNC =================
         async function handleDepositSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById("btnDepositSubmit");
@@ -1383,7 +1354,7 @@
 
                 if (depError) throw depError;
 
-                // 2. Also log in transactions so customer sees it in wallet history
+                // 2. Also log in transactions
                 try {
                     await supabaseClient.from("transactions").insert([{
                         user_id: currentUser.id,
@@ -1393,7 +1364,7 @@
                     }]);
                 } catch (tErr) {}
 
-                // Save locally for fallback
+                // Save locally
                 const localTrxs = JSON.parse(localStorage.getItem(`local_trx_${currentUser.id}`) || '[]');
                 localTrxs.unshift({
                     created_at: new Date().toISOString(),
@@ -1403,10 +1374,8 @@
                 });
                 localStorage.setItem(`local_trx_${currentUser.id}`, JSON.stringify(localTrxs));
 
-                // 3. Instant feedback
                 notify("Deposit request submitted successfully! Admin will verify soon.", "success");
                 
-                // Reset form
                 document.getElementById("depAmountPKR").value = "";
                 document.getElementById("depSenderNum").value = "";
                 document.getElementById("depTrxId").value = "";
@@ -1422,7 +1391,7 @@
             }
         }
 
-        // ================= FIX 2: TRANSACTIONS WITH NEVER-HANG FALLBACK =================
+        // ================= TRANSACTIONS (NEVER HANG) =================
         async function loadTransactions() {
             const container = document.getElementById("transactionsListContainer");
             if (!container) return;
@@ -1433,7 +1402,7 @@
             }
 
             try {
-                const { data, error } = await supabaseClient
+                const { data } = await supabaseClient
                     .from("transactions")
                     .select("*")
                     .eq("user_id", currentUser.id)
@@ -1441,7 +1410,6 @@
 
                 let trxs = data || [];
 
-                // Merge with local submitted transactions if table was empty
                 if (trxs.length === 0) {
                     const localTrxs = JSON.parse(localStorage.getItem(`local_trx_${currentUser.id}`) || '[]');
                     trxs = localTrxs;
@@ -1471,12 +1439,12 @@
             }
         }
 
-        // ================= FIX 3: LIVE SUPPORT CHAT WITH INSTANT UI & SECURE SEND =================
+        // ================= LIVE SUPPORT CHAT =================
         async function loadCustomerChat() {
             if (!currentUser || !supabaseClient) return;
             const body = document.getElementById("customerChatWindow");
             try {
-                const { data, error } = await supabaseClient
+                const { data } = await supabaseClient
                     .from("chat_messages")
                     .select("*")
                     .eq("user_id", currentUser.id)
@@ -1506,7 +1474,6 @@
 
             btn.disabled = true;
 
-            // Instant bubble on screen
             const body = document.getElementById("customerChatWindow");
             const tempBubble = document.createElement("div");
             tempBubble.className = "bubble-user";
