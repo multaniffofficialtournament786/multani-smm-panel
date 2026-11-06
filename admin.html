@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MULTANI SMM PANEL | VIP Customer Panel</title>
+    <title>MULTANI SMM | Super Admin Control Panel</title>
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,875 +25,789 @@
             --text-main: #FFFFFF;
             --text-muted: #9BA8BC;
             --border-card: #1f293d;
-            --sidebar-w: 260px;
+            --sidebar-w: 240px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; width: 100%; padding-bottom: 75px; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; overflow-x: hidden; width: 100%; }
         h1, h2, h3, h4, .brand-font { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* 1. SCROLLING ANNOUNCEMENT TICKER */
-        .announcement-bar {
-            background: linear-gradient(90deg, #101622, #182233);
-            border-bottom: 1px solid var(--accent-orange);
-            color: #fff;
-            padding: 6px 12px;
-            font-size: 0.78rem;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 1002;
-        }
-        .announcement-badge {
-            background: var(--accent-orange);
-            color: #fff;
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 0.65rem;
-            margin-right: 10px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .announcement-ticker {
-            display: inline-block;
-            white-space: nowrap;
-            padding-left: 100%;
-            animation: marquee 24s linear infinite;
-            font-weight: 600;
-            color: var(--accent-cyan);
-        }
-        @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
 
-        /* 2. TOP NAVBAR */
-        .top-navbar {
-            height: 60px;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-card);
-            padding: 0 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 31px;
-            z-index: 1000;
-        }
-        .nav-left { display: flex; align-items: center; gap: 10px; }
-        .menu-toggle { background: transparent; border: none; color: #fff; font-size: 1.35rem; cursor: pointer; padding: 4px; }
-        
-        .wallet-badge {
-            background: var(--bg-card-sec);
-            border: 1px solid var(--border-card);
-            border-radius: 20px;
-            padding: 5px 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: var(--accent-cyan);
-        }
-        .currency-select {
-            background: var(--bg-card-sec);
-            border: 1px solid var(--border-card);
-            color: #fff;
-            border-radius: 6px;
-            padding: 4px 6px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            outline: none;
-        }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-        .user-avatar-mini {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1.5px solid var(--accent-orange);
-            object-fit: cover;
-        }
-        .user-name-mini {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #fff;
-            max-width: 90px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+        /* Toast Container */
+        #toastContainer { position: fixed; top: 15px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.96); border-left: 4px solid var(--accent-cyan); border-radius: 8px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; }
+        .toast.error { border-left-color: var(--accent-orange); }
+        .toast.success { border-left-color: var(--accent-green); }
 
-        /* 3. SIDEBAR DRAWER (FULL ORIGINAL OPTIONS) */
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1999; display: none; }
-        .sidebar-overlay.active { display: block; }
-        .sidebar {
-            position: fixed;
-            top: 0; bottom: 0; left: 0;
-            width: var(--sidebar-w);
-            background: var(--bg-card);
-            border-right: 1px solid var(--border-card);
-            z-index: 2000;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .sidebar.open { transform: translateX(0); }
-        .sidebar-header {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-card);
-        }
-        .sidebar-menu { list-style: none; padding: 10px 8px; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; flex: 1; }
-        .sidebar-menu li a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 11px 12px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-        .sidebar-menu li a:hover, .sidebar-menu li a.active {
-            background: rgba(255, 70, 36, 0.15);
-            color: #fff;
-            border-left: 3px solid var(--accent-orange);
-        }
-
-        /* Content Layout */
-        .content-body { padding: 14px; max-width: 650px; width: 100%; margin: 0 auto; }
-        .app-view { display: none; }
-        .app-view.active { display: block; }
-
-        .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
-        
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-        .stat-box { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
-        .stat-box i { font-size: 1.2rem; padding: 9px; border-radius: 8px; }
-        .stat-box .stat-val { font-size: 1.05rem; font-weight: 700; font-family: 'Rajdhani'; }
-        .stat-box .stat-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+        /* Admin Auth Screen */
+        #adminAuthContainer { width: 100%; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; }
+        .admin-auth-box { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 24px 20px; }
 
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 5px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 10px 12px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; color: var(--text-main); font-size: 0.88rem; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent-cyan); }
 
-        .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 11px; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; }
+        .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; }
         .btn-vip.btn-sec { background: var(--bg-card-sec); border: 1px solid var(--border-card); color: var(--text-main); }
+        .btn-vip.btn-green { background: linear-gradient(135deg, #10B981, #059669); }
 
-        /* Tables & Lists */
+        /* Admin Main Layout */
+        #adminAppContainer { width: 100%; display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-w); background: var(--bg-card); border-right: 1px solid var(--border-card); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 100; transition: transform 0.3s ease; }
+        .sidebar-header { padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-card); }
+        .sidebar-menu { flex: 1; padding: 10px 8px; overflow-y: auto; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; cursor: pointer; }
+        .sidebar-menu li a.active { background: rgba(255, 70, 36, 0.15); border-left: 3px solid var(--accent-orange); color: #fff; }
+
+        .main-content { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 75px; width: 100%; overflow-x: hidden; }
+        .top-navbar { height: 56px; background: var(--bg-card); border-bottom: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 90; }
+
+        .content-body { padding: 15px; max-width: 1100px; width: 100%; margin: 0 auto; }
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+        .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 16px; margin-bottom: 15px; width: 100%; }
+
+        .filter-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
+        .tab-btn { padding: 6px 12px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 20px; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; white-space: nowrap; }
+        .tab-btn.active { background: var(--accent-orange); color: #fff; border-color: var(--accent-orange); }
+
+        /* Members Card Grid */
+        .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .member-card { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+        .member-top { display: flex; align-items: center; gap: 10px; }
+        .member-top img { width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--accent-cyan); object-fit: cover; }
+        .member-info h4 { font-size: 0.95rem; color: #fff; }
+        .member-info p { font-size: 0.72rem; color: var(--text-muted); word-break: break-all; }
+        .member-balance-box { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; border: 1px dashed var(--border-card); }
+        .member-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+        /* Tables */
         .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
         th, td { padding: 9px 12px; border-bottom: 1px solid var(--border-card); }
         th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
+
         .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
         .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; }
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+        .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
-        /* Chat */
-        .chat-box { background: var(--bg-card-sec); border-radius: 10px; height: 350px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .bubble-admin { align-self: flex-start; background: #1f293d; color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
-        .bubble-user { align-self: flex-end; background: var(--accent-orange); color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
-
-        /* Profile Elements */
-        .profile-avatar-wrap { text-align: center; margin-bottom: 16px; }
-        .profile-avatar-img { width: 85px; height: 85px; border-radius: 50%; border: 2.5px solid var(--accent-cyan); object-fit: cover; }
-
-        /* 4. MOBILE BOTTOM NAVIGATION (ORIGINAL 5 BUTTONS) */
-        .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(14, 17, 24, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; display: flex; justify-content: space-around; align-items: center; }
+        /* Mobile Bottom Nav */
+        .mobile-bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(14, 17, 24, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; justify-content: space-around; align-items: center; }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; flex: 1; height: 100%; }
         .mobile-nav-item i { font-size: 1.15rem; }
         .mobile-nav-item.active { color: var(--accent-orange); }
 
-        #toastContainer { position: fixed; top: 40px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-        .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.96); border-left: 4px solid var(--accent-cyan); border-radius: 8px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; }
-        .toast.error { border-left-color: var(--accent-orange); }
-        .toast.success { border-left-color: var(--accent-green); }
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 15px; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; max-width: 550px; width: 100%; padding: 20px; max-height: 85vh; overflow-y: auto; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-bottom-nav { display: flex; }
+        }
     </style>
 </head>
 <body>
 
     <div id="toastContainer"></div>
 
-    <!-- 1. LIVE SCROLLING ANNOUNCEMENT BAR -->
-    <div class="announcement-bar">
-        <div class="announcement-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
-        <div class="announcement-ticker" id="scrollingAnnouncementText">
-            Welcome to MULTANI SMM PANEL! All services active with instant speed. Binance USDT Rate: 1$ = 290 PKR.
+    <!-- 1. ADMIN AUTH GATE -->
+    <div id="adminAuthContainer">
+        <div class="admin-auth-box">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i class="fa-solid fa-shield-halved" style="font-size: 2.2rem; color: var(--accent-orange); margin-bottom: 6px;"></i>
+                <h2>SUPER ADMIN</h2>
+                <p style="color: var(--text-muted); font-size: 0.8rem;">Multani SMM Control Center</p>
+            </div>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Admin Email</label>
+                    <input type="email" id="adminEmail" required placeholder="admin@domain.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPass" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-vip" style="width: 100%;" id="btnAdminLogin">Access Control Center</button>
+            </form>
         </div>
     </div>
 
-    <!-- 2. TOP NAVBAR (WITH 3-LINE BUTTON & PROFILE AVATAR) -->
-    <header class="top-navbar">
-        <div class="nav-left">
-            <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-            <div class="wallet-badge">
-                <i class="fa-solid fa-wallet"></i>
-                <span id="headerBalanceDisplay">Rs 0.00</span>
-            </div>
-            <!-- Multi-Currency Selector -->
-            <select class="currency-select" id="currencySelect" onchange="handleCurrencyChange(this.value)">
-                <option value="PKR">🇵🇰 PKR (Rs)</option>
-                <option value="USD">🇺🇸 USD ($)</option>
-                <option value="INR">🇮🇳 INR (₹)</option>
-                <option value="AED">🇦🇪 AED</option>
-                <option value="SAR">🇸🇦 SAR</option>
-            </select>
-        </div>
+    <!-- 2. ADMIN APP CONTAINER -->
+    <div id="adminAppContainer" class="hidden">
         
-        <div class="nav-right" onclick="switchTab('viewProfile')">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-mini">
-            <span class="user-name-mini" id="navUserName">M Nadeem</span>
-        </div>
-    </header>
-
-    <!-- 3. SIDEBAR DRAWER (ALL 9 ORIGINAL OPTIONS) -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-    <aside class="sidebar" id="sidebarDrawer">
-        <div class="sidebar-header">
-            <i class="fa-solid fa-crown" style="color: var(--accent-orange); font-size: 1.3rem;"></i>
-            <h2>MULTANI VIP</h2>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a class="active" onclick="switchTab('viewDashboard', this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-            <li><a onclick="switchTab('viewOrder', this)"><i class="fa-solid fa-cart-shopping"></i> New Order</a></li>
-            <li><a onclick="switchTab('viewServices', this)"><i class="fa-solid fa-list"></i> Services</a></li>
-            <li><a onclick="switchTab('viewOrdersList', this)"><i class="fa-solid fa-box-archive"></i> My Orders</a></li>
-            <li><a onclick="switchTab('viewAddFunds', this)"><i class="fa-solid fa-wallet"></i> Add Funds</a></li>
-            <li><a onclick="switchTab('viewTransactions', this)"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a></li>
-            <li><a onclick="switchTab('viewReferrals', this)"><i class="fa-solid fa-users"></i> Referrals</a></li>
-            <li><a onclick="switchTab('viewSupport', this)"><i class="fa-solid fa-comments"></i> Live Support</a></li>
-            <li><a onclick="switchTab('viewProfile', this)"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
-        </ul>
-    </aside>
-
-    <div class="content-body">
-        
-        <!-- VIEW 1: DASHBOARD -->
-        <div id="viewDashboard" class="app-view active">
-            <div class="vip-card">
-                <h2 style="font-size: 1.15rem; color: var(--accent-cyan); margin-bottom: 4px;" id="dashWelcomeName">WELCOME, M NADEEM</h2>
-                <p style="font-size: 0.75rem; color: #10B981; font-weight: 600;">Account: Active Level 1</p>
+        <aside class="sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-crown" style="color: var(--accent-orange);"></i>
+                    <h2>ADMIN PANEL</h2>
+                </div>
+                <button onclick="toggleAdminSidebar()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
             </div>
+            <ul class="sidebar-menu">
+                <li><a class="active" onclick="navigateAdmin('allOrdersView', this)"><i class="fa-solid fa-list-check"></i> Orders</a></li>
+                <li><a onclick="navigateAdmin('membersView', this)"><i class="fa-solid fa-users-gear"></i> Members</a></li>
+                <li><a onclick="navigateAdmin('servicesManageView', this)"><i class="fa-solid fa-cubes"></i> Services</a></li>
+                <li><a onclick="navigateAdmin('depositsManageView', this)"><i class="fa-solid fa-money-bill-transfer"></i> Deposits</a></li>
+                <li><a onclick="navigateAdmin('chatSupportDeskView', this)"><i class="fa-solid fa-headset"></i> Live Chat</a></li>
+                <li style="margin-top: auto;"><a onclick="triggerAdminLogout()" style="color: var(--accent-orange);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
 
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <i class="fa-solid fa-cart-shopping" style="background: rgba(0,213,255,0.1); color: var(--accent-cyan);"></i>
-                    <div>
-                        <div class="stat-val" id="dashTotalOrders">0</div>
-                        <div class="stat-lbl">Total Orders</div>
-                    </div>
+        <main class="main-content">
+            <header class="top-navbar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button onclick="toggleAdminSidebar()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;"><i class="fa-solid fa-bars"></i></button>
+                    <h3 style="font-size: 1.1rem; color: var(--accent-cyan);">Multani Admin Desk</h3>
                 </div>
-                <div class="stat-box">
-                    <i class="fa-solid fa-check-double" style="background: rgba(16,185,129,0.1); color: #10B981;"></i>
-                    <div>
-                        <div class="stat-val" id="dashCompletedOrders">0</div>
-                        <div class="stat-lbl">Completed</div>
-                    </div>
+                <div style="font-size: 0.8rem; color: #10B981; font-weight: 700;">
+                    <i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Active
                 </div>
-                <div class="stat-box">
-                    <i class="fa-solid fa-hourglass-half" style="background: rgba(234,179,8,0.1); color: #EAB308;"></i>
-                    <div>
-                        <div class="stat-val" id="dashPendingOrders">0</div>
-                        <div class="stat-lbl">Pending</div>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <i class="fa-solid fa-money-bill-transfer" style="background: rgba(255,70,36,0.1); color: var(--accent-orange);"></i>
-                    <div>
-                        <div class="stat-val" id="dashTotalSpent">Rs 0.00</div>
-                        <div class="stat-lbl">Total Spent</div>
-                    </div>
-                </div>
-            </div>
+            </header>
 
-            <div class="vip-card">
-                <h3 style="font-size: 0.95rem; margin-bottom: 10px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>Order #</th><th>Date</th><th>Service</th><th>Qty</th><th>Charge</th></tr>
-                        </thead>
-                        <tbody id="dashRecentOrdersBody">
-                            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 2: NEW ORDER -->
-        <div id="viewOrder" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 14px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-bolt"></i> Place Order</h2>
-                <form onsubmit="handlePlaceOrder(event)">
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="orderCatSelect" onchange="handleCategoryFilter(this.value)" required>
-                            <option value="">Select Category</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Service</label>
-                        <select id="orderServiceSelect" onchange="handleServiceSelect(this.value)" required>
-                            <option value="">Select Service</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Target Link / Username</label>
-                        <input type="text" id="orderTargetLink" required placeholder="https://tiktok.com/@username/video/...">
-                    </div>
-                    <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" id="orderQuantity" required oninput="calculateTotalCharge()" placeholder="1000">
-                        <small id="qtyLimitHint" style="color: var(--text-muted); font-size: 0.7rem;"></small>
-                    </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">Total Price:</span>
-                        <span style="font-size: 1.15rem; font-weight: 700; color: var(--accent-orange); font-family: 'Rajdhani';" id="orderTotalDisplay">Rs 0.00</span>
-                    </div>
-                    <button type="submit" class="btn-vip" id="btnPlaceOrder"><i class="fa-solid fa-cart-shopping"></i> Confirm Order</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- VIEW 3: SERVICES LIST -->
-        <div id="viewServices" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-list-check"></i> Available Services</h2>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>Name</th><th>Rate/1K</th><th>Min/Max</th></tr>
-                        </thead>
-                        <tbody id="servicesListBody">
-                            <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Loading services...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 4: MY ORDERS -->
-        <div id="viewOrdersList" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-boxes-stacked"></i> My Order History</h2>
-                <div id="customerOrdersList" style="display: flex; flex-direction: column; gap: 8px;">
-                    <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading orders...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 5: ADD FUNDS (DEPOSIT) -->
-        <div id="viewAddFunds" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: #10B981;"><i class="fa-solid fa-money-bill-transfer"></i> Deposit Funds</h2>
+            <div class="content-body">
                 
-                <div style="background: rgba(0,0,0,0.3); border: 1px dashed var(--accent-cyan); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
-                    <div><strong>Easypaisa / JazzCash Account:</strong></div>
-                    <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.95rem; margin-top: 3px;">03186815926 / 03017573729</div>
-                    <small style="color: var(--text-muted);">Binance Rate: 1$ = 290 PKR</small>
+                <!-- GLOBAL ANNOUNCEMENT CONTROLLER (TOP OF DASHBOARD) -->
+                <div class="vip-card" style="margin-bottom: 15px;">
+                    <h3 style="font-size: 0.95rem; color: var(--accent-orange); margin-bottom: 8px;">
+                        <i class="fa-solid fa-bullhorn"></i> Live Customer Scrolling Announcement
+                    </h3>
+                    <form onsubmit="handleUpdateAnnouncement(event)" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="text" id="adminAnnouncementInput" placeholder="Enter marquee announcement text..." required style="flex: 1; min-width: 200px;">
+                        <button type="submit" class="btn-vip" id="btnUpdateNotice" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-check"></i> Update Notice</button>
+                    </form>
                 </div>
 
-                <form onsubmit="handleDepositSubmit(event)">
-                    <div class="form-group">
-                        <label>Payment Method</label>
-                        <select id="depMethod" required>
-                            <option value="Easypaisa">Easypaisa</option>
-                            <option value="JazzCash">JazzCash</option>
-                        </select>
+                <!-- VIEW 1: ORDERS (GLOBAL ORDERS STREAM) -->
+                <section id="allOrdersView" class="page-view active">
+                    <div class="vip-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                            <h2><i class="fa-solid fa-boxes-stacked"></i> Global Orders Stream</h2>
+                            <button class="btn-vip btn-sec" onclick="loadAllGlobalOrders()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                        </div>
+
+                        <div class="filter-tabs">
+                            <button class="tab-btn active" onclick="filterOrderStream('all', this)">All</button>
+                            <button class="tab-btn" onclick="filterOrderStream('pending', this)">Pending</button>
+                            <button class="tab-btn" onclick="filterOrderStream('completed', this)">Completed</button>
+                            <button class="tab-btn" onclick="filterOrderStream('cancelled', this)">Cancelled</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date</th>
+                                        <th>User</th>
+                                        <th>Service & Provider ID</th>
+                                        <th>Target</th>
+                                        <th>Qty</th>
+                                        <th>Charge</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="globalOrdersTableBody">
+                                    <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Loading orders...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Amount Paid (PKR)</label>
-                        <input type="number" id="depAmountPKR" required placeholder="e.g. 1000" oninput="calculateDepositUSD()">
-                        <small id="depUSDHint" style="color: #10B981; font-weight: 600;"></small>
+                </section>
+
+                <!-- VIEW 2: MEMBERS (CARDS GRID) -->
+                <section id="membersView" class="page-view">
+                    <div class="vip-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px;">
+                            <h2><i class="fa-solid fa-users"></i> Member Management</h2>
+                            <input type="text" id="memberSearchInput" placeholder="Search members..." oninput="filterMembers()" style="max-width: 220px; padding: 7px 10px; font-size: 0.8rem;">
+                        </div>
+                        <div class="members-grid" id="membersCardContainer">
+                            <p style="color: var(--text-muted); text-align: center;">Loading members...</p>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Sender Account / Number</label>
-                        <input type="text" id="depSenderNum" required placeholder="03XXXXXXXXX">
+                </section>
+
+                <!-- VIEW 3: SERVICES & PROVIDER MAPPING -->
+                <section id="servicesManageView" class="page-view">
+                    <div class="vip-card" style="margin-bottom: 15px;">
+                        <h3 style="font-size: 1rem; margin-bottom: 10px; color: var(--accent-cyan);"><i class="fa-solid fa-folder-plus"></i> Add Category</h3>
+                        <form onsubmit="handleCreateCategory(event)" style="display: flex; gap: 8px;">
+                            <input type="text" id="newCatName" required placeholder="Category Name (e.g. TikTok Services)" style="flex: 1;">
+                            <button type="submit" class="btn-vip" id="btnAddCat"><i class="fa-solid fa-plus"></i> Add</button>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label>Transaction ID (TRX ID)</label>
-                        <input type="text" id="depTrxId" required placeholder="e.g. 9845789123">
+
+                    <div class="vip-card">
+                        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service (Provider Mapping)</h3>
+                        <form onsubmit="handleSaveService(event)" id="serviceAdminForm">
+                            <input type="hidden" id="srvFormId">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="srvAdminCategorySelect" required>
+                                        <option value="">Select Category</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Name</label>
+                                    <input type="text" id="srvAdminName" required placeholder="e.g. TikTok Likes [Lifetime]">
+                                </div>
+                                <div class="form-group">
+                                    <label>Provider Service ID</label>
+                                    <input type="text" id="srvAdminProviderId" placeholder="e.g. 10838">
+                                </div>
+                                <div class="form-group">
+                                    <label>Rate Per 1K ($ USD)</label>
+                                    <input type="number" step="0.0001" id="srvAdminRate" required placeholder="0.6900">
+                                </div>
+                                <div class="form-group">
+                                    <label>Min Qty</label>
+                                    <input type="number" id="srvAdminMin" required placeholder="10">
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Qty</label>
+                                    <input type="number" id="srvAdminMax" required placeholder="100000">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                <button type="submit" class="btn-vip" id="btnSaveSrv">Save Service</button>
+                                <button type="button" class="btn-vip btn-sec" onclick="resetServiceForm()">Cancel</button>
+                            </div>
+                        </form>
                     </div>
-                    <button type="submit" class="btn-vip" id="btnDepositSubmit">Submit Deposit Request</button>
-                </form>
-            </div>
-        </div>
 
-        <!-- VIEW 6: TRANSACTIONS -->
-        <div id="viewTransactions" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-clock-rotate-left"></i> Wallet Transactions</h2>
-                <div id="transactionsListContainer" class="table-responsive">
-                    <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading wallet history...</p>
-                </div>
-            </div>
-        </div>
+                    <div class="vip-card">
+                        <h3 style="font-size: 1rem; margin-bottom: 12px;">Existing Services List</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr><th>Name</th><th>Category</th><th>Prov ID</th><th>Rate/1K</th><th>Min/Max</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="adminServicesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
 
-        <!-- VIEW 7: REFERRALS -->
-        <div id="viewReferrals" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-users"></i> Affiliate & Referrals</h2>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Share your link and earn 5% bonus on friend deposits!</p>
-                <div class="form-group">
-                    <label>Your Referral Link</label>
-                    <input type="text" readonly id="referralLinkInput" value="https://multaniffofficialtournament786.github.io/multani-smm-panel/?ref=vip">
-                </div>
-            </div>
-        </div>
+                <!-- VIEW 4: DEPOSITS VERIFICATION -->
+                <section id="depositsManageView" class="page-view">
+                    <div class="vip-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h2><i class="fa-solid fa-money-check-dollar"></i> Deposits Verification</h2>
+                            <button class="btn-vip btn-sec" onclick="loadAdminDeposits()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr><th>Date</th><th>User</th><th>Method</th><th>Amount</th><th>TRX ID</th><th>Sender</th><th>Status</th><th>Action</th></tr>
+                                </thead>
+                                <tbody id="adminDepositsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
 
-        <!-- VIEW 8: LIVE SUPPORT CHAT -->
-        <div id="viewSupport" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 10px; font-size: 1.15rem; color: var(--accent-orange);"><i class="fa-solid fa-headset"></i> Live Support Chat</h2>
-                <div class="chat-box" id="customerChatWindow">
-                    <div class="bubble-admin">Assalam-o-Alaikum! Leave your question or TRX ID here. Admin will reply live.</div>
-                </div>
-                <form style="display: flex; gap: 6px;" onsubmit="handleSendCustomerChat(event)">
-                    <input type="text" id="customerChatInput" placeholder="Type message..." required>
-                    <button type="submit" class="btn-vip" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-paper-plane"></i></button>
-                </form>
-            </div>
-        </div>
+                <!-- VIEW 5: LIVE SUPPORT CHAT DESK -->
+                <section id="chatSupportDeskView" class="page-view">
+                    <div class="vip-card">
+                        <h2><i class="fa-solid fa-comments"></i> Admin Live Support Desk</h2>
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                            <div id="chatUsersList" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;"></div>
+                            <div style="background: var(--bg-card-sec); border-radius: 10px; height: 320px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px;" id="adminChatWindowBody">
+                                <p style="text-align: center; color: var(--text-muted); margin-top: 50px;">Select a user to chat</p>
+                            </div>
+                            <form style="display: flex; gap: 8px;" onsubmit="handleAdminSendMessage(event)">
+                                <input type="text" id="adminChatInput" placeholder="Reply to customer..." required disabled>
+                                <button type="submit" class="btn-vip" id="btnAdminSendChat" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
 
-        <!-- VIEW 9: PROFILE -->
-        <div id="viewProfile" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 14px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-id-card"></i> Account Profile</h2>
-                <div class="profile-avatar-wrap">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="profilePageAvatar" class="profile-avatar-img">
-                </div>
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="profFullName" placeholder="Your Name">
-                </div>
-                <div class="form-group">
-                    <label>Account Email (Fixed)</label>
-                    <input type="email" id="profEmail" readonly style="opacity: 0.7;">
-                </div>
-                <button type="button" class="btn-vip" onclick="handleSaveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
             </div>
-        </div>
+        </main>
 
+        <!-- MOBILE BOTTOM BAR BUTTONS (ADMIN) -->
+        <nav class="mobile-bottom-nav">
+            <div class="mobile-nav-item active" onclick="navigateAdmin('allOrdersView', this)">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Orders</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateAdmin('membersView', this)">
+                <i class="fa-solid fa-users-gear"></i>
+                <span>Members</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateAdmin('servicesManageView', this)">
+                <i class="fa-solid fa-cubes"></i>
+                <span>Services</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateAdmin('depositsManageView', this)">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                <span>Deposits</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateAdmin('chatSupportDeskView', this)">
+                <i class="fa-solid fa-headset"></i>
+                <span>Chat</span>
+            </div>
+        </nav>
     </div>
 
-    <!-- 4. BOTTOM NAVIGATION BAR (ORIGINAL 5 BUTTONS RESTORED) -->
-    <nav class="mobile-bottom-nav">
-        <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
-            <i class="fa-solid fa-chart-pie"></i>
-            <span>Home</span>
-        </div>
-        <div class="mobile-nav-item" id="btnNavOrder" onclick="switchTab('viewOrder', this)">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span>Order</span>
-        </div>
-        <div class="mobile-nav-item" id="btnNavServices" onclick="switchTab('viewServices', this)">
-            <i class="fa-solid fa-list"></i>
-            <span>Services</span>
-        </div>
-        <div class="mobile-nav-item" id="btnNavOrders" onclick="switchTab('viewOrdersList', this)">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <span>Orders</span>
-        </div>
-        <div class="mobile-nav-item" id="btnNavSupport" onclick="switchTab('viewSupport', this)">
-            <i class="fa-solid fa-headset"></i>
-            <span>Support</span>
-        </div>
-    </nav>
+    <!-- MODAL: MEMBER WALLET & ORDER HISTORY -->
+    <div id="memberHistoryModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 id="modalMemberTitle" style="color: var(--accent-cyan);">Member Details</h3>
+                <button onclick="closeMemberModal()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+                <label>Adjust Balance ($ USD)</label>
+                <div style="display: flex; gap: 8px; margin-top: 4px;">
+                    <input type="number" step="0.0001" id="modalAdjustBalanceInput">
+                    <button class="btn-vip btn-green" onclick="submitBalanceAdjustment()">Update</button>
+                </div>
+            </div>
 
+            <div class="filter-tabs">
+                <button class="tab-btn active" id="btnModalOrderTab" onclick="switchModalTab('orders')">Orders</button>
+                <button class="tab-btn" id="btnModalWalletTab" onclick="switchModalTab('wallet')">Wallet</button>
+            </div>
+
+            <div id="modalHistoryContent" class="table-responsive" style="max-height: 250px;"></div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
-        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
-        let currentUser = null;
-        let currentUserProfile = null;
-        let allServices = [];
-        let selectedService = null;
-
-        // MULTI-CURRENCY CONVERSION (Binance Rate: 1$ = 290 PKR)
-        const CURRENCIES = {
-            PKR: { symbol: "Rs ", rate: 290.00 },
-            USD: { symbol: "$", rate: 1.00 },
-            INR: { symbol: "₹", rate: 94.35 },
-            AED: { symbol: "AED ", rate: 3.67 },
-            SAR: { symbol: "SAR ", rate: 3.75 }
-        };
-        let activeCurrency = localStorage.getItem("app_currency") || "PKR";
-
-        function formatPrice(amountInUSD) {
-            const c = CURRENCIES[activeCurrency] || CURRENCIES.PKR;
-            const converted = amountInUSD * c.rate;
-            return `${c.symbol}${converted.toFixed(2)}`;
-        }
-
-        function handleCurrencyChange(curr) {
-            activeCurrency = curr;
-            localStorage.setItem("app_currency", curr);
-            updateWalletDisplay();
-            renderServiceDropdown(document.getElementById("orderCatSelect").value);
-            renderServicesPageTable();
-            calculateTotalCharge();
-        }
+        
+        let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        let currentAdminUser = null;
+        let allGlobalOrders = [];
+        let allMembers = [];
+        let activeChatUserId = null;
+        let activeModalUserId = null;
 
         function notify(msg, type = "info") {
             const container = document.getElementById("toastContainer");
             const toast = document.createElement("div");
             toast.className = `toast ${type}`;
-            toast.innerText = msg;
+            toast.innerHTML = `<span>${msg}</span>`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
-        }
-
-        function toggleSidebar() {
-            document.getElementById("sidebarDrawer").classList.toggle("open");
-            document.getElementById("sidebarOverlay").classList.toggle("active");
-        }
-
-        function switchTab(viewId, element) {
-            document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
-            document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
-            document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
-
-            const target = document.getElementById(viewId);
-            if (target) target.classList.add("active");
-
-            // Sync Bottom Bar Active Class
-            if (viewId === 'viewDashboard') document.getElementById("btnNavHome").classList.add("active");
-            else if (viewId === 'viewOrder') document.getElementById("btnNavOrder").classList.add("active");
-            else if (viewId === 'viewServices') document.getElementById("btnNavServices").classList.add("active");
-            else if (viewId === 'viewOrdersList') document.getElementById("btnNavOrders").classList.add("active");
-            else if (viewId === 'viewSupport') document.getElementById("btnNavSupport").classList.add("active");
-
-            document.getElementById("sidebarDrawer").classList.remove("open");
-            document.getElementById("sidebarOverlay").classList.remove("active");
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => { toast.remove(); }, 3500);
         }
 
         window.addEventListener("DOMContentLoaded", async () => {
-            document.getElementById("currencySelect").value = activeCurrency;
-            await loadSiteAnnouncement();
-
+            if (!supabaseClient) return;
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
-                currentUser = session.user;
-                await loadUserProfile();
-                loadCustomerOrders();
-                loadCustomerChat();
-                loadTransactions();
+                verifyAdminRole(session.user);
+            } else {
+                showAdminAuth();
             }
-            await loadServicesAndCategories();
         });
 
-        // 1. LIVE NOTICE TICKER
-        async function loadSiteAnnouncement() {
-            const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
-            if (data && data.value) {
-                document.getElementById("scrollingAnnouncementText").innerText = data.value;
-            }
-        }
-
-        // 2. USER PROFILE & STATS
-        async function loadUserProfile() {
-            const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).single();
-            if (data) {
-                currentUserProfile = data;
-                const name = data.full_name || 'M Nadeem';
-                document.getElementById("dashWelcomeName").innerText = `WELCOME, ${name.toUpperCase()}`;
-                document.getElementById("navUserName").innerText = name;
-                document.getElementById("profFullName").value = name;
-                document.getElementById("profEmail").value = data.email || currentUser.email || '';
-                
-                if (data.avatar_url) {
-                    document.getElementById("navAvatarImg").src = data.avatar_url;
-                    document.getElementById("profilePageAvatar").src = data.avatar_url;
-                }
-                updateWalletDisplay();
-            }
-        }
-
-        function updateWalletDisplay() {
-            if (!currentUserProfile) return;
-            const balUSD = parseFloat(currentUserProfile.balance || 0);
-            document.getElementById("headerBalanceDisplay").innerText = formatPrice(balUSD);
-        }
-
-        async function handleSaveProfile() {
-            const name = document.getElementById("profFullName").value.trim();
-            if (!name) return notify("Please enter your name", "error");
-
-            const { error } = await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
-            if (error) return notify(error.message, "error");
-
-            notify("Profile updated successfully!", "success");
-            loadUserProfile();
-        }
-
-        // 3. SERVICES & CATEGORIES
-        async function loadServicesAndCategories() {
-            const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
-            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").eq("is_active", true);
-
-            allServices = srvs || [];
-
-            const catSelect = document.getElementById("orderCatSelect");
-            catSelect.innerHTML = '<option value="">Select Category</option>';
-            if (cats) {
-                cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
-            }
-            renderServicesPageTable();
-        }
-
-        function handleCategoryFilter(catId) {
-            renderServiceDropdown(catId);
-        }
-
-        function renderServiceDropdown(catId) {
-            const srvSelect = document.getElementById("orderServiceSelect");
-            srvSelect.innerHTML = '<option value="">Select Service</option>';
-            if (!catId) return;
-
-            const filtered = allServices.filter(s => s.category_id === catId);
-            filtered.forEach(s => {
-                srvSelect.innerHTML += `<option value="${s.id}">${s.name} - (${formatPrice(parseFloat(s.rate_per_1k))}/1k)</option>`;
-            });
-        }
-
-        function renderServicesPageTable() {
-            const body = document.getElementById("servicesListBody");
-            if (!allServices || allServices.length === 0) {
-                body.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No services available.</td></tr>`;
+        async function verifyAdminRole(user) {
+            if (user.email === 'nadeemsandila57866@gmail.com') {
+                currentAdminUser = user;
+                initAdminPanel();
                 return;
             }
-            body.innerHTML = allServices.map(s => `
+
+            const { data: profile } = await supabaseClient.from("profiles").select("role").eq("id", user.id).maybeSingle();
+            if (profile && profile.role === 'admin') {
+                currentAdminUser = user;
+                initAdminPanel();
+            } else {
+                notify("Access Denied: Admin privileges required.", "error");
+                await supabaseClient.auth.signOut();
+                showAdminAuth();
+            }
+        }
+
+        function showAdminAuth() {
+            document.getElementById("adminAuthContainer").classList.remove("hidden");
+            document.getElementById("adminAppContainer").classList.add("hidden");
+        }
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById("adminEmail").value.trim();
+            const password = document.getElementById("adminPass").value;
+            const btn = document.getElementById("btnAdminLogin");
+
+            btn.disabled = true;
+            btn.innerText = "Checking...";
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            btn.disabled = false;
+            btn.innerText = "Access Control Center";
+
+            if (error) return notify(error.message, "error");
+            verifyAdminRole(data.user);
+        }
+
+        async function triggerAdminLogout() {
+            await supabaseClient.auth.signOut();
+            location.reload();
+        }
+
+        function initAdminPanel() {
+            document.getElementById("adminAuthContainer").classList.add("hidden");
+            document.getElementById("adminAppContainer").classList.remove("hidden");
+            loadAdminAnnouncement();
+            loadAllGlobalOrders();
+            loadAllMembers();
+            loadAdminCategoriesAndServices();
+            loadAdminDeposits();
+            loadChatDeskUsers();
+        }
+
+        // ================= 0. LIVE ANNOUNCEMENT CONTROLLER =================
+        async function loadAdminAnnouncement() {
+            const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
+            if (data && data.value) {
+                document.getElementById("adminAnnouncementInput").value = data.value;
+            }
+        }
+
+        async function handleUpdateAnnouncement(e) {
+            e.preventDefault();
+            const val = document.getElementById("adminAnnouncementInput").value.trim();
+            if (!val) return;
+
+            const btn = document.getElementById("btnUpdateNotice");
+            btn.disabled = true;
+            btn.innerText = "Updating...";
+
+            const { error } = await supabaseClient.from("site_settings").upsert({
+                key: 'announcement',
+                value: val,
+                updated_at: new Date()
+            });
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> Update Notice`;
+
+            if (error) return notify("Failed: " + error.message, "error");
+            notify("Announcement updated on customer panel!", "success");
+        }
+
+        // ================= 1. GLOBAL ORDERS STREAM =================
+        async function loadAllGlobalOrders() {
+            const { data, error } = await supabaseClient
+                .from("orders")
+                .select("*, services(name, provider_service_id), profiles(full_name, email)")
+                .order("created_at", { ascending: false });
+
+            if (error) return notify(error.message, "error");
+            allGlobalOrders = data || [];
+            renderGlobalOrders(allGlobalOrders);
+        }
+
+        function renderGlobalOrders(items) {
+            const body = document.getElementById("globalOrdersTableBody");
+            if (!items || items.length === 0) {
+                body.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No orders found.</td></tr>`;
+                return;
+            }
+
+            body.innerHTML = items.map(o => `
                 <tr>
-                    <td><strong>${s.name}</strong></td>
-                    <td style="color: var(--accent-orange); font-weight: 700;">${formatPrice(parseFloat(s.rate_per_1k))}</td>
-                    <td>${s.min_quantity} - ${s.max_quantity}</td>
+                    <td><strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong></td>
+                    <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                    <td>${o.profiles ? o.profiles.full_name : 'User'}</td>
+                    <td>${o.services ? o.services.name : 'Service'} <small style="color:var(--accent-orange);">(ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : 'Manual'})</small></td>
+                    <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan);">${o.target_link}</a></td>
+                    <td>${o.quantity}</td>
+                    <td>$${parseFloat(o.charge).toFixed(4)}</td>
+                    <td><span class="badge badge-${o.status}">${o.status}</span></td>
+                    <td>
+                        <select onchange="changeOrderStatus('${o.id}', this.value)" style="padding: 2px 4px; font-size: 0.75rem; width: auto;">
+                            <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
                 </tr>
             `).join("");
         }
 
-        function handleServiceSelect(srvId) {
-            selectedService = allServices.find(s => s.id === srvId) || null;
-            if (selectedService) {
-                document.getElementById("qtyLimitHint").innerText = `Min: ${selectedService.min_quantity} | Max: ${selectedService.max_quantity}`;
-            }
-            calculateTotalCharge();
+        function filterOrderStream(status, btn) {
+            document.querySelectorAll(".filter-tabs .tab-btn").forEach(b => b.classList.remove("active"));
+            if (btn) btn.classList.add("active");
+            if (status === 'all') renderGlobalOrders(allGlobalOrders);
+            else renderGlobalOrders(allGlobalOrders.filter(o => o.status === status));
         }
 
-        function calculateTotalCharge() {
-            const qty = parseInt(document.getElementById("orderQuantity").value) || 0;
-            if (!selectedService || qty <= 0) {
-                document.getElementById("orderTotalDisplay").innerText = formatPrice(0);
+        async function changeOrderStatus(orderId, newStatus) {
+            const { error } = await supabaseClient.from("orders").update({ status: newStatus }).eq("id", orderId);
+            if (error) return notify(error.message, "error");
+            notify("Updated", "success");
+            loadAllGlobalOrders();
+        }
+
+        // ================= 2. MEMBERS MANAGEMENT =================
+        async function loadAllMembers() {
+            const { data } = await supabaseClient.from("profiles").select("*").order("created_at", { ascending: false });
+            allMembers = data || [];
+            renderMembers(allMembers);
+        }
+
+        function renderMembers(list) {
+            const container = document.getElementById("membersCardContainer");
+            if (!list || list.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">No members found.</p>`;
                 return;
             }
-            const chargeUSD = (qty / 1000) * parseFloat(selectedService.rate_per_1k);
-            document.getElementById("orderTotalDisplay").innerText = formatPrice(chargeUSD);
-        }
 
-        // 4. ORDER PLACEMENT
-        async function handlePlaceOrder(e) {
-            e.preventDefault();
-            if (!currentUser) return notify("Please login first!", "error");
-            if (!selectedService) return notify("Select a service first!", "error");
-
-            const qty = parseInt(document.getElementById("orderQuantity").value);
-            if (qty < selectedService.min_quantity || qty > selectedService.max_quantity) {
-                return notify(`Quantity must be between ${selectedService.min_quantity} and ${selectedService.max_quantity}`, "error");
-            }
-
-            const chargeUSD = (qty / 1000) * parseFloat(selectedService.rate_per_1k);
-            if (parseFloat(currentUserProfile.balance) < chargeUSD) {
-                return notify("Insufficient wallet balance. Please deposit funds.", "error");
-            }
-
-            const link = document.getElementById("orderTargetLink").value.trim();
-            const btn = document.getElementById("btnPlaceOrder");
-            btn.disabled = true;
-            btn.innerText = "Processing...";
-
-            const { data, error } = await supabaseClient.from("orders").insert({
-                user_id: currentUser.id,
-                service_id: selectedService.id,
-                target_link: link,
-                quantity: qty,
-                charge: chargeUSD,
-                status: 'pending'
-            }).select();
-
-            btn.disabled = false;
-            btn.innerText = "Confirm Order";
-
-            if (error) return notify("Order failed: " + error.message, "error");
-
-            // Deduct balance
-            await supabaseClient.from("profiles").update({
-                balance: parseFloat(currentUserProfile.balance) - chargeUSD
-            }).eq("id", currentUser.id);
-
-            notify("Order placed successfully!", "success");
-            document.getElementById("orderTargetLink").value = "";
-            document.getElementById("orderQuantity").value = "";
-            loadUserProfile();
-            loadCustomerOrders();
-        }
-
-        // 5. ORDERS & DASHBOARD STATS
-        async function loadCustomerOrders() {
-            if (!currentUser) return;
-            const { data } = await supabaseClient.from("orders").select("*, services(name)").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-            
-            const orders = data || [];
-            document.getElementById("dashTotalOrders").innerText = orders.length;
-            document.getElementById("dashCompletedOrders").innerText = orders.filter(o => o.status === 'completed').length;
-            document.getElementById("dashPendingOrders").innerText = orders.filter(o => o.status === 'pending').length;
-            
-            const totalSpentUSD = orders.reduce((acc, curr) => acc + parseFloat(curr.charge || 0), 0);
-            document.getElementById("dashTotalSpent").innerText = formatPrice(totalSpentUSD);
-
-            // Recent Table
-            const recentBody = document.getElementById("dashRecentOrdersBody");
-            if (orders.length === 0) {
-                recentBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>`;
-            } else {
-                recentBody.innerHTML = orders.slice(0, 5).map(o => `
-                    <tr>
-                        <td><strong>#${o.order_number || o.id.substring(0,4)}</strong></td>
-                        <td>${new Date(o.created_at).toLocaleDateString()}</td>
-                        <td>${o.services ? o.services.name : 'Service'}</td>
-                        <td>${o.quantity}</td>
-                        <td style="color: var(--accent-orange); font-weight:700;">${formatPrice(parseFloat(o.charge))}</td>
-                    </tr>
-                `).join("");
-            }
-
-            // Orders list view
-            const list = document.getElementById("customerOrdersList");
-            if (orders.length === 0) {
-                list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No orders placed yet.</p>`;
-            } else {
-                list.innerHTML = orders.map(o => `
-                    <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                            <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong>
-                            <span class="badge ${o.status==='completed'?'badge-completed':'badge-pending'}">${o.status.toUpperCase()}</span>
-                        </div>
-                        <div style="font-size: 0.78rem;">${o.services ? o.services.name : 'Service'}</div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
-                            <span>Qty: ${o.quantity}</span>
-                            <strong style="color: #fff;">${formatPrice(parseFloat(o.charge))}</strong>
+            container.innerHTML = list.map(m => `
+                <div class="member-card">
+                    <div class="member-top">
+                        <img src="${m.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}">
+                        <div class="member-info">
+                            <h4>${m.full_name || 'Member'}</h4>
+                            <p>${m.email || ''}</p>
                         </div>
                     </div>
-                `).join("");
+                    <div class="member-balance-box">
+                        <span style="font-size: 0.75rem;">Balance:</span>
+                        <span style="font-weight: 700; color: #10B981;">$${parseFloat(m.balance || 0).toFixed(4)}</span>
+                    </div>
+                    <div class="member-actions">
+                        <button class="btn-vip btn-sec" onclick="openMemberModal('${m.id}', 'orders')">Orders</button>
+                        <button class="btn-vip btn-sec" onclick="openMemberModal('${m.id}', 'wallet')">Wallet</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function filterMembers() {
+            const q = document.getElementById("memberSearchInput").value.toLowerCase();
+            renderMembers(allMembers.filter(m => (m.full_name && m.full_name.toLowerCase().includes(q)) || (m.email && m.email.toLowerCase().includes(q))));
+        }
+
+        function openMemberModal(userId, tab) {
+            activeModalUserId = userId;
+            const m = allMembers.find(x => x.id === userId);
+            if (!m) return;
+            document.getElementById("modalMemberTitle").innerText = m.full_name || 'Member';
+            document.getElementById("modalAdjustBalanceInput").value = parseFloat(m.balance || 0).toFixed(4);
+            document.getElementById("memberHistoryModal").classList.add("active");
+            switchModalTab(tab);
+        }
+
+        function closeMemberModal() {
+            document.getElementById("memberHistoryModal").classList.remove("active");
+            activeModalUserId = null;
+        }
+
+        async function switchModalTab(tab) {
+            const content = document.getElementById("modalHistoryContent");
+            if (tab === 'orders') {
+                document.getElementById("btnModalOrderTab").classList.add("active");
+                document.getElementById("btnModalWalletTab").classList.remove("active");
+                const { data } = await supabaseClient.from("orders").select("*, services(name)").eq("user_id", activeModalUserId);
+                content.innerHTML = (!data || data.length === 0) ? `<p style="padding:10px; color:var(--text-muted);">No orders found</p>` : `
+                    <table><thead><tr><th>#</th><th>Service</th><th>Qty</th><th>Status</th></tr></thead>
+                    <tbody>${data.map(o => `<tr><td>#${o.order_number||o.id.substring(0,4)}</td><td>${o.services?o.services.name:''}</td><td>${o.quantity}</td><td>${o.status}</td></tr>`).join("")}</tbody></table>`;
+            } else {
+                document.getElementById("btnModalWalletTab").classList.add("active");
+                document.getElementById("btnModalOrderTab").classList.remove("active");
+                const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", activeModalUserId);
+                content.innerHTML = (!data || data.length === 0) ? `<p style="padding:10px; color:var(--text-muted);">No transactions found</p>` : `
+                    <table><thead><tr><th>Date</th><th>Desc</th><th>Amount</th></tr></thead>
+                    <tbody>${data.map(t => `<tr><td>${new Date(t.created_at).toLocaleDateString()}</td><td>${t.description}</td><td>$${parseFloat(t.amount).toFixed(4)}</td></tr>`).join("")}</tbody></table>`;
             }
         }
 
-        // 6. DEPOSITS
-        function calculateDepositUSD() {
-            const pkr = parseFloat(document.getElementById("depAmountPKR").value) || 0;
-            const usd = (pkr / 290.00).toFixed(4);
-            document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
+        async function submitBalanceAdjustment() {
+            const newBal = parseFloat(document.getElementById("modalAdjustBalanceInput").value);
+            const { error } = await supabaseClient.from("profiles").update({ balance: newBal }).eq("id", activeModalUserId);
+            if (error) return notify(error.message, "error");
+            notify("Balance updated!", "success");
+            loadAllMembers();
         }
 
-        async function handleDepositSubmit(e) {
+        // ================= 3. SERVICES & CATEGORIES =================
+        async function loadAdminCategoriesAndServices() {
+            const { data: cats, error: catErr } = await supabaseClient.from("categories").select("*").order("name");
+            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").order("created_at", { ascending: false });
+            
+            const sel = document.getElementById("srvAdminCategorySelect");
+            sel.innerHTML = '<option value="">Select Category</option>';
+            if (cats) cats.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+
+            const body = document.getElementById("adminServicesTableBody");
+            if (!srvs || srvs.length === 0) { body.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No services added yet.</td></tr>`; return; }
+            body.innerHTML = srvs.map(s => `
+                <tr>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${s.categories ? s.categories.name : '-'}</td>
+                    <td><span style="color:var(--accent-orange); font-weight:700;">${s.provider_service_id || 'Manual'}</span></td>
+                    <td>$${parseFloat(s.rate_per_1k).toFixed(4)}</td>
+                    <td>${s.min_quantity} - ${s.max_quantity}</td>
+                    <td><button class="btn-vip btn-sec" style="color:#ef4444; padding:3px 8px; font-size:0.75rem;" onclick="deleteService('${s.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>
+            `).join("");
+        }
+
+        async function handleCreateCategory(e) {
             e.preventDefault();
-            if (!currentUser) return notify("Please login first!", "error");
+            const input = document.getElementById("newCatName");
+            const btn = document.getElementById("btnAddCat");
+            const name = input.value.trim();
+            if (!name) return;
 
-            const pkr = parseFloat(document.getElementById("depAmountPKR").value);
-            const usd = pkr / 290.00;
-            const method = document.getElementById("depMethod").value;
-            const sender = document.getElementById("depSenderNum").value.trim();
-            const trx = document.getElementById("depTrxId").value.trim();
-
-            const btn = document.getElementById("btnDepositSubmit");
             btn.disabled = true;
-            btn.innerText = "Submitting...";
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
 
-            const { error } = await supabaseClient.from("deposits").insert({
-                user_id: currentUser.id,
-                amount: usd,
-                payment_method: method,
-                sender_account: sender,
-                transaction_id: trx,
-                status: 'pending'
-            });
-
+            const { error } = await supabaseClient.from("categories").insert([{ name: name, is_active: true }]);
             btn.disabled = false;
-            btn.innerText = "Submit Deposit Request";
+            btn.innerHTML = `<i class="fa-solid fa-plus"></i> Add`;
 
             if (error) return notify("Failed: " + error.message, "error");
 
-            notify("Deposit submitted! Admin will verify and approve.", "success");
-            document.getElementById("depAmountPKR").value = "";
-            document.getElementById("depSenderNum").value = "";
-            document.getElementById("depTrxId").value = "";
-            document.getElementById("depUSDHint").innerText = "";
+            input.value = "";
+            notify("Category created!", "success");
+            await loadAdminCategoriesAndServices();
         }
 
-        // 7. TRANSACTIONS
-        async function loadTransactions() {
-            if (!currentUser) return;
-            const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-            const container = document.getElementById("transactionsListContainer");
-            if (!data || data.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No transactions yet.</p>`;
-                return;
-            }
-            container.innerHTML = `
-                <table>
-                    <thead><tr><th>Date</th><th>Type</th><th>Desc</th><th>Amount</th></tr></thead>
-                    <tbody>${data.map(t => `
-                        <tr>
-                            <td>${new Date(t.created_at).toLocaleDateString()}</td>
-                            <td><span class="badge badge-completed">${t.type}</span></td>
-                            <td>${t.description}</td>
-                            <td style="color:${t.amount<0?'var(--accent-orange)':'#10B981'}; font-weight:700;">${formatPrice(parseFloat(t.amount))}</td>
-                        </tr>
-                    `).join("")}</tbody>
-                </table>
-            `;
-        }
-
-        // 8. CHAT
-        async function loadCustomerChat() {
-            if (!currentUser) return;
-            const { data } = await supabaseClient.from("chat_messages").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true });
-            const body = document.getElementById("customerChatWindow");
-            if (data && data.length > 0) {
-                body.innerHTML = data.map(m => `
-                    <div class="${m.sender_type==='admin'?'bubble-admin':'bubble-user'}">${m.message}</div>
-                `).join("");
-                body.scrollTop = body.scrollHeight;
-            }
-        }
-
-        async function handleSendCustomerChat(e) {
+        async function handleSaveService(e) {
             e.preventDefault();
-            if (!currentUser) return notify("Please login first!", "error");
-            const input = document.getElementById("customerChatInput");
+            const catId = document.getElementById("srvAdminCategorySelect").value;
+            if (!catId) return notify("Please select a category first", "error");
+
+            const payload = {
+                category_id: catId,
+                name: document.getElementById("srvAdminName").value.trim(),
+                provider_service_id: document.getElementById("srvAdminProviderId").value.trim(),
+                rate_per_1k: parseFloat(document.getElementById("srvAdminRate").value),
+                min_quantity: parseInt(document.getElementById("srvAdminMin").value),
+                max_quantity: parseInt(document.getElementById("srvAdminMax").value),
+                is_active: true
+            };
+
+            const btn = document.getElementById("btnSaveSrv");
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            const { error } = await supabaseClient.from("services").insert(payload);
+            btn.disabled = false;
+            btn.innerText = "Save Service";
+
+            if (error) return notify("Service save failed: " + error.message, "error");
+
+            resetServiceForm();
+            notify("Service added successfully!", "success");
+            loadAdminCategoriesAndServices();
+        }
+
+        function resetServiceForm() {
+            document.getElementById("serviceAdminForm").reset();
+        }
+
+        async function deleteService(id) {
+            if (!confirm("Are you sure you want to delete this service?")) return;
+            const { error } = await supabaseClient.from("services").delete().eq("id", id);
+            if (error) return notify(error.message, "error");
+            notify("Service deleted", "success");
+            loadAdminCategoriesAndServices();
+        }
+
+        // ================= 4. DEPOSITS VERIFICATION =================
+        async function loadAdminDeposits() {
+            const { data } = await supabaseClient.from("deposits").select("*, profiles(full_name)").order("created_at", { ascending: false });
+            const body = document.getElementById("adminDepositsTableBody");
+            if (!data || data.length === 0) { body.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No deposits yet.</td></tr>`; return; }
+            body.innerHTML = data.map(d => `
+                <tr>
+                    <td>${new Date(d.created_at).toLocaleDateString()}</td>
+                    <td>${d.profiles ? d.profiles.full_name : ''}</td>
+                    <td>${d.payment_method}</td>
+                    <td>$${parseFloat(d.amount).toFixed(4)}</td>
+                    <td>${d.transaction_id}</td>
+                    <td>${d.sender_account}</td>
+                    <td><span class="badge badge-${d.status}">${d.status}</span></td>
+                    <td>
+                        ${d.status === 'pending' ? `<button class="btn-vip btn-green" style="padding:3px 8px; font-size:0.75rem;" onclick="approveDeposit('${d.id}')">Approve</button>` : ''}
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        async function approveDeposit(id) {
+            const { data, error } = await supabaseClient.rpc("admin_approve_deposit", { p_deposit_id: id });
+            if (error || !data.success) return notify(data ? data.message : error.message, "error");
+            notify("Deposit Approved & Balance Credited!", "success");
+            loadAdminDeposits();
+            loadAllMembers();
+        }
+
+        // ================= 5. LIVE CHAT DESK =================
+        async function loadChatDeskUsers() {
+            const { data } = await supabaseClient.from("chat_messages").select("user_id, profiles(full_name)").order("created_at", { ascending: false });
+            const container = document.getElementById("chatUsersList");
+            if (!data) return;
+            const seen = new Set();
+            container.innerHTML = "";
+            data.forEach(item => {
+                if (!seen.has(item.user_id) && item.profiles) {
+                    seen.add(item.user_id);
+                    container.innerHTML += `<button class="tab-btn" onclick="selectChatUser('${item.user_id}')">${item.profiles.full_name}</button>`;
+                }
+            });
+        }
+
+        async function selectChatUser(uid) {
+            activeChatUserId = uid;
+            document.getElementById("adminChatInput").disabled = false;
+            document.getElementById("btnAdminSendChat").disabled = false;
+            const { data } = await supabaseClient.from("chat_messages").select("*").eq("user_id", uid).order("created_at", { ascending: true });
+            const body = document.getElementById("adminChatWindowBody");
+            body.innerHTML = data.map(m => `<div style="align-self: ${m.sender_type==='admin'?'flex-end':'flex-start'}; background:${m.sender_type==='admin'?'var(--accent-orange)':'#1f293d'}; color:#fff; padding:6px 10px; border-radius:8px; font-size:0.8rem;">${m.message}</div>`).join("");
+            body.scrollTop = body.scrollHeight;
+        }
+
+        async function handleAdminSendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById("adminChatInput");
             const msg = input.value.trim();
             if (!msg) return;
-
             input.value = "";
-            await supabaseClient.from("chat_messages").insert({ user_id: currentUser.id, sender_type: 'user', message: msg });
-            loadCustomerChat();
+            await supabaseClient.from("chat_messages").insert({ user_id: activeChatUserId, sender_type: 'admin', message: msg });
+            selectChatUser(activeChatUserId);
+        }
+
+        // NAVIGATION SWITCHER
+        function navigateAdmin(viewId, element) {
+            document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
+            document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
+            document.querySelectorAll(".mobile-nav-item").forEach(m => m.classList.remove("active"));
+
+            const target = document.getElementById(viewId);
+            if (target) target.classList.add("active");
+            if (element) element.classList.add("active");
+
+            document.getElementById("adminSidebar").classList.remove("mobile-open");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleAdminSidebar() {
+            document.getElementById("adminSidebar").classList.toggle("mobile-open");
         }
     </script>
 </body>
