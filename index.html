@@ -315,7 +315,7 @@
     </div>
 
     <!-- 0. LOGIN & SIGNUP SCREEN -->
-    <div id="authGateContainer" class="hidden">
+    <div id="authGateContainer">
         <div class="auth-card">
             <div style="text-align: center; margin-bottom: 16px;">
                 <i class="fa-solid fa-crown" style="font-size: 2.2rem; color: var(--accent-orange); margin-bottom: 4px;"></i>
@@ -716,20 +716,29 @@
         }
 
         function showAuthScreen() {
-            const auth = document.getElementById("authGateContainer");
-            const app = document.getElementById("mainAppWrapper");
-            if (auth) auth.classList.remove("hidden");
-            if (app) app.classList.add("hidden");
+            document.getElementById("authGateContainer").classList.remove("hidden");
+            document.getElementById("mainAppWrapper").classList.add("hidden");
         }
 
         function showPanelScreen() {
-            const auth = document.getElementById("authGateContainer");
-            const app = document.getElementById("mainAppWrapper");
-            if (auth) auth.classList.add("hidden");
-            if (app) app.classList.remove("hidden");
+            document.getElementById("authGateContainer").classList.add("hidden");
+            document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
-        // 1. FAST EXTRACT TOKEN FROM URL HASH
+        function parseJwtPayload(token) {
+            try {
+                if (!token || !token.includes('.')) return null;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+
         function getHashParams() {
             const hash = window.location.hash;
             if (!hash || !hash.includes("access_token=")) return null;
@@ -741,68 +750,90 @@
             };
         }
 
-        // 2. MASTER APP INITIALIZATION
+        // AUTO-INIT FUNCTION: GUARANTEED SESSION LOCK
         async function initMultaniApp() {
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
             loadSiteAnnouncement();
 
-            if (!supabaseClient) {
-                showAuthScreen();
-                return;
-            }
-
-            // A: CHECK IF REDIRECTED WITH GOOGLE TOKEN IN HASH
+            // 1. CHECK HASH FROM GOOGLE REDIRECT
             const hashData = getHashParams();
             if (hashData && hashData.access_token) {
-                showPanelScreen(); // Instantly show dashboard!
+                const jwt = parseJwtPayload(hashData.access_token);
+                if (jwt) {
+                    currentUser = {
+                        id: jwt.sub,
+                        email: jwt.email,
+                        user_metadata: jwt.user_metadata || {}
+                    };
+                    localStorage.setItem("multani_vip_session", JSON.stringify({
+                        user: currentUser,
+                        access_token: hashData.access_token
+                    }));
+                    window.history.replaceState(null, null, window.location.pathname);
+                    showPanelScreen();
+                    
+                    if (supabaseClient) {
+                        supabaseClient.auth.setSession({
+                            access_token: hashData.access_token,
+                            refresh_token: hashData.refresh_token || ""
+                        }).catch(() => {});
+                    }
+                    
+                    await postLoginSuccess(currentUser);
+                    return; // Stays on Dashboard!
+                }
+            }
+
+            // 2. CHECK LOCAL STORAGE SESSION
+            const savedStr = localStorage.getItem("multani_vip_session");
+            if (savedStr) {
                 try {
-                    const { data, error } = await supabaseClient.auth.setSession(hashData);
-                    if (!error && data && data.session) {
-                        currentUser = data.session.user;
-                        window.history.replaceState(null, null, window.location.pathname);
+                    const saved = JSON.parse(savedStr);
+                    if (saved && saved.user) {
+                        currentUser = saved.user;
+                        showPanelScreen();
+                        if (saved.access_token && supabaseClient) {
+                            supabaseClient.auth.setSession({
+                                access_token: saved.access_token,
+                                refresh_token: ""
+                            }).catch(() => {});
+                        }
+                        await postLoginSuccess(currentUser);
+                        return; // Stays on Dashboard!
+                    }
+                } catch (e) {}
+            }
+
+            // 3. FALLBACK SUPABASE CHECK
+            if (supabaseClient) {
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session && session.user) {
+                        currentUser = session.user;
+                        localStorage.setItem("multani_vip_session", JSON.stringify({ user: currentUser }));
+                        showPanelScreen();
                         await postLoginSuccess(currentUser);
                         return;
                     }
-                } catch (e) {
-                    console.warn("Hash session setup:", e);
-                }
+                } catch (e) {}
             }
 
-            // B: CHECK SAVED SESSION IN STORAGE
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session && session.user) {
-                    currentUser = session.user;
-                    showPanelScreen();
-                    await postLoginSuccess(currentUser);
-                    return;
-                }
-            } catch (e) {
-                console.warn("Session check:", e);
-            }
-
-            // C: IF NOT LOGGED IN, SHOW LOGIN SCREEN
+            // 4. SHOW LOGIN ONLY IF NO SESSION FOUND
             showAuthScreen();
         }
 
-        // Real-time Auth State Change Listener
         if (supabaseClient) {
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 if (session && session.user) {
-                    if (!currentUser) {
-                        currentUser = session.user;
-                        showPanelScreen();
-                        await postLoginSuccess(currentUser);
-                    }
-                } else if (event === 'SIGNED_OUT') {
-                    currentUser = null;
-                    showAuthScreen();
+                    currentUser = session.user;
+                    localStorage.setItem("multani_vip_session", JSON.stringify({ user: currentUser }));
+                    showPanelScreen();
+                    await postLoginSuccess(currentUser);
                 }
             });
         }
 
-        // RUN ON LOAD
         window.addEventListener("DOMContentLoaded", initMultaniApp);
 
         async function postLoginSuccess(user) {
@@ -861,6 +892,7 @@
             if (error) return notify(error.message, "error");
             notify("Login successful!", "success");
             currentUser = data.user;
+            localStorage.setItem("multani_vip_session", JSON.stringify({ user: currentUser }));
             showPanelScreen();
             postLoginSuccess(currentUser);
         }
@@ -890,6 +922,7 @@
 
             if (data.user) {
                 currentUser = data.user;
+                localStorage.setItem("multani_vip_session", JSON.stringify({ user: currentUser }));
                 await ensureUserProfile(data.user, fullName);
                 showPanelScreen();
                 postLoginSuccess(currentUser);
@@ -899,6 +932,7 @@
 
         async function ensureUserProfile(user, fallbackName = null) {
             try {
+                if (!user || !user.id) return;
                 const meta = user.user_metadata || {};
                 const resolvedName = fallbackName || meta.full_name || meta.name || (user.email ? user.email.split('@')[0] : 'Member');
                 const resolvedAvatar = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
@@ -925,7 +959,8 @@
         function askCustomerLogout() {
             toggleSidebar();
             showVipModal("CONFIRM LOGOUT", "Are you sure you want to sign out?", "fa-solid fa-arrow-right-from-bracket", async () => {
-                await supabaseClient.auth.signOut();
+                localStorage.removeItem("multani_vip_session");
+                if (supabaseClient) await supabaseClient.auth.signOut().catch(() => {});
                 currentUser = null;
                 currentUserProfile = null;
                 notify("Logged out!", "info");
