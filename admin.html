@@ -350,7 +350,7 @@
                             <form id="providerAdminForm" onsubmit="handleSaveProvider(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>Provider Name</label>
-                                    <input type="text" id="newProvName" placeholder="e.g. Sasta smm pak, smmdecent" required>
+                                    <input type="text" id="newProvName" placeholder="e.g. Sasta smm pak, smm decent" required>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>API URL</label>
@@ -697,7 +697,7 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // 1. MULTI-PROVIDER SYSTEM
+        // 1. MULTI-PROVIDER SYSTEM (SECURE VIA SUPABASE EDGE FUNCTION)
         function toggleAddProviderForm() {
             const form = document.getElementById("addProviderFormContainer");
             form.style.display = (form.style.display === "none" || !form.style.display) ? "block" : "none";
@@ -707,9 +707,10 @@
             const container = document.getElementById("providersListContainer");
             const srvProvSelect = document.getElementById("srvAdminProviderSelect");
 
+            // فرنٹ اینڈ کے لیے API Key سلیکٹ نہیں کی جا رہی تاکہ سیکیورٹی محفوظ رہے
             const { data, error } = await supabaseClient
                 .from("provider_settings")
-                .select("*")
+                .select("id, provider_name, api_url, balance, currency")
                 .order("id", { ascending: true });
 
             if (error) {
@@ -738,12 +739,13 @@
                     </div>
                     <div style="font-size: 0.72rem; color: var(--text-muted); word-break: break-all;">${p.api_url}</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
-                        <span>Balance: <strong id="prov_bal_${p.id}" style="color: #10B981;">Checking...</strong></span>
-                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${p.id})"><i class="fa-solid fa-rotate"></i></button>
+                        <span>Balance: <strong id="prov_bal_${p.id}" style="color: ${p.balance ? '#10B981' : '#9BA8BC'};">${p.balance ? (p.currency + ' ' + parseFloat(p.balance).toFixed(2)) : 'Checking...'}</strong></span>
+                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${p.id})"><i class="fa-solid fa-rotate" id="prov_rot_${p.id}"></i></button>
                     </div>
                 </div>
             `).join("");
 
+            // تمام پرووائیڈرز کا بیلنس تازہ کرنے کے لیے کال
             data.forEach(p => {
                 checkSpecificProviderBalance(p.id);
             });
@@ -801,103 +803,62 @@
             loadProvidersList();
         }
 
-        // ================= SMART PROXY ENGINE (POST + FORM-DATA + GET FALLBACK) =================
+        // ================= SECURE EDGE FUNCTION BASED BALANCE ENGINE =================
         async function checkSpecificProviderBalance(provId) {
             const badge = document.getElementById(`prov_bal_${provId}`);
+            const rotIcon = document.getElementById(`prov_rot_${provId}`);
+
             if (badge) {
                 badge.innerText = "Checking...";
                 badge.style.color = "#FF4624";
             }
-
-            const prov = allProviders.find(p => p.id == provId);
-            if (!prov || !prov.api_url || !prov.api_key) {
-                if (badge) { badge.innerText = "N/A"; badge.style.color = "#EF4444"; }
-                return;
+            if (rotIcon) {
+                rotIcon.classList.add("fa-spin");
             }
 
-            const cleanUrl = prov.api_url.trim();
-            const cleanKey = prov.api_key.trim();
-
-            // Method 1: SMM Standard POST via Direct Corsfree / CodeTabs Bridge
             try {
-                const formBody = `key=${encodeURIComponent(cleanKey)}&action=balance`;
-                const postProxies = [
-                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`
-                ];
-
-                for (let pUrl of postProxies) {
-                    try {
-                        const res = await fetch(pUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: formBody
-                        });
-
-                        if (res.ok) {
-                            const raw = await res.text();
-                            const data = JSON.parse(raw);
-                            if (data && data.balance !== undefined) {
-                                if (badge) {
-                                    const curr = data.currency || "USD";
-                                    badge.innerText = `${curr} ${parseFloat(data.balance).toFixed(2)}`;
-                                    badge.style.color = "#10B981";
-                                }
-                                return;
-                            } else if (data && data.error) {
-                                if (badge) {
-                                    badge.innerText = `API: ${data.error}`;
-                                    badge.style.color = "#EF4444";
-                                }
-                                return;
-                            }
-                        }
-                    } catch (e) {}
+                // ایڈمن سیشن حاصل کریں
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) {
+                    if (badge) {
+                        badge.innerText = "Auth Required";
+                        badge.style.color = "#EF4444";
+                    }
+                    return;
                 }
-            } catch (e) {}
 
-            // Method 2: GET URL query with Multiple Proxy Endpoints
-            const getUrl = `${cleanUrl}${cleanUrl.includes('?') ? '&' : '?'}key=${encodeURIComponent(cleanKey)}&action=balance`;
-            const getProxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(getUrl)}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(getUrl)}`,
-                `https://thingproxy.freeboard.io/fetch/${getUrl}`
-            ];
+                // Supabase Edge Function کو کال کریں
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/check-provider-balance`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`
+                    },
+                    body: JSON.stringify({ provider_id: provId })
+                });
 
-            for (let proxyUrl of getProxies) {
-                try {
-                    const res = await fetch(proxyUrl, { method: 'GET' });
-                    if (!res.ok) continue;
+                const result = await response.json();
 
-                    const text = await res.text();
-                    let data;
-                    try {
-                        data = JSON.parse(text);
-                    } catch (e) {
-                        continue;
+                if (response.ok && result.success) {
+                    if (badge) {
+                        badge.innerText = `${result.currency} ${parseFloat(result.balance).toFixed(2)}`;
+                        badge.style.color = "#10B981";
                     }
-
-                    if (data && data.balance !== undefined) {
-                        if (badge) {
-                            const curr = data.currency || "USD";
-                            badge.innerText = `${curr} ${parseFloat(data.balance).toFixed(2)}`;
-                            badge.style.color = "#10B981";
-                        }
-                        return;
-                    } else if (data && data.error) {
-                        if (badge) {
-                            badge.innerText = `API: ${data.error}`;
-                            badge.style.color = "#EF4444";
-                        }
-                        return;
+                } else {
+                    if (badge) {
+                        badge.innerText = result.error || "Check Failed";
+                        badge.style.color = "#EF4444";
                     }
-                } catch (err) {}
-            }
-
-            if (badge) {
-                badge.innerText = "Check Failed";
-                badge.style.color = "#EF4444";
+                }
+            } catch (err) {
+                if (badge) {
+                    badge.innerText = "Network Error";
+                    badge.style.color = "#EF4444";
+                }
+            } finally {
+                if (rotIcon) {
+                    rotIcon.classList.remove("fa-spin");
+                }
             }
         }
 
