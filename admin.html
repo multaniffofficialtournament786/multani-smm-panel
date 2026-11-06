@@ -549,7 +549,6 @@
     </div>
 
     <script>
-        // Supabase Configuration with Exact Anon Key
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
@@ -765,7 +764,6 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
 
             try {
-                // Table schema match ke sath safe insert
                 const { data, error } = await supabaseClient
                     .from("provider_settings")
                     .insert([{
@@ -803,7 +801,7 @@
             loadProvidersList();
         }
 
-        // ================= RELIABLE MULTI-PROXY ENGINE FOR BALANCE =================
+        // ================= SMART PROXY ENGINE (POST + FORM-DATA + GET FALLBACK) =================
         async function checkSpecificProviderBalance(provId) {
             const badge = document.getElementById(`prov_bal_${provId}`);
             if (badge) {
@@ -820,17 +818,54 @@
             const cleanUrl = prov.api_url.trim();
             const cleanKey = prov.api_key.trim();
 
-            // SMM standard GET URL with action=balance
-            const targetUrl = `${cleanUrl}?key=${encodeURIComponent(cleanKey)}&action=balance`;
+            // Method 1: SMM Standard POST via Direct Corsfree / CodeTabs Bridge
+            try {
+                const formBody = `key=${encodeURIComponent(cleanKey)}&action=balance`;
+                const postProxies = [
+                    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(cleanUrl)}`
+                ];
 
-            // Reliable CORS proxies list
-            const proxies = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
-                `https://thingproxy.freeboard.io/fetch/${targetUrl}`
+                for (let pUrl of postProxies) {
+                    try {
+                        const res = await fetch(pUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: formBody
+                        });
+
+                        if (res.ok) {
+                            const raw = await res.text();
+                            const data = JSON.parse(raw);
+                            if (data && data.balance !== undefined) {
+                                if (badge) {
+                                    const curr = data.currency || "USD";
+                                    badge.innerText = `${curr} ${parseFloat(data.balance).toFixed(2)}`;
+                                    badge.style.color = "#10B981";
+                                }
+                                return;
+                            } else if (data && data.error) {
+                                if (badge) {
+                                    badge.innerText = `API: ${data.error}`;
+                                    badge.style.color = "#EF4444";
+                                }
+                                return;
+                            }
+                        }
+                    } catch (e) {}
+                }
+            } catch (e) {}
+
+            // Method 2: GET URL query with Multiple Proxy Endpoints
+            const getUrl = `${cleanUrl}${cleanUrl.includes('?') ? '&' : '?'}key=${encodeURIComponent(cleanKey)}&action=balance`;
+            const getProxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(getUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(getUrl)}`,
+                `https://thingproxy.freeboard.io/fetch/${getUrl}`
             ];
 
-            for (let proxyUrl of proxies) {
+            for (let proxyUrl of getProxies) {
                 try {
                     const res = await fetch(proxyUrl, { method: 'GET' });
                     if (!res.ok) continue;
@@ -857,9 +892,7 @@
                         }
                         return;
                     }
-                } catch (err) {
-                    // Try next proxy
-                }
+                } catch (err) {}
             }
 
             if (badge) {
