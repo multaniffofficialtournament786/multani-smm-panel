@@ -801,11 +801,14 @@
             loadProvidersList();
         }
 
-        // ================= UPDATED PROVIDER BALANCE FUNCTION =================
+        // ================= SECURE EDGE FUNCTION BALANCE INVOKE =================
         async function checkSpecificProviderBalance(provId) {
             const badge = document.getElementById(`prov_bal_${provId}`);
 
-            if (badge) badge.innerText = "Checking...";
+            if (badge) {
+                badge.innerText = "Checking...";
+                badge.style.color = "#FF4624";
+            }
 
             try {
                 const { data, error } = await supabaseClient.functions.invoke(
@@ -815,16 +818,19 @@
                     }
                 );
 
-                if (error) throw error;
+                if (error) {
+                    throw new Error(error.message || "Invoke Error");
+                }
+                
                 if (!data || !data.success) {
-                    throw new Error(data?.error || "Balance check failed");
+                    throw new Error(data?.error || "Panel Error");
                 }
 
                 const balance = Number(data.balance).toFixed(2);
                 const currency = data.currency || "USD";
 
                 if (badge) {
-                    badge.innerText = `${balance} ${currency}`;
+                    badge.innerText = `${currency} ${balance}`;
                     badge.style.color = "#10B981";
                 }
 
@@ -839,11 +845,10 @@
                     }
                 }
 
-            } catch (error) {
-                console.error("Provider balance error:", error);
-
+            } catch (err) {
+                console.error("Provider balance error:", err);
                 if (badge) {
-                    badge.innerText = "Balance Error";
+                    badge.innerText = (err.message || "Error").slice(0, 22);
                     badge.style.color = "#EF4444";
                 }
             }
