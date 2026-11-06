@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MULTANI SMM | Master Admin Control</title>
-
-    <!-- Google Fonts & Icons -->
+    <title>MULTANI SMM | Super Admin Control Panel</title>
+    
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Supabase CDN -->
+    
+    <!-- Supabase CDN Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
 
     <style>
@@ -22,397 +22,801 @@
             --accent-orange: #FF4624;
             --accent-cyan: #00D5FF;
             --accent-green: #10B981;
-            --accent-yellow: #EAB308;
             --text-main: #FFFFFF;
             --text-muted: #9BA8BC;
             --border-card: #1f293d;
+            --sidebar-w: 240px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; padding-bottom: 75px; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; overflow-x: hidden; width: 100%; }
         h1, h2, h3, h4, .brand-font { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .hidden { display: none !important; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
 
-        .top-navbar {
-            height: 60px;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-card);
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+        /* Toast Container */
+        #toastContainer { position: fixed; top: 15px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.96); border-left: 4px solid var(--accent-cyan); border-radius: 8px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; }
+        .toast.error { border-left-color: var(--accent-orange); }
+        .toast.success { border-left-color: var(--accent-green); }
 
-        .content-body { padding: 14px; max-width: 700px; margin: 0 auto; }
-        .admin-view { display: none; }
-        .admin-view.active { display: block; }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-card);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 14px;
-        }
-
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-        .stat-box {
-            background: var(--bg-card-sec);
-            border: 1px solid var(--border-card);
-            border-radius: 10px;
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .stat-box i { font-size: 1.25rem; padding: 10px; border-radius: 8px; }
-        .stat-val { font-size: 1.15rem; font-weight: 700; font-family: 'Rajdhani'; }
-        .stat-lbl { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+        /* Admin Auth Screen */
+        #adminAuthContainer { width: 100%; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; }
+        .admin-auth-box { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 24px 20px; }
 
         .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 5px; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px 12px;
-            background: var(--bg-card-sec);
-            border: 1px solid var(--border-card);
-            border-radius: 8px;
-            color: var(--text-main);
-            font-size: 0.88rem;
-            outline: none;
-        }
+        label { display: block; margin-bottom: 5px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 10px 12px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; color: var(--text-main); font-size: 0.88rem; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent-cyan); }
 
-        .btn-vip {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            width: 100%;
-            padding: 11px;
-            background: linear-gradient(135deg, var(--accent-orange), #d93314);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.88rem;
-            font-weight: 700;
-            font-family: 'Rajdhani', sans-serif;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-        .btn-vip.btn-sm { width: auto; padding: 6px 12px; font-size: 0.78rem; }
+        .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; }
         .btn-vip.btn-sec { background: var(--bg-card-sec); border: 1px solid var(--border-card); color: var(--text-main); }
-        .btn-vip.btn-green { background: linear-gradient(135deg, var(--accent-green), #059669); }
+        .btn-vip.btn-green { background: linear-gradient(135deg, #10B981, #059669); }
 
-        .provider-item-box {
+        /* Admin Main Layout */
+        #adminAppContainer { width: 100%; display: flex; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-w); background: var(--bg-card); border-right: 1px solid var(--border-card); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 100; transition: transform 0.3s ease; }
+        .sidebar-header { padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-card); }
+        .sidebar-menu { flex: 1; padding: 10px 8px; overflow-y: auto; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; cursor: pointer; }
+        .sidebar-menu li a.active { background: rgba(255, 70, 36, 0.15); border-left: 3px solid var(--accent-orange); color: #fff; }
+
+        .main-content { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 75px; width: 100%; overflow-x: hidden; }
+        
+        /* TOP NAVBAR */
+        .top-navbar { height: 56px; background: var(--bg-card); border-bottom: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 90; }
+        .nav-controls { display: flex; align-items: center; gap: 8px; }
+        .currency-select-admin {
             background: var(--bg-card-sec);
             border: 1px solid var(--border-card);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
-        }
-        .provider-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .provider-name { font-weight: 700; font-size: 0.95rem; color: var(--accent-cyan); }
-        .provider-url { font-size: 0.72rem; color: var(--text-muted); word-break: break-all; margin-bottom: 8px; }
-        .provider-balance-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0,0,0,0.3);
-            padding: 6px 10px;
+            color: #fff;
             border-radius: 6px;
+            padding: 4px 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            outline: none;
         }
 
+        .content-body { padding: 15px; max-width: 1100px; width: 100%; margin: 0 auto; }
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+        .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 16px; margin-bottom: 15px; width: 100%; }
+
+        .filter-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
+        .tab-btn { padding: 6px 12px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 20px; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; white-space: nowrap; }
+        .tab-btn.active { background: var(--accent-orange); color: #fff; border-color: var(--accent-orange); }
+
+        /* Members Card Grid */
+        .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .member-card { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+        .member-top { display: flex; align-items: center; gap: 10px; }
+        .member-top img { width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--accent-cyan); object-fit: cover; }
+        .member-info h4 { font-size: 0.95rem; color: #fff; }
+        .member-info p { font-size: 0.72rem; color: var(--text-muted); word-break: break-all; }
+        .member-balance-box { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; border: 1px dashed var(--border-card); }
+        .member-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+        /* Provider Cards */
+        .providers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 10px; }
+        .provider-card { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .provider-top { display: flex; justify-content: space-between; align-items: center; }
+
+        /* Tables */
         .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
         th, td { padding: 9px 12px; border-bottom: 1px solid var(--border-card); }
-        th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; text-align: left; }
+        th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
+
         .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
         .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; }
-        .badge-processing { background: rgba(0, 213, 255, 0.15); color: #00D5FF; }
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
         .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
-        .mobile-bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 60px;
-            background: rgba(14, 17, 24, 0.98);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid var(--border-card);
-            z-index: 1000;
+        /* INBOX / CHAT DESK */
+        .inbox-item {
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
             display: flex;
-            justify-content: space-around;
             align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .mobile-nav-item {
+        .inbox-item:hover, .inbox-item:active {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 213, 255, 0.05);
+        }
+        .inbox-user-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
+        .inbox-avatar { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--accent-orange); object-fit: cover; flex-shrink: 0; }
+        .inbox-texts { flex: 1; overflow: hidden; }
+        .inbox-texts h4 { font-size: 0.95rem; color: #fff; margin-bottom: 2px; }
+        .inbox-last-msg { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+        .inbox-badge-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+        .unread-pill {
+            background: #EF4444;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 12px;
+            animation: pulseBadge 1.5s infinite;
+        }
+        @keyframes pulseBadge {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* ACTIVE CHAT WINDOW */
+        .chat-active-container {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            color: var(--text-muted);
-            font-size: 0.65rem;
-            font-weight: 600;
-            cursor: pointer;
-            flex: 1;
-            height: 100%;
+            height: 520px;
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            overflow: hidden;
         }
+        .chat-header-bar {
+            background: rgba(0,0,0,0.4);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-card);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chat-back-btn { background: transparent; border: none; color: var(--accent-cyan); font-size: 1.15rem; cursor: pointer; padding: 4px 6px; }
+        .chat-messages-area { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble-admin { align-self: flex-end; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; padding: 8px 12px; border-radius: 12px 12px 2px 12px; font-size: 0.82rem; max-width: 80%; word-break: break-word; }
+        .bubble-user { align-self: flex-start; background: #1f293d; border: 1px solid #2d3b55; color: #fff; padding: 8px 12px; border-radius: 12px 12px 12px 2px; font-size: 0.82rem; max-width: 80%; word-break: break-word; }
+
+        /* Mobile Bottom Nav */
+        .mobile-bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(14, 17, 24, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; justify-content: space-around; align-items: center; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; flex: 1; height: 100%; position: relative; }
         .mobile-nav-item i { font-size: 1.15rem; }
         .mobile-nav-item.active { color: var(--accent-orange); }
 
-        #toastContainer { position: fixed; top: 70px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-        .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.96); border-left: 4px solid var(--accent-cyan); border-radius: 8px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; }
-        .toast.error { border-left-color: var(--accent-orange); }
-        .toast.success { border-left-color: var(--accent-green); }
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 15px; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; max-width: 550px; width: 100%; padding: 20px; max-height: 85vh; overflow-y: auto; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-bottom-nav { display: flex; }
+        }
     </style>
 </head>
 <body>
 
     <div id="toastContainer"></div>
 
-    <header class="top-navbar">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <i class="fa-solid fa-shield-halved" style="color: var(--accent-orange); font-size: 1.25rem;"></i>
-            <h2 style="font-size: 1.15rem; color: #fff;">MULTANI SMM ADMIN</h2>
-        </div>
-        <button type="button" class="btn-vip btn-sm btn-sec" onclick="loadAllAdminData()"><i class="fa-solid fa-rotate"></i> Refresh</button>
-    </header>
-
-    <div class="content-body">
-        <!-- 1. ORDERS VIEW -->
-        <div id="viewOrders" class="admin-view active">
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <i class="fa-solid fa-boxes-stacked" style="background: rgba(0,213,255,0.1); color: var(--accent-cyan);"></i>
-                    <div>
-                        <div class="stat-val" id="statOrdersTotal">0</div>
-                        <div class="stat-lbl">Total Orders</div>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <i class="fa-solid fa-hourglass-half" style="background: rgba(234,179,8,0.1); color: #EAB308;"></i>
-                    <div>
-                        <div class="stat-val" id="statOrdersPending">0</div>
-                        <div class="stat-lbl">Pending</div>
-                    </div>
-                </div>
+    <!-- 1. ADMIN AUTH GATE -->
+    <div id="adminAuthContainer">
+        <div class="admin-auth-box">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i class="fa-solid fa-shield-halved" style="font-size: 2.2rem; color: var(--accent-orange); margin-bottom: 6px;"></i>
+                <h2>SUPER ADMIN</h2>
+                <p style="color: var(--text-muted); font-size: 0.8rem;">Multani SMM Control Center</p>
             </div>
-
-            <div class="card">
-                <h3 style="font-size: 1rem; margin-bottom: 12px;"><i class="fa-solid fa-cart-flatbed"></i> Customer Orders</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>Order #</th><th>User</th><th>Service</th><th>Link / Qty</th><th>Charge</th><th>Status</th><th>Action</th></tr>
-                        </thead>
-                        <tbody id="adminOrdersBody">
-                            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading orders...</td></tr>
-                        </tbody>
-                    </table>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Admin Email</label>
+                    <input type="email" id="adminEmail" required placeholder="admin@domain.com">
                 </div>
-            </div>
-        </div>
-
-        <!-- 2. MEMBERS VIEW -->
-        <div id="viewMembers" class="admin-view">
-            <div class="card">
-                <h3 style="font-size: 1rem; margin-bottom: 12px;"><i class="fa-solid fa-users"></i> Registered Members</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>Name</th><th>Email</th><th>Balance</th><th>Add Balance</th></tr>
-                        </thead>
-                        <tbody id="adminMembersBody">
-                            <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading members...</td></tr>
-                        </tbody>
-                    </table>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPass" required placeholder="••••••••">
                 </div>
-            </div>
-        </div>
-
-        <!-- 3. SERVICES & PROVIDERS VIEW -->
-        <div id="viewServices" class="admin-view">
-            <!-- Notice bar -->
-            <div class="card" style="border-left: 4px solid var(--accent-orange);">
-                <label>Scrolling Notice</label>
-                <div style="display: flex; gap: 6px;">
-                    <input type="text" id="siteNoticeInput" placeholder="Enter marquee announcement text...">
-                    <button type="button" class="btn-vip btn-sm" onclick="saveSiteNotice()">Update</button>
-                </div>
-            </div>
-
-            <!-- API Providers Box -->
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h3 style="font-size: 1rem; color: var(--accent-cyan);"><i class="fa-solid fa-server"></i> API Providers (SMM Resellers)</h3>
-                    <button type="button" class="btn-vip btn-sm" onclick="toggleAddProviderForm()"><i class="fa-solid fa-plus"></i> Add Provider</button>
-                </div>
-
-                <div id="addProviderForm" class="hidden" style="background: var(--bg-card-sec); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                    <div class="form-group">
-                        <label>Provider Name</label>
-                        <input type="text" id="provNameInput" placeholder="e.g. SMM Decent">
-                    </div>
-                    <div class="form-group">
-                        <label>API URL</label>
-                        <input type="text" id="provUrlInput" placeholder="https://smmdecent.co/api/v2">
-                    </div>
-                    <div class="form-group">
-                        <label>API Key</label>
-                        <input type="text" id="provKeyInput" placeholder="Enter provider API Key">
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-vip btn-sec" onclick="toggleAddProviderForm()">Cancel</button>
-                        <button type="button" class="btn-vip" onclick="saveNewProvider()">Save Provider</button>
-                    </div>
-                </div>
-
-                <div id="providersListContainer">
-                    <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading providers...</p>
-                </div>
-            </div>
-
-            <!-- Category Box -->
-            <div class="card">
-                <h3 style="font-size: 1rem; margin-bottom: 10px;"><i class="fa-solid fa-folder-plus"></i> Add Category</h3>
-                <div style="display: flex; gap: 6px;">
-                    <input type="text" id="newCategoryInput" placeholder="Category Name (e.g. TikTok Services)">
-                    <button type="button" class="btn-vip btn-sm" onclick="saveNewCategory()">+ Add</button>
-                </div>
-            </div>
-
-            <!-- Add Service Box -->
-            <div class="card">
-                <h3 style="font-size: 1rem; margin-bottom: 10px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service (Provider Mapping)</h3>
-                <form onsubmit="handleCreateService(event)">
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="srvCategorySelect" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Service Title</label>
-                        <input type="text" id="srvTitleInput" required placeholder="TikTok Likes [Real - Instant]">
-                    </div>
-                    <div class="form-group">
-                        <label>Linked Provider (Auto Order)</label>
-                        <select id="srvProviderSelect" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Provider Service ID</label>
-                        <input type="text" id="srvProviderIdInput" required placeholder="ID from provider (e.g. 1042)">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
-                        <div class="form-group">
-                            <label>Rate / 1K (USD)</label>
-                            <input type="number" step="0.0001" id="srvRateInput" required placeholder="0.25">
-                        </div>
-                        <div class="form-group">
-                            <label>Min Qty</label>
-                            <input type="number" id="srvMinInput" required placeholder="100">
-                        </div>
-                        <div class="form-group">
-                            <label>Max Qty</label>
-                            <input type="number" id="srvMaxInput" required placeholder="50000">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-vip"><i class="fa-solid fa-floppy-disk"></i> Save Service</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- 4. DEPOSITS VIEW -->
-        <div id="viewDeposits" class="admin-view">
-            <div class="card">
-                <h3 style="font-size: 1rem; margin-bottom: 12px; color: #10B981;"><i class="fa-solid fa-money-bill-transfer"></i> Manual Deposit Requests</h3>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>User</th><th>Method</th><th>Amount</th><th>TRX / Sender</th><th>Status</th><th>Approve / Reject</th></tr>
-                        </thead>
-                        <tbody id="adminDepositsBody">
-                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading deposit requests...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. CHAT VIEW -->
-        <div id="viewChat" class="admin-view">
-            <div class="card">
-                <h3 style="font-size: 1rem; margin-bottom: 10px;"><i class="fa-solid fa-comments"></i> User Inquiries</h3>
-                <div id="adminChatList" style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto;">
-                    <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading messages...</p>
-                </div>
-            </div>
+                <button type="submit" class="btn-vip" style="width: 100%;" id="btnAdminLogin">Access Control Center</button>
+            </form>
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
-    <nav class="mobile-bottom-nav">
-        <div class="mobile-nav-item active" onclick="switchAdminTab('viewOrders', this)">
-            <i class="fa-solid fa-boxes-stacked"></i><span>Orders</span>
+    <!-- 2. ADMIN DASHBOARD APP -->
+    <div id="adminAppContainer" class="hidden">
+        
+        <aside class="sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-crown" style="color: var(--accent-orange);"></i>
+                    <h2>ADMIN PANEL</h2>
+                </div>
+                <button onclick="toggleAdminSidebar()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a class="active" onclick="navigateAdmin('allOrdersView', this)"><i class="fa-solid fa-list-check"></i> Orders</a></li>
+                <li><a onclick="navigateAdmin('membersView', this)"><i class="fa-solid fa-users-gear"></i> Members</a></li>
+                <li><a onclick="navigateAdmin('servicesManageView', this)"><i class="fa-solid fa-cubes"></i> Services & Providers</a></li>
+                <li><a onclick="navigateAdmin('depositsManageView', this)"><i class="fa-solid fa-money-bill-transfer"></i> Deposits</a></li>
+                <li><a onclick="navigateAdmin('chatSupportDeskView', this)"><i class="fa-solid fa-headset"></i> Live Chat <span id="sidebarUnreadDot" class="unread-pill hidden" style="margin-left: auto;">0</span></a></li>
+                <li style="margin-top: auto;"><a onclick="triggerAdminLogout()" style="color: var(--accent-orange);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- TOP NAVBAR -->
+            <header class="top-navbar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button onclick="toggleAdminSidebar()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;"><i class="fa-solid fa-bars"></i></button>
+                    <h3 style="font-size: 1.05rem; color: var(--accent-cyan);">Multani Admin</h3>
+                </div>
+                
+                <div class="nav-controls">
+                    <select class="currency-select-admin" id="adminCurrencySelect" onchange="handleAdminCurrencyChange(this.value)">
+                        <option value="PKR">🇵🇰 PKR (Rs)</option>
+                        <option value="USD">🇺🇸 USD ($)</option>
+                        <option value="INR">🇮🇳 INR (₹)</option>
+                        <option value="AED">🇦🇪 AED</option>
+                        <option value="SAR">🇸🇦 SAR</option>
+                    </select>
+                    
+                    <div style="font-size: 0.75rem; color: #10B981; font-weight: 700;">
+                        <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> Active
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-body">
+                
+                <!-- GLOBAL ANNOUNCEMENT CONTROLLER -->
+                <div class="vip-card" style="margin-bottom: 15px;">
+                    <h3 style="font-size: 0.95rem; color: var(--accent-orange); margin-bottom: 8px;">
+                        <i class="fa-solid fa-bullhorn"></i> Live Customer Scrolling Announcement
+                    </h3>
+                    <form onsubmit="handleUpdateAnnouncement(event)" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="text" id="adminAnnouncementInput" placeholder="Enter marquee announcement text..." required style="flex: 1; min-width: 200px;">
+                        <button type="submit" class="btn-vip" id="btnUpdateNotice" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-check"></i> Update Notice</button>
+                    </form>
+                </div>
+
+                <!-- VIEW 1: ORDERS -->
+                <section id="allOrdersView" class="page-view active">
+                    <div class="vip-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                            <h2><i class="fa-solid fa-boxes-stacked"></i> Global Orders Stream</h2>
+                            <button class="btn-vip btn-sec" onclick="loadAllGlobalOrders()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                        </div>
+
+                        <div class="filter-tabs">
+                            <button class="tab-btn active" onclick="filterOrderStream('all', this)">All</button>
+                            <button class="tab-btn" onclick="filterOrderStream('pending', this)">Pending</button>
+                            <button class="tab-btn" onclick="filterOrderStream('completed', this)">Completed</button>
+                            <button class="tab-btn" onclick="filterOrderStream('cancelled', this)">Cancelled</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date</th>
+                                        <th>User</th>
+                                        <th>Service & Provider ID</th>
+                                        <th>Target</th>
+                                        <th>Qty</th>
+                                        <th>Charge</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="globalOrdersTableBody">
+                                    <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">Loading orders...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 2: MEMBERS -->
+                <section id="membersView" class="page-view">
+                    <div class="vip-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px;">
+                            <h2><i class="fa-solid fa-users"></i> Member Management</h2>
+                            <input type="text" id="memberSearchInput" placeholder="Search members..." oninput="filterMembers()" style="max-width: 220px; padding: 7px 10px; font-size: 0.8rem;">
+                        </div>
+                        <div class="members-grid" id="membersCardContainer">
+                            <p style="color: var(--text-muted); text-align: center;">Loading members...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 3: SERVICES & MULTI-PROVIDER SETTINGS -->
+                <section id="servicesManageView" class="page-view">
+                    
+                    <!-- MULTI-PROVIDER MANAGEMENT BOX -->
+                    <div class="vip-card" style="margin-bottom: 15px; border-left: 4px solid var(--accent-cyan);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                            <h3 style="font-size: 1rem; color: var(--accent-cyan);">
+                                <i class="fa-solid fa-server"></i> API Providers (SMM Resellers)
+                            </h3>
+                            <button type="button" class="btn-vip btn-sec" style="font-size: 0.75rem; padding: 4px 8px;" onclick="toggleAddProviderForm()">
+                                <i class="fa-solid fa-plus"></i> Add New Provider
+                            </button>
+                        </div>
+
+                        <!-- Add Provider Form -->
+                        <div id="addProviderFormContainer" style="display: none; background: rgba(0,0,0,0.3); border: 1px dashed var(--border-card); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                            <h4 style="font-size: 0.85rem; color: #fff; margin-bottom: 8px;">Connect New Provider API</h4>
+                            <form id="providerAdminForm" onsubmit="handleSaveProvider(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Provider Name</label>
+                                    <input type="text" id="newProvName" placeholder="e.g. Smm decent, Peakerr" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>API URL</label>
+                                    <input type="url" id="newProvUrl" placeholder="https://smmdecent.co/api/v2" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>API Key</label>
+                                    <input type="password" id="newProvKey" placeholder="Paste Provider API Key" required>
+                                </div>
+                                <div style="display: flex; gap: 6px; align-items: flex-end;">
+                                    <button type="submit" id="btnSaveProvider" class="btn-vip" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> Save Provider</button>
+                                    <button type="button" class="btn-vip btn-sec" onclick="toggleAddProviderForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Providers List Grid -->
+                        <div class="providers-grid" id="providersListContainer">
+                            <p style="color: var(--text-muted); font-size: 0.8rem;">Loading providers...</p>
+                        </div>
+                    </div>
+
+                    <!-- Add Category -->
+                    <div class="vip-card" style="margin-bottom: 15px;">
+                        <h3 style="font-size: 1rem; margin-bottom: 10px; color: var(--accent-cyan);"><i class="fa-solid fa-folder-plus"></i> Add Category</h3>
+                        <form onsubmit="handleCreateCategory(event)" style="display: flex; gap: 8px;">
+                            <input type="text" id="newCatName" required placeholder="Category Name (e.g. TikTok Services)" style="flex: 1;">
+                            <button type="submit" class="btn-vip" id="btnAddCat"><i class="fa-solid fa-plus"></i> Add</button>
+                        </form>
+                    </div>
+
+                    <!-- Add Service -->
+                    <div class="vip-card">
+                        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service (Provider Mapping)</h3>
+                        <form onsubmit="handleSaveService(event)" id="serviceAdminForm">
+                            <input type="hidden" id="srvFormId">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="srvAdminCategorySelect" required>
+                                        <option value="">Select Category</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Provider</label>
+                                    <select id="srvAdminProviderSelect">
+                                        <option value="">Manual (No API)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Name</label>
+                                    <input type="text" id="srvAdminName" required placeholder="e.g. TikTok Likes [Lifetime]">
+                                </div>
+                                <div class="form-group">
+                                    <label>Provider Service ID</label>
+                                    <input type="text" id="srvAdminProviderId" placeholder="e.g. 10838">
+                                </div>
+                                <div class="form-group">
+                                    <label>Rate Per 1K ($ USD)</label>
+                                    <input type="number" step="0.0001" id="srvAdminRate" required placeholder="0.6900">
+                                </div>
+                                <div class="form-group">
+                                    <label>Min Qty</label>
+                                    <input type="number" id="srvAdminMin" required placeholder="10">
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Qty</label>
+                                    <input type="number" id="srvAdminMax" required placeholder="100000">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                <button type="submit" class="btn-vip" id="btnSaveSrv">Save Service</button>
+                                <button type="button" class="btn-vip btn-sec" onclick="resetServiceForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="vip-card">
+                        <h3 style="font-size: 1rem; margin-bottom: 12px;">Existing Services List</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr><th>Name</th><th>Category</th><th>Provider</th><th>Prov ID</th><th>Rate/1K</th><th>Min/Max</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="adminServicesTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 4: DEPOSITS -->
+                <section id="depositsManageView" class="page-view">
+                    <div class="vip-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h2><i class="fa-solid fa-money-check-dollar"></i> Deposits Verification</h2>
+                            <button class="btn-vip btn-sec" onclick="loadAdminDeposits()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr><th>Date</th><th>User</th><th>Method</th><th>Amount</th><th>TRX ID</th><th>Sender</th><th>Status</th><th>Action</th></tr>
+                                </thead>
+                                <tbody id="adminDepositsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 5: CHAT SYSTEM -->
+                <section id="chatSupportDeskView" class="page-view">
+                    <div class="vip-card">
+                        <div id="chatInboxContainer">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <h2><i class="fa-solid fa-inbox"></i> Customer Support Inbox</h2>
+                                <button class="btn-vip btn-sec" onclick="loadChatInboxList()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                            </div>
+                            <div id="chatCustomerInboxList">
+                                <p style="text-align: center; color: var(--text-muted); padding: 25px 0;">Loading customer conversations...</p>
+                            </div>
+                        </div>
+
+                        <div id="chatConversationContainer" class="hidden">
+                            <div class="chat-active-container">
+                                <div class="chat-header-bar">
+                                    <button class="chat-back-btn" onclick="backToInbox()"><i class="fa-solid fa-arrow-left"></i></button>
+                                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="activeChatUserAvatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+                                    <div>
+                                        <h4 id="activeChatUserName" style="font-size: 0.95rem; color: #fff;">Customer Name</h4>
+                                        <p id="activeChatUserEmail" style="font-size: 0.68rem; color: var(--text-muted);"></p>
+                                    </div>
+                                </div>
+                                <div class="chat-messages-area" id="adminChatMessagesBody">
+                                    <p style="text-align: center; color: var(--text-muted); margin-top: 50px;">Loading chat messages...</p>
+                                </div>
+                                <form style="display: flex; gap: 8px; padding: 12px; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border-card);" onsubmit="handleAdminSendMessage(event)">
+                                    <input type="text" id="adminChatInput" placeholder="Reply to customer..." required>
+                                    <button type="submit" class="btn-vip" id="btnAdminSendChat" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-paper-plane"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- MOBILE BOTTOM BAR -->
+        <nav class="mobile-bottom-nav">
+            <div class="mobile-nav-item active" onclick="navigateAdmin('allOrdersView', this)">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Orders</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateAdmin('membersView', this)">
+                <i class="fa-solid fa-users-gear"></i>
+                <span>Members</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateAdmin('servicesManageView', this)">
+                <i class="fa-solid fa-cubes"></i>
+                <span>Services</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateAdmin('depositsManageView', this)">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                <span>Deposits</span>
+            </div>
+            <div class="mobile-nav-item" onclick="navigateAdmin('chatSupportDeskView', this)">
+                <i class="fa-solid fa-headset"></i>
+                <span>Chat</span>
+                <span id="bottomNavUnreadBadge" class="unread-pill hidden" style="position: absolute; top: 4px; right: 18px; font-size: 0.6rem; padding: 1px 5px;">0</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- MODAL: MEMBER DETAILS -->
+    <div id="memberHistoryModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 id="modalMemberTitle" style="color: var(--accent-cyan);">Member Details</h3>
+                <button onclick="closeMemberModal()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+                <label>Adjust Balance ($ USD Base)</label>
+                <div style="display: flex; gap: 8px; margin-top: 4px;">
+                    <input type="number" step="0.0001" id="modalAdjustBalanceInput">
+                    <button class="btn-vip btn-green" onclick="submitBalanceAdjustment()">Update</button>
+                </div>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="tab-btn active" id="btnModalOrderTab" onclick="switchModalTab('orders')">Orders</button>
+                <button class="tab-btn" id="btnModalWalletTab" onclick="switchModalTab('wallet')">Wallet</button>
+            </div>
+
+            <div id="modalHistoryContent" class="table-responsive" style="max-height: 250px;"></div>
         </div>
-        <div class="mobile-nav-item" onclick="switchAdminTab('viewMembers', this)">
-            <i class="fa-solid fa-users"></i><span>Members</span>
-        </div>
-        <div class="mobile-nav-item" onclick="switchAdminTab('viewServices', this)">
-            <i class="fa-solid fa-cubes"></i><span>Services</span>
-        </div>
-        <div class="mobile-nav-item" onclick="switchAdminTab('viewDeposits', this)">
-            <i class="fa-solid fa-money-bill-transfer"></i><span>Deposits</span>
-        </div>
-        <div class="mobile-nav-item" onclick="switchAdminTab('viewChat', this)">
-            <i class="fa-solid fa-headset"></i><span>Chat</span>
-        </div>
-    </nav>
+    </div>
 
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmiedwzabkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
-        const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        let currentAdminUser = null;
+        let allGlobalOrders = [];
+        let allMembers = [];
+        let allProviders = [];
+        let activeChatUserId = null;
+        let activeModalUserId = null;
 
-        let providersData = [];
-        let categoriesData = [];
+        const ADMIN_CURRENCIES = {
+            PKR: { symbol: "Rs ", rate: 290.00 },
+            USD: { symbol: "$", rate: 1.00 },
+            INR: { symbol: "₹", rate: 94.35 },
+            AED: { symbol: "AED ", rate: 3.67 },
+            SAR: { symbol: "SAR ", rate: 3.75 }
+        };
+        let activeAdminCurrency = localStorage.getItem("admin_currency") || "PKR";
+
+        function formatAdminPrice(amountInUSD) {
+            const c = ADMIN_CURRENCIES[activeAdminCurrency] || ADMIN_CURRENCIES.PKR;
+            const converted = (parseFloat(amountInUSD) || 0) * c.rate;
+            return `${c.symbol}${converted.toFixed(2)}`;
+        }
+
+        function handleAdminCurrencyChange(curr) {
+            activeAdminCurrency = curr;
+            localStorage.setItem("admin_currency", curr);
+            renderGlobalOrders(allGlobalOrders);
+            renderMembers(allMembers);
+            loadAdminCategoriesAndServices();
+        }
 
         function notify(msg, type = "info") {
             const container = document.getElementById("toastContainer");
             const toast = document.createElement("div");
             toast.className = `toast ${type}`;
-            toast.innerText = msg;
+            toast.innerHTML = `<span>${msg}</span>`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
+            setTimeout(() => { toast.remove(); }, 3500);
         }
 
-        function switchAdminTab(viewId, element) {
-            document.querySelectorAll(".admin-view").forEach(v => v.classList.remove("active"));
-            document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
+        window.addEventListener("DOMContentLoaded", async () => {
+            document.getElementById("adminCurrencySelect").value = activeAdminCurrency;
+            if (!supabaseClient) return;
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                verifyAdminRole(session.user);
+            } else {
+                showAdminAuth();
+            }
+        });
+
+        async function verifyAdminRole(user) {
+            if (user.email === 'nadeemsandila57866@gmail.com') {
+                currentAdminUser = user;
+                initAdminPanel();
+                return;
+            }
+
+            const { data: profile } = await supabaseClient.from("profiles").select("role").eq("id", user.id).maybeSingle();
+            if (profile && profile.role === 'admin') {
+                currentAdminUser = user;
+                initAdminPanel();
+            } else {
+                notify("Access Denied: Admin privileges required.", "error");
+                await supabaseClient.auth.signOut();
+                showAdminAuth();
+            }
+        }
+
+        function showAdminAuth() {
+            document.getElementById("adminAuthContainer").classList.remove("hidden");
+            document.getElementById("adminAppContainer").classList.add("hidden");
+        }
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById("adminEmail").value.trim();
+            const password = document.getElementById("adminPass").value;
+            const btn = document.getElementById("btnAdminLogin");
+
+            btn.disabled = true;
+            btn.innerText = "Checking...";
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            btn.disabled = false;
+            btn.innerText = "Access Control Center";
+
+            if (error) return notify(error.message, "error");
+            verifyAdminRole(data.user);
+        }
+
+        async function triggerAdminLogout() {
+            await supabaseClient.auth.signOut();
+            location.reload();
+        }
+
+        function initAdminPanel() {
+            document.getElementById("adminAuthContainer").classList.add("hidden");
+            document.getElementById("adminAppContainer").classList.remove("hidden");
+            loadAdminAnnouncement();
+            loadProvidersList();
+            loadAllGlobalOrders();
+            loadAllMembers();
+            loadAdminCategoriesAndServices();
+            loadAdminDeposits();
+            loadChatInboxList();
+        }
+
+        // 0. LIVE ANNOUNCEMENT
+        async function loadAdminAnnouncement() {
+            const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
+            if (data && data.value) {
+                document.getElementById("adminAnnouncementInput").value = data.value;
+            }
+        }
+
+        async function handleUpdateAnnouncement(e) {
+            e.preventDefault();
+            const val = document.getElementById("adminAnnouncementInput").value.trim();
+            if (!val) return;
+
+            const btn = document.getElementById("btnUpdateNotice");
+            btn.disabled = true;
+            btn.innerText = "Updating...";
+
+            const { error } = await supabaseClient.from("site_settings").upsert({
+                key: 'announcement',
+                value: val,
+                updated_at: new Date()
+            });
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> Update Notice`;
+
+            if (error) return notify("Failed: " + error.message, "error");
+            notify("Announcement updated on customer panel!", "success");
+        }
+
+        // 1. MULTI-PROVIDER SYSTEM WITH DIRECT CORS PROXY BALANCE ENGINE
+        function toggleAddProviderForm() {
+            const form = document.getElementById("addProviderFormContainer");
+            form.style.display = (form.style.display === "none" || !form.style.display) ? "block" : "none";
+        }
+
+        async function loadProvidersList() {
+            const container = document.getElementById("providersListContainer");
+            const srvProvSelect = document.getElementById("srvAdminProviderSelect");
+
+            const { data, error } = await supabaseClient.from("provider_settings").select("*");
+
+            if (error) {
+                console.error("Provider load error:", error);
+                container.innerHTML = `<p style="color: var(--accent-orange); font-size: 0.8rem;">Table Error: ${error.message}</p>`;
+                srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.8rem;">No providers connected yet.</p>`;
+                srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>`;
+                return;
+            }
+
+            allProviders = data;
+
+            srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>` + 
+                data.map(p => {
+                    const pId = p.provider_id || p.id;
+                    return `<option value="${pId}">${p.provider_name}</option>`;
+                }).join("");
+
+            container.innerHTML = data.map(p => {
+                const pId = p.provider_id || p.id;
+                return `
+                <div class="provider-card">
+                    <div class="provider-top">
+                        <strong style="color: var(--accent-cyan); font-size: 0.95rem;">${p.provider_name}</strong>
+                        <button type="button" onclick="deleteProvider('${pId}')" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" title="Delete Provider"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); word-break: break-all;">${p.api_url}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
+                        <span>Balance: <strong id="prov_bal_${pId}" style="color: #10B981;">Checking...</strong></span>
+                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance('${pId}')"><i class="fa-solid fa-rotate"></i></button>
+                    </div>
+                </div>
+            `;}).join("");
+
+            data.forEach(p => {
+                const pId = p.provider_id || p.id;
+                checkSpecificProviderBalance(pId);
+            });
+        }
+
+        async function handleSaveProvider(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnSaveProvider");
+            const name = document.getElementById("newProvName").value.trim();
+            const url = document.getElementById("newProvUrl").value.trim();
+            const key = document.getElementById("newProvKey").value.trim();
+
+            if (!name || !url || !key) {
+                return notify("Please fill all fields", "error");
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+            const { error } = await supabaseClient.from("provider_settings").insert([{
+                provider_name: name,
+                api_url: url,
+                api_key: key
+            }]);
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Provider`;
+
+            if (error) {
+                console.error("Provider save error:", error);
+                return notify("Save Failed: " + error.message, "error");
+            }
+
+            notify("Provider added successfully!", "success");
+            document.getElementById("newProvName").value = "";
+            document.getElementById("newProvUrl").value = "";
+            document.getElementById("newProvKey").value = "";
+            toggleAddProviderForm();
+            loadProvidersList();
+        }
+
+        async function deleteProvider(id) {
+            if (!confirm("Are you sure you want to remove this provider?")) return;
             
-            const target = document.getElementById(viewId);
-            if (target) target.classList.add("active");
-            if (element) element.classList.add("active");
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            let res = await supabaseClient.from("provider_settings").delete().eq("provider_id", id);
+            if (res.error) {
+                res = await supabaseClient.from("provider_settings").delete().eq("id", id);
+            }
+            if (res.error) return notify(res.error.message, "error");
+            notify("Provider removed", "success");
+            loadProvidersList();
         }
 
-        // ================= CORS PROXY BALANCE ENGINE =================
-        async function fetchProviderBalance(apiUrl, apiKey) {
-            const cleanUrl = apiUrl.trim();
-            // Multiple CORS proxies for 100% reliable fallback
+        // ================= CORS PROXY ENGINE FOR PROVIDER BALANCE =================
+        async function checkSpecificProviderBalance(provId) {
+            const badge = document.getElementById(`prov_bal_${provId}`);
+            if (badge) badge.innerText = "Checking...";
+
+            const prov = allProviders.find(p => (p.provider_id || p.id) == provId);
+            if (!prov || !prov.api_url || !prov.api_key) {
+                if (badge) badge.innerText = "N/A";
+                return;
+            }
+
+            const cleanUrl = prov.api_url.trim();
+            const cleanKey = prov.api_key.trim();
+
+            // Proxies list to bypass browser CORS blockage
             const proxy1 = `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`;
             const proxy2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`;
 
             const payload = new URLSearchParams();
-            payload.append('key', apiKey.trim());
+            payload.append('key', cleanKey);
             payload.append('action', 'balance');
 
-            const tryFetch = async (target) => {
-                const res = await fetch(target, {
+            const makeCall = async (targetUrl) => {
+                const res = await fetch(targetUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: payload
@@ -421,325 +825,454 @@
             };
 
             try {
-                const data = await tryFetch(proxy1);
+                const data = await makeCall(proxy1);
                 if (data && data.balance !== undefined) {
-                    return `${data.balance} ${data.currency || 'USD'}`;
+                    if (badge) {
+                        badge.innerText = `${data.currency || 'USD'} ${parseFloat(data.balance).toFixed(2)}`;
+                        badge.style.color = '#10B981';
+                    }
+                    return;
                 }
-                if (data && data.error) return `Error: ${data.error}`;
+                if (data && data.error) {
+                    if (badge) {
+                        badge.innerText = `Error: ${data.error}`;
+                        badge.style.color = '#EF4444';
+                    }
+                    return;
+                }
             } catch (err) {
                 try {
-                    const data2 = await tryFetch(proxy2);
+                    const data2 = await makeCall(proxy2);
                     if (data2 && data2.balance !== undefined) {
-                        return `${data2.balance} ${data2.currency || 'USD'}`;
+                        if (badge) {
+                            badge.innerText = `${data2.currency || 'USD'} ${parseFloat(data2.balance).toFixed(2)}`;
+                            badge.style.color = '#10B981';
+                        }
+                        return;
                     }
-                } catch (e2) {}
+                } catch (err2) {}
             }
-            return "N/A";
-        }
 
-        async function refreshSingleProviderBalance(id, url, key) {
-            const el = document.getElementById(`balance-${id}`);
-            if (el) el.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Checking...`;
-            const bal = await fetchProviderBalance(url, key);
-            if (el) {
-                el.innerText = bal;
-                el.style.color = (bal !== 'N/A' && !bal.startsWith('Error')) ? '#10B981' : '#EF4444';
+            if (badge) {
+                badge.innerText = "N/A";
+                badge.style.color = '#EF4444';
             }
         }
 
-        // ================= LOAD & RENDER PROVIDERS =================
-        async function loadProviders() {
-            const { data, error } = await supabase.from("api_providers").select("*").order("name");
-            const container = document.getElementById("providersListContainer");
-            const select = document.getElementById("srvProviderSelect");
-            
-            if (error || !data) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No providers found.</p>`;
+        // 2. GLOBAL ORDERS STREAM
+        async function loadAllGlobalOrders() {
+            const { data, error } = await supabaseClient
+                .from("orders")
+                .select("*, services(name, provider_service_id), profiles(full_name, email)")
+                .order("created_at", { ascending: false });
+
+            if (error) return notify(error.message, "error");
+            allGlobalOrders = data || [];
+            renderGlobalOrders(allGlobalOrders);
+        }
+
+        function renderGlobalOrders(items) {
+            const body = document.getElementById("globalOrdersTableBody");
+            if (!items || items.length === 0) {
+                body.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No orders found.</td></tr>`;
                 return;
             }
 
-            providersData = data;
-            select.innerHTML = '<option value="">Select Linked Provider</option>';
-
-            container.innerHTML = data.map(p => {
-                select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
-                return `
-                    <div class="provider-item-box">
-                        <div class="provider-top">
-                            <span class="provider-name">${p.name}</span>
-                            <button class="btn-vip btn-sm btn-sec" style="color: #EF4444;" onclick="deleteProvider('${p.id}')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="provider-url">${p.api_url}</div>
-                        <div class="provider-balance-row">
-                            <span style="font-size: 0.78rem; color: var(--text-muted);">Live Balance:</span>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <strong id="balance-${p.id}" style="color: var(--accent-cyan); font-size: 0.85rem;">Checking...</strong>
-                                <button type="button" style="background: none; border: none; color: #fff; cursor: pointer;" onclick="refreshSingleProviderBalance('${p.id}', '${p.api_url}', '${p.api_key}')">
-                                    <i class="fa-solid fa-rotate"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join("");
-
-            // Automatically check balances for all active providers
-            data.forEach(p => {
-                refreshSingleProviderBalance(p.id, p.api_url, p.api_key);
-            });
-        }
-
-        function toggleAddProviderForm() {
-            document.getElementById("addProviderForm").classList.toggle("hidden");
-        }
-
-        async function saveNewProvider() {
-            const name = document.getElementById("provNameInput").value.trim();
-            const url = document.getElementById("provUrlInput").value.trim();
-            const key = document.getElementById("provKeyInput").value.trim();
-
-            if (!name || !url || !key) return notify("Please fill all fields", "error");
-
-            const { error } = await supabase.from("api_providers").insert({
-                name, api_url: url, api_key: key
-            });
-
-            if (error) return notify("Failed: " + error.message, "error");
-            notify("Provider added!", "success");
-            toggleAddProviderForm();
-            document.getElementById("provNameInput").value = "";
-            document.getElementById("provUrlInput").value = "";
-            document.getElementById("provKeyInput").value = "";
-            loadProviders();
-        }
-
-        async function deleteProvider(id) {
-            if (!confirm("Are you sure you want to delete this provider?")) return;
-            await supabase.from("api_providers").delete().eq("id", id);
-            notify("Provider deleted!", "info");
-            loadProviders();
-        }
-
-        // ================= CATEGORIES & SERVICES =================
-        async function loadCategories() {
-            const { data } = await supabase.from("categories").select("*").order("name");
-            const select = document.getElementById("srvCategorySelect");
-            if (!select) return;
-            select.innerHTML = '<option value="">Select Category</option>';
-            if (data) {
-                categoriesData = data;
-                data.forEach(c => select.innerHTML += `<option value="${c.id}">${c.name}</option>`);
-            }
-        }
-
-        async function saveNewCategory() {
-            const name = document.getElementById("newCategoryInput").value.trim();
-            if (!name) return notify("Enter category name", "error");
-            const { error } = await supabase.from("categories").insert({ name });
-            if (error) return notify("Error: " + error.message, "error");
-            notify("Category created!", "success");
-            document.getElementById("newCategoryInput").value = "";
-            loadCategories();
-        }
-
-        async function handleCreateService(e) {
-            e.preventDefault();
-            const catId = document.getElementById("srvCategorySelect").value;
-            const title = document.getElementById("srvTitleInput").value.trim();
-            const provId = document.getElementById("srvProviderSelect").value;
-            const provSrvId = document.getElementById("srvProviderIdInput").value.trim();
-            const rate = parseFloat(document.getElementById("srvRateInput").value);
-            const min = parseInt(document.getElementById("srvMinInput").value);
-            const max = parseInt(document.getElementById("srvMaxInput").value);
-
-            const { error } = await supabase.from("services").insert({
-                category_id: catId,
-                name: title,
-                provider_id: provId,
-                provider_service_id: provSrvId,
-                rate_per_1k: rate,
-                min_quantity: min,
-                max_quantity: max,
-                is_active: true
-            });
-
-            if (error) return notify("Failed: " + error.message, "error");
-            notify("Service created and mapped!", "success");
-            e.target.reset();
-        }
-
-        // ================= NOTICE BANNER =================
-        async function loadSiteNotice() {
-            const { data } = await supabase.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
-            if (data) document.getElementById("siteNoticeInput").value = data.value;
-        }
-
-        async function saveSiteNotice() {
-            const val = document.getElementById("siteNoticeInput").value.trim();
-            await supabase.from("site_settings").upsert({ key: 'announcement', value: val });
-            notify("Notice updated!", "success");
-        }
-
-        // ================= ORDERS MANAGEMENT =================
-        async function loadOrders() {
-            const { data, error } = await supabase.from("orders").select("*, profiles(full_name, email), services(name)").order("created_at", { ascending: false });
-            const tbody = document.getElementById("adminOrdersBody");
-            if (error || !data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No orders found.</td></tr>`;
-                return;
-            }
-
-            document.getElementById("statOrdersTotal").innerText = data.length;
-            document.getElementById("statOrdersPending").innerText = data.filter(o => o.status === 'pending').length;
-
-            tbody.innerHTML = data.map(o => `
+            body.innerHTML = items.map(o => `
                 <tr>
-                    <td><strong>#${o.order_number || o.id.substring(0,5)}</strong></td>
-                    <td>${(o.profiles && o.profiles.full_name) || 'User'}</td>
-                    <td>${o.services ? o.services.name : 'Custom'}</td>
-                    <td><a href="${o.target_link}" target="_blank" style="color:var(--accent-cyan); text-decoration:none;">Link</a> (${o.quantity})</td>
-                    <td style="color: var(--accent-orange); font-weight:700;">$${parseFloat(o.charge).toFixed(3)}</td>
-                    <td><span class="badge badge-${o.status}">${o.status.toUpperCase()}</span></td>
+                    <td><strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong></td>
+                    <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                    <td>${o.profiles ? o.profiles.full_name : 'User'}</td>
+                    <td>${o.services ? o.services.name : 'Service'} <br><small style="color:var(--accent-orange);">(ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : '-'})</small></td>
+                    <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan);">${o.target_link}</a></td>
+                    <td>${o.quantity}</td>
+                    <td><strong style="color: #fff;">${formatAdminPrice(o.charge)}</strong></td>
+                    <td><span class="badge badge-${o.status}">${o.status}</span></td>
                     <td>
-                        <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding: 4px; font-size: 0.72rem;">
-                            <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
-                            <option value="processing" ${o.status==='processing'?'selected':''}>Processing</option>
-                            <option value="completed" ${o.status==='completed'?'selected':''}>Completed</option>
-                            <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
+                        <select onchange="changeOrderStatus('${o.id}', this.value)" style="padding: 2px 4px; font-size: 0.75rem; width: auto;">
+                            <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                         </select>
                     </td>
                 </tr>
             `).join("");
         }
 
-        async function updateOrderStatus(id, status) {
-            await supabase.from("orders").update({ status }).eq("id", id);
-            notify(`Order status set to ${status}`, "success");
-            loadOrders();
+        function filterOrderStream(status, btn) {
+            document.querySelectorAll(".filter-tabs .tab-btn").forEach(b => b.classList.remove("active"));
+            if (btn) btn.classList.add("active");
+            if (status === 'all') renderGlobalOrders(allGlobalOrders);
+            else renderGlobalOrders(allGlobalOrders.filter(o => o.status === status));
         }
 
-        // ================= MEMBERS & BALANCE =================
-        async function loadMembers() {
-            const { data } = await supabase.from("profiles").select("*").order("balance", { ascending: false });
-            const tbody = document.getElementById("adminMembersBody");
-            if (!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No members registered yet.</td></tr>`;
+        async function changeOrderStatus(orderId, newStatus) {
+            const { error } = await supabaseClient.from("orders").update({ status: newStatus }).eq("id", orderId);
+            if (error) return notify(error.message, "error");
+            notify("Updated", "success");
+            loadAllGlobalOrders();
+        }
+
+        // 3. MEMBERS MANAGEMENT
+        async function loadAllMembers() {
+            const { data } = await supabaseClient.from("profiles").select("*").order("created_at", { ascending: false });
+            allMembers = data || [];
+            renderMembers(allMembers);
+        }
+
+        function renderMembers(list) {
+            const container = document.getElementById("membersCardContainer");
+            if (!list || list.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); text-align: center;">No members found.</p>`;
                 return;
             }
-            tbody.innerHTML = data.map(u => `
-                <tr>
-                    <td><strong>${u.full_name || 'Member'}</strong></td>
-                    <td>${u.email || '-'}</td>
-                    <td style="color:#10B981; font-weight:700;">$${parseFloat(u.balance || 0).toFixed(2)}</td>
-                    <td>
-                        <button type="button" class="btn-vip btn-sm" onclick="promptAddBalance('${u.id}', '${u.full_name || 'User'}', ${u.balance || 0})">
-                            + Add $
-                        </button>
-                    </td>
-                </tr>
-            `).join("");
-        }
 
-        async function promptAddBalance(userId, name, currentBalance) {
-            const amountStr = prompt(`Enter amount in USD to add to ${name}'s wallet:`, "5.00");
-            const amt = parseFloat(amountStr);
-            if (!amt || isNaN(amt) || amt <= 0) return;
-
-            const newBal = currentBalance + amt;
-            const { error } = await supabase.from("profiles").update({ balance: newBal }).eq("id", userId);
-            if (error) return notify("Failed: " + error.message, "error");
-
-            await supabase.from("transactions").insert({
-                user_id: userId,
-                type: 'deposit',
-                amount: amt,
-                description: `Admin manual fund credit: +$${amt.toFixed(2)}`
-            });
-
-            notify(`Added $${amt.toFixed(2)} to ${name}!`, "success");
-            loadMembers();
-        }
-
-        // ================= MANUAL DEPOSITS =================
-        async function loadDeposits() {
-            const { data } = await supabase.from("deposits").select("*, profiles(full_name, email)").order("created_at", { ascending: false });
-            const tbody = document.getElementById("adminDepositsBody");
-            if (!data || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No deposit requests.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = data.map(d => `
-                <tr>
-                    <td>${(d.profiles && d.profiles.full_name) || 'User'}</td>
-                    <td><strong>${d.payment_method}</strong></td>
-                    <td style="color:#10B981; font-weight:700;">$${parseFloat(d.amount).toFixed(2)}</td>
-                    <td>${d.transaction_id || '-'} (${d.sender_account || '-'})</td>
-                    <td><span class="badge badge-${d.status}">${d.status.toUpperCase()}</span></td>
-                    <td>
-                        ${d.status === 'pending' ? `
-                            <button class="btn-vip btn-sm btn-green" onclick="handleDepositDecision('${d.id}', '${d.user_id}', ${d.amount}, 'approved')">Approve</button>
-                            <button class="btn-vip btn-sm" style="background:#EF4444;" onclick="handleDepositDecision('${d.id}', '${d.user_id}', ${d.amount}, 'rejected')">Reject</button>
-                        ` : `<span style="font-size:0.75rem; color:var(--text-muted);">${d.status}</span>`}
-                    </td>
-                </tr>
-            `).join("");
-        }
-
-        async function handleDepositDecision(depositId, userId, amount, decision) {
-            if (!confirm(`Are you sure you want to ${decision} this deposit of $${amount}?`)) return;
-
-            await supabase.from("deposits").update({ status: decision }).eq("id", depositId);
-
-            if (decision === 'approved') {
-                const { data: userProfile } = await supabase.from("profiles").select("balance").eq("id", userId).single();
-                const updatedBalance = (parseFloat(userProfile?.balance || 0) + parseFloat(amount));
-                await supabase.from("profiles").update({ balance: updatedBalance }).eq("id", userId);
-                await supabase.from("transactions").insert({
-                    user_id: userId,
-                    type: 'deposit',
-                    amount: amount,
-                    description: `Deposit Approved: +$${parseFloat(amount).toFixed(2)}`
-                });
-            }
-
-            notify(`Deposit ${decision}!`, "success");
-            loadDeposits();
-            loadMembers();
-        }
-
-        // ================= SUPPORT CHAT =================
-        async function loadSupportChat() {
-            const { data } = await supabase.from("chat_messages").select("*, profiles(full_name)").order("created_at", { ascending: false }).limit(20);
-            const container = document.getElementById("adminChatList");
-            if (!data || data.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No messages.</p>`;
-                return;
-            }
-            container.innerHTML = data.map(m => `
-                <div style="background: var(--bg-card-sec); border-radius: 8px; padding: 10px; font-size: 0.82rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <strong style="color: var(--accent-cyan);">${(m.profiles && m.profiles.full_name) || 'User'}</strong>
-                        <span style="font-size: 0.68rem; color: var(--text-muted);">${new Date(m.created_at).toLocaleTimeString()}</span>
+            container.innerHTML = list.map(m => `
+                <div class="member-card">
+                    <div class="member-top">
+                        <img src="${m.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}">
+                        <div class="member-info">
+                            <h4>${m.full_name || 'Member'}</h4>
+                            <p>${m.email || ''}</p>
+                        </div>
                     </div>
-                    <div>${m.message}</div>
+                    <div class="member-balance-box">
+                        <span style="font-size: 0.75rem;">Balance:</span>
+                        <span style="font-weight: 700; color: #10B981; font-family:'Rajdhani'; font-size:1.1rem;">${formatAdminPrice(m.balance || 0)}</span>
+                    </div>
+                    <div class="member-actions">
+                        <button class="btn-vip btn-sec" onclick="openMemberModal('${m.id}', 'orders')">Orders</button>
+                        <button class="btn-vip btn-sec" onclick="openMemberModal('${m.id}', 'wallet')">Wallet</button>
+                    </div>
                 </div>
             `).join("");
         }
 
-        // ================= MASTER LOAD =================
-        function loadAllAdminData() {
-            loadProviders();
-            loadCategories();
-            loadOrders();
-            loadMembers();
-            loadDeposits();
-            loadSiteNotice();
-            loadSupportChat();
+        function filterMembers() {
+            const q = document.getElementById("memberSearchInput").value.toLowerCase();
+            renderMembers(allMembers.filter(m => (m.full_name && m.full_name.toLowerCase().includes(q)) || (m.email && m.email.toLowerCase().includes(q))));
         }
 
-        window.addEventListener("DOMContentLoaded", loadAllAdminData);
+        function openMemberModal(userId, tab) {
+            activeModalUserId = userId;
+            const m = allMembers.find(x => x.id === userId);
+            if (!m) return;
+            document.getElementById("modalMemberTitle").innerText = m.full_name || 'Member';
+            document.getElementById("modalAdjustBalanceInput").value = parseFloat(m.balance || 0).toFixed(4);
+            document.getElementById("memberHistoryModal").classList.add("active");
+            switchModalTab(tab);
+        }
+
+        function closeMemberModal() {
+            document.getElementById("memberHistoryModal").classList.remove("active");
+            activeModalUserId = null;
+        }
+
+        async function switchModalTab(tab) {
+            const content = document.getElementById("modalHistoryContent");
+            if (tab === 'orders') {
+                document.getElementById("btnModalOrderTab").classList.add("active");
+                document.getElementById("btnModalWalletTab").classList.remove("active");
+                const { data } = await supabaseClient.from("orders").select("*, services(name)").eq("user_id", activeModalUserId);
+                content.innerHTML = (!data || data.length === 0) ? `<p style="padding:10px; color:var(--text-muted);">No orders found</p>` : `
+                    <table><thead><tr><th>#</th><th>Service</th><th>Qty</th><th>Charge</th><th>Status</th></tr></thead>
+                    <tbody>${data.map(o => `<tr><td>#${o.order_number||o.id.substring(0,4)}</td><td>${o.services?o.services.name:''}</td><td>${o.quantity}</td><td>${formatAdminPrice(o.charge)}</td><td>${o.status}</td></tr>`).join("")}</tbody></table>`;
+            } else {
+                document.getElementById("btnModalWalletTab").classList.add("active");
+                document.getElementById("btnModalOrderTab").classList.remove("active");
+                const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", activeModalUserId);
+                content.innerHTML = (!data || data.length === 0) ? `<p style="padding:10px; color:var(--text-muted);">No transactions found</p>` : `
+                    <table><thead><tr><th>Date</th><th>Desc</th><th>Amount</th></tr></thead>
+                    <tbody>${data.map(t => `<tr><td>${new Date(t.created_at).toLocaleDateString()}</td><td>${t.description}</td><td>${formatAdminPrice(t.amount)}</td></tr>`).join("")}</tbody></table>`;
+            }
+        }
+
+        async function submitBalanceAdjustment() {
+            const newBal = parseFloat(document.getElementById("modalAdjustBalanceInput").value);
+            const { error } = await supabaseClient.from("profiles").update({ balance: newBal }).eq("id", activeModalUserId);
+            if (error) return notify(error.message, "error");
+            notify("Balance updated!", "success");
+            loadAllMembers();
+        }
+
+        // 4. SERVICES & CATEGORIES
+        async function loadAdminCategoriesAndServices() {
+            const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
+            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").order("created_at", { ascending: false });
+            
+            const sel = document.getElementById("srvAdminCategorySelect");
+            sel.innerHTML = '<option value="">Select Category</option>';
+            if (cats) cats.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+
+            const body = document.getElementById("adminServicesTableBody");
+            if (!srvs || srvs.length === 0) { body.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No services added yet.</td></tr>`; return; }
+            body.innerHTML = srvs.map(s => `
+                <tr>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${s.categories ? s.categories.name : '-'}</td>
+                    <td><span style="color:var(--accent-cyan); font-weight:600;">Manual / API</span></td>
+                    <td><span style="color:var(--accent-orange); font-weight:700;">${s.provider_service_id || '-'}</span></td>
+                    <td>${formatAdminPrice(s.rate_per_1k)}</td>
+                    <td>${s.min_quantity} - ${s.max_quantity}</td>
+                    <td><button class="btn-vip btn-sec" style="color:#ef4444; padding:3px 8px; font-size:0.75rem;" onclick="deleteService('${s.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>
+            `).join("");
+        }
+
+        async function handleCreateCategory(e) {
+            e.preventDefault();
+            const input = document.getElementById("newCatName");
+            const btn = document.getElementById("btnAddCat");
+            const name = input.value.trim();
+            if (!name) return;
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
+            const { error } = await supabaseClient.from("categories").insert([{ name: name, is_active: true }]);
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-plus"></i> Add`;
+
+            if (error) return notify("Failed: " + error.message, "error");
+
+            input.value = "";
+            notify("Category created!", "success");
+            await loadAdminCategoriesAndServices();
+        }
+
+        async function handleSaveService(e) {
+            e.preventDefault();
+            const catId = document.getElementById("srvAdminCategorySelect").value;
+            const provIdVal = document.getElementById("srvAdminProviderSelect").value;
+            if (!catId) return notify("Please select a category first", "error");
+
+            const payload = {
+                category_id: catId,
+                name: document.getElementById("srvAdminName").value.trim(),
+                provider_service_id: document.getElementById("srvAdminProviderId").value.trim(),
+                rate_per_1k: parseFloat(document.getElementById("srvAdminRate").value),
+                min_quantity: parseInt(document.getElementById("srvAdminMin").value),
+                max_quantity: parseInt(document.getElementById("srvAdminMax").value),
+                is_active: true
+            };
+            if (provIdVal) payload.provider_id = parseInt(provIdVal);
+
+            const btn = document.getElementById("btnSaveSrv");
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            const { error } = await supabaseClient.from("services").insert([payload]);
+            btn.disabled = false;
+            btn.innerText = "Save Service";
+
+            if (error) return notify("Service save failed: " + error.message, "error");
+
+            resetServiceForm();
+            notify("Service added successfully!", "success");
+            loadAdminCategoriesAndServices();
+        }
+
+        function resetServiceForm() {
+            document.getElementById("serviceAdminForm").reset();
+        }
+
+        async function deleteService(id) {
+            if (!confirm("Are you sure you want to delete this service?")) return;
+            const { error } = await supabaseClient.from("services").delete().eq("id", id);
+            if (error) return notify(error.message, "error");
+            notify("Service deleted", "success");
+            loadAdminCategoriesAndServices();
+        }
+
+        // 5. DEPOSITS VERIFICATION
+        async function loadAdminDeposits() {
+            const { data } = await supabaseClient.from("deposits").select("*, profiles(full_name)").order("created_at", { ascending: false });
+            const body = document.getElementById("adminDepositsTableBody");
+            if (!data || data.length === 0) { body.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No deposits yet.</td></tr>`; return; }
+            body.innerHTML = data.map(d => `
+                <tr>
+                    <td>${new Date(d.created_at).toLocaleDateString()}</td>
+                    <td>${d.profiles ? d.profiles.full_name : ''}</td>
+                    <td>${d.payment_method}</td>
+                    <td style="color:#10B981; font-weight:700;">${formatAdminPrice(d.amount)}</td>
+                    <td>${d.transaction_id}</td>
+                    <td>${d.sender_account}</td>
+                    <td><span class="badge badge-${d.status}">${d.status}</span></td>
+                    <td>
+                        ${d.status === 'pending' ? `<button class="btn-vip btn-green" style="padding:3px 8px; font-size:0.75rem;" onclick="approveDeposit('${d.id}')">Approve</button>` : ''}
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        async function approveDeposit(id) {
+            const { data, error } = await supabaseClient.rpc("admin_approve_deposit", { p_deposit_id: id });
+            if (error || !data.success) return notify(data ? data.message : error.message, "error");
+            notify("Deposit Approved & Balance Credited!", "success");
+            loadAdminDeposits();
+            loadAllMembers();
+        }
+
+        // 6. CUSTOMER INBOX & CHAT SYSTEM
+        async function loadChatInboxList() {
+            const { data: messages, error } = await supabaseClient
+                .from("chat_messages")
+                .select("*, profiles(full_name, email, avatar_url)")
+                .order("created_at", { ascending: false });
+
+            const container = document.getElementById("chatCustomerInboxList");
+            if (error || !messages || messages.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 25px 0;">No customer inquiries found.</p>`;
+                updateGlobalUnreadCounter(0);
+                return;
+            }
+
+            const inboxMap = new Map();
+            let totalUnreadOverall = 0;
+
+            messages.forEach(m => {
+                if (!inboxMap.has(m.user_id)) {
+                    inboxMap.set(m.user_id, {
+                        userId: m.user_id,
+                        name: m.profiles ? (m.profiles.full_name || 'Customer') : 'Customer',
+                        email: m.profiles ? m.profiles.email : '',
+                        avatar: m.profiles && m.profiles.avatar_url ? m.profiles.avatar_url : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+                        lastMessage: m.message,
+                        time: new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                        unreadCount: 0
+                    });
+                }
+
+                if (m.sender_type === 'user' && m.is_read === false) {
+                    const item = inboxMap.get(m.user_id);
+                    item.unreadCount += 1;
+                    totalUnreadOverall += 1;
+                }
+            });
+
+            updateGlobalUnreadCounter(totalUnreadOverall);
+
+            const userList = Array.from(inboxMap.values());
+            container.innerHTML = userList.map(u => `
+                <div class="inbox-item" onclick="openChatWindow('${u.userId}', '${escape(u.name)}', '${u.email}', '${u.avatar}')">
+                    <div class="inbox-user-info">
+                        <img src="${u.avatar}" class="inbox-avatar">
+                        <div class="inbox-texts">
+                            <h4>${u.name}</h4>
+                            <div class="inbox-last-msg">${u.lastMessage}</div>
+                        </div>
+                    </div>
+                    <div class="inbox-badge-wrap">
+                        <small style="font-size: 0.68rem; color: var(--text-muted);">${u.time}</small>
+                        ${u.unreadCount > 0 ? `<span class="unread-pill">${u.unreadCount}</span>` : ''}
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function updateGlobalUnreadCounter(count) {
+            const sideDot = document.getElementById("sidebarUnreadDot");
+            const bottomBadge = document.getElementById("bottomNavUnreadBadge");
+
+            if (count > 0) {
+                sideDot.innerText = count;
+                sideDot.classList.remove("hidden");
+                bottomBadge.innerText = count;
+                bottomBadge.classList.remove("hidden");
+            } else {
+                sideDot.classList.add("hidden");
+                bottomBadge.classList.add("hidden");
+            }
+        }
+
+        async function openChatWindow(userId, userName, userEmail, userAvatar) {
+            activeChatUserId = userId;
+            
+            document.getElementById("chatInboxContainer").classList.add("hidden");
+            document.getElementById("chatConversationContainer").classList.remove("hidden");
+
+            document.getElementById("activeChatUserName").innerText = unescape(userName);
+            document.getElementById("activeChatUserEmail").innerText = userEmail;
+            document.getElementById("activeChatUserAvatar").src = userAvatar;
+
+            await supabaseClient
+                .from("chat_messages")
+                .update({ is_read: true })
+                .eq("user_id", userId)
+                .eq("sender_type", "user");
+
+            loadAdminChatMessages();
+        }
+
+        function backToInbox() {
+            activeChatUserId = null;
+            document.getElementById("chatConversationContainer").classList.add("hidden");
+            document.getElementById("chatInboxContainer").classList.remove("hidden");
+            loadChatInboxList();
+        }
+
+        async function loadAdminChatMessages() {
+            if (!activeChatUserId) return;
+            const { data } = await supabaseClient
+                .from("chat_messages")
+                .select("*")
+                .eq("user_id", activeChatUserId)
+                .order("created_at", { ascending: true });
+
+            const body = document.getElementById("adminChatMessagesBody");
+            if (!data || data.length === 0) {
+                body.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 50px;">No messages in this chat.</p>`;
+                return;
+            }
+
+            body.innerHTML = data.map(m => `
+                <div class="${m.sender_type==='admin'?'bubble-admin':'bubble-user'}">
+                    ${m.message}
+                    <div style="font-size: 0.62rem; color: rgba(255,255,255,0.6); margin-top: 2px; text-align: right;">
+                        ${new Date(m.created_at).toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                </div>
+            `).join("");
+            body.scrollTop = body.scrollHeight;
+        }
+
+        async function handleAdminSendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById("adminChatInput");
+            const msg = input.value.trim();
+            if (!msg || !activeChatUserId) return;
+
+            input.value = "";
+            await supabaseClient.from("chat_messages").insert([{
+                user_id: activeChatUserId,
+                sender_type: 'admin',
+                message: msg,
+                is_read: true
+            }]);
+
+            loadAdminChatMessages();
+        }
+
+        function navigateAdmin(viewId, element) {
+            document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
+            document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
+            document.querySelectorAll(".mobile-nav-item").forEach(m => m.classList.remove("active"));
+
+            const target = document.getElementById(viewId);
+            if (target) target.classList.add("active");
+            if (element) element.classList.add("active");
+
+            if (viewId === 'chatSupportDeskView') {
+                backToInbox();
+            }
+
+            document.getElementById("adminSidebar").classList.remove("mobile-open");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleAdminSidebar() {
+            document.getElementById("adminSidebar").classList.toggle("mobile-open");
+        }
     </script>
 </body>
 </html>
