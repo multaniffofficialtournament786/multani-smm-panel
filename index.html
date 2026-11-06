@@ -486,7 +486,7 @@
                         <div class="form-group">
                             <label>Service</label>
                             <select id="orderServiceSelect" onchange="handleServiceSelect(this.value)" required>
-                                <option value="">Select Service</option>
+                                <option value="">Select Category First</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -534,17 +534,21 @@
             <div id="viewAddFunds" class="app-view">
                 <div class="vip-card">
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: #10B981;"><i class="fa-solid fa-money-bill-transfer"></i> Deposit Funds</h2>
-                    <div style="background: rgba(0,0,0,0.3); border: 1px dashed var(--accent-cyan); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
-                        <div><strong>Easypaisa / JazzCash Account:</strong></div>
-                        <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.95rem; margin-top: 3px;">03186815926 / 03017573729</div>
-                        <small style="color: var(--text-muted);">Binance Rate: 1$ = 290 PKR</small>
+                    
+                    <!-- Dynamic Account Display Box -->
+                    <div style="background: rgba(0,0,0,0.4); border: 1.5px dashed var(--accent-cyan); padding: 14px; border-radius: 10px; margin-bottom: 15px;">
+                        <div id="accountTitleDisplay" style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">Easypaisa Account:</div>
+                        <div id="accountNumberDisplay" style="color: var(--accent-cyan); font-weight: 800; font-size: 1.15rem; margin-top: 3px; letter-spacing: 0.5px;">03186815926</div>
+                        <div id="accountHolderDisplay" style="color: #10B981; font-weight: 600; font-size: 0.85rem; margin-top: 2px;">Title: Muhammad Nadeem</div>
+                        <small style="color: var(--text-muted); display: block; margin-top: 6px; font-size: 0.7rem;">Binance Rate: 1$ = 290 PKR</small>
                     </div>
+
                     <form onsubmit="handleDepositSubmit(event)">
                         <div class="form-group">
                             <label>Payment Method</label>
-                            <select id="depMethod" required>
+                            <select id="depMethod" required onchange="handlePaymentMethodChange(this.value)">
                                 <option value="Easypaisa">Easypaisa</option>
-                                <option value="JazzCash">JazzCash</option>
+                                <option value="Sadapay">Sadapay</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -631,7 +635,7 @@
 
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmiedwzabkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
         const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: {
@@ -645,8 +649,30 @@
         let currentUser = null;
         let currentUserProfile = null;
         let allServices = [];
+        let allCategories = [];
         let selectedService = null;
         let onConfirmAction = null;
+
+        // Payment Accounts Configuration
+        const PAYMENT_METHODS_DATA = {
+            Easypaisa: {
+                title: "Easypaisa Account:",
+                number: "03186815926",
+                name: "Title: Muhammad Nadeem"
+            },
+            Sadapay: {
+                title: "Sadapay Account:",
+                number: "03281926729",
+                name: "Title: Muhammad Nadeem"
+            }
+        };
+
+        function handlePaymentMethodChange(method) {
+            const data = PAYMENT_METHODS_DATA[method] || PAYMENT_METHODS_DATA.Easypaisa;
+            document.getElementById("accountTitleDisplay").innerText = data.title;
+            document.getElementById("accountNumberDisplay").innerText = data.number;
+            document.getElementById("accountHolderDisplay").innerText = data.name;
+        }
 
         const CURRENCIES = {
             PKR: { symbol: "Rs ", rate: 290.00 },
@@ -659,7 +685,7 @@
 
         function formatPrice(amountInUSD) {
             const c = CURRENCIES[activeCurrency] || CURRENCIES.PKR;
-            const converted = amountInUSD * c.rate;
+            const converted = (parseFloat(amountInUSD) || 0) * c.rate;
             return `${c.symbol}${converted.toFixed(2)}`;
         }
 
@@ -667,7 +693,8 @@
             activeCurrency = curr;
             localStorage.setItem("app_currency", curr);
             updateWalletDisplay();
-            renderServiceDropdown(document.getElementById("orderCatSelect").value);
+            const catSelect = document.getElementById("orderCatSelect");
+            renderServiceDropdown(catSelect ? catSelect.value : "");
             renderServicesPageTable();
             calculateTotalCharge();
         }
@@ -750,13 +777,14 @@
             };
         }
 
-        // AUTO-INIT FUNCTION: GUARANTEED SESSION LOCK
         async function initMultaniApp() {
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
+            
             loadSiteAnnouncement();
+            loadServicesAndCategories();
 
-            // 1. CHECK HASH FROM GOOGLE REDIRECT
+            // 1. Google Redirect Check
             const hashData = getHashParams();
             if (hashData && hashData.access_token) {
                 const jwt = parseJwtPayload(hashData.access_token);
@@ -781,11 +809,11 @@
                     }
                     
                     await postLoginSuccess(currentUser);
-                    return; // Stays on Dashboard!
+                    return;
                 }
             }
 
-            // 2. CHECK LOCAL STORAGE SESSION
+            // 2. Local Storage Session Check
             const savedStr = localStorage.getItem("multani_vip_session");
             if (savedStr) {
                 try {
@@ -800,12 +828,12 @@
                             }).catch(() => {});
                         }
                         await postLoginSuccess(currentUser);
-                        return; // Stays on Dashboard!
+                        return;
                     }
                 } catch (e) {}
             }
 
-            // 3. FALLBACK SUPABASE CHECK
+            // 3. Fallback Supabase Check
             if (supabaseClient) {
                 try {
                     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -819,7 +847,6 @@
                 } catch (e) {}
             }
 
-            // 4. SHOW LOGIN ONLY IF NO SESSION FOUND
             showAuthScreen();
         }
 
@@ -864,14 +891,11 @@
             }
         }
 
-        // GOOGLE ONE-CLICK SIGN IN
         async function handleGoogleOAuthLogin() {
             const currentCleanUrl = window.location.origin + window.location.pathname;
             const { error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
-                options: {
-                    redirectTo: currentCleanUrl
-                }
+                options: { redirectTo: currentCleanUrl }
             });
             if (error) notify("Login Error: " + error.message, "error");
         }
@@ -947,9 +971,7 @@
                         balance: 0.0000
                     });
                 } else if (resolvedAvatar) {
-                    await supabaseClient.from("profiles").update({
-                        avatar_url: resolvedAvatar
-                    }).eq("id", user.id);
+                    await supabaseClient.from("profiles").update({ avatar_url: resolvedAvatar }).eq("id", user.id);
                 }
             } catch (err) {
                 console.warn("Profile sync error:", err);
@@ -978,8 +1000,14 @@
 
             if (viewId === 'viewDashboard') document.getElementById("btnNavHome").classList.add("active");
             else if (viewId === 'viewOrder') document.getElementById("btnNavOrder").classList.add("active");
-            else if (viewId === 'viewServices') document.getElementById("btnNavServices").classList.add("active");
-            else if (viewId === 'viewOrdersList') document.getElementById("btnNavOrders").classList.add("active");
+            else if (viewId === 'viewServices') {
+                document.getElementById("btnNavServices").classList.add("active");
+                renderServicesPageTable();
+            }
+            else if (viewId === 'viewOrdersList') {
+                document.getElementById("btnNavOrders").classList.add("active");
+                loadCustomerOrders();
+            }
             else if (viewId === 'viewSupport') document.getElementById("btnNavSupport").classList.add("active");
 
             document.getElementById("sidebarDrawer").classList.remove("open");
@@ -1029,40 +1057,82 @@
             loadUserProfile();
         }
 
+        // ================= FAST & STABLE SERVICES & CATEGORIES FETCH =================
         async function loadServicesAndCategories() {
+            if (!supabaseClient) return;
             try {
-                const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
-                const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").eq("is_active", true);
+                const { data: cats } = await supabaseClient
+                    .from("categories")
+                    .select("id, name")
+                    .order("name", { ascending: true });
 
-                allServices = srvs || [];
+                const { data: srvs } = await supabaseClient
+                    .from("services")
+                    .select("id, category_id, name, rate_per_1k, min_quantity, max_quantity, is_active")
+                    .order("created_at", { ascending: false });
+
+                allCategories = cats || [];
+                allServices = (srvs || []).filter(s => s.is_active !== false);
+
                 const catSelect = document.getElementById("orderCatSelect");
                 if (catSelect) {
-                    catSelect.innerHTML = '<option value="">Select Category</option>';
-                    if (cats) cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+                    if (allCategories.length === 0) {
+                        catSelect.innerHTML = '<option value="">No Categories Available</option>';
+                    } else {
+                        catSelect.innerHTML = '<option value="">Select Category</option>' + 
+                            allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+                    }
                 }
+
+                if (catSelect && catSelect.value) {
+                    renderServiceDropdown(catSelect.value);
+                } else {
+                    renderServiceDropdown("");
+                }
+
                 renderServicesPageTable();
-            } catch (e) {}
+            } catch (e) {
+                console.error("Services load error:", e);
+                renderServicesPageTable();
+            }
         }
 
-        function handleCategoryFilter(catId) { renderServiceDropdown(catId); }
+        function handleCategoryFilter(catId) { 
+            renderServiceDropdown(catId); 
+        }
 
         function renderServiceDropdown(catId) {
             const srvSelect = document.getElementById("orderServiceSelect");
             if (!srvSelect) return;
-            srvSelect.innerHTML = '<option value="">Select Service</option>';
-            if (!catId) return;
+            
+            if (!catId) {
+                srvSelect.innerHTML = '<option value="">Select Category First</option>';
+                selectedService = null;
+                calculateTotalCharge();
+                return;
+            }
 
-            const filtered = allServices.filter(s => s.category_id === catId);
-            filtered.forEach(s => {
-                srvSelect.innerHTML += `<option value="${s.id}">${s.name} - (${formatPrice(parseFloat(s.rate_per_1k))}/1k)</option>`;
-            });
+            const filtered = allServices.filter(s => String(s.category_id) === String(catId));
+            
+            if (filtered.length === 0) {
+                srvSelect.innerHTML = '<option value="">No services in this category</option>';
+                selectedService = null;
+                calculateTotalCharge();
+                return;
+            }
+
+            srvSelect.innerHTML = '<option value="">Select Service</option>' + 
+                filtered.map(s => `<option value="${s.id}">${s.name} - (${formatPrice(parseFloat(s.rate_per_1k))}/1k)</option>`).join("");
+
+            selectedService = null;
+            calculateTotalCharge();
         }
 
         function renderServicesPageTable() {
             const body = document.getElementById("servicesListBody");
             if (!body) return;
             if (!allServices || allServices.length === 0) {
-                body.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No services available.</td></tr>`;
+                body.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 16px 0;">No services found.</td></tr>`;
                 return;
             }
             body.innerHTML = allServices.map(s => `
@@ -1075,21 +1145,25 @@
         }
 
         function handleServiceSelect(srvId) {
-            selectedService = allServices.find(s => s.id === srvId) || null;
-            if (selectedService) {
-                document.getElementById("qtyLimitHint").innerText = `Min: ${selectedService.min_quantity} | Max: ${selectedService.max_quantity}`;
+            selectedService = allServices.find(s => String(s.id) === String(srvId)) || null;
+            const hint = document.getElementById("qtyLimitHint");
+            if (selectedService && hint) {
+                hint.innerText = `Min: ${selectedService.min_quantity} | Max: ${selectedService.max_quantity}`;
+            } else if (hint) {
+                hint.innerText = "";
             }
             calculateTotalCharge();
         }
 
         function calculateTotalCharge() {
             const qty = parseInt(document.getElementById("orderQuantity").value) || 0;
+            const display = document.getElementById("orderTotalDisplay");
             if (!selectedService || qty <= 0) {
-                document.getElementById("orderTotalDisplay").innerText = formatPrice(0);
+                if (display) display.innerText = formatPrice(0);
                 return;
             }
             const chargeUSD = (qty / 1000) * parseFloat(selectedService.rate_per_1k);
-            document.getElementById("orderTotalDisplay").innerText = formatPrice(chargeUSD);
+            if (display) display.innerText = formatPrice(chargeUSD);
         }
 
         async function handlePlaceOrder(e) {
@@ -1131,9 +1205,11 @@
                 balance: parseFloat(currentUserProfile.balance) - chargeUSD
             }).eq("id", currentUser.id);
 
-            await supabaseClient.rpc("place_auto_provider_order", {
-                p_order_id: newOrderData.id
-            });
+            try {
+                await supabaseClient.rpc("place_auto_provider_order", {
+                    p_order_id: newOrderData.id
+                });
+            } catch (e) {}
 
             btn.disabled = false;
             btn.innerText = "Confirm Order";
@@ -1145,50 +1221,67 @@
             loadCustomerOrders();
         }
 
+        // ================= FAST & STABLE ORDERS FETCH =================
         async function loadCustomerOrders() {
-            if (!currentUser) return;
-            const { data } = await supabaseClient.from("orders").select("*, services(name)").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-            const orders = data || [];
-            document.getElementById("dashTotalOrders").innerText = orders.length;
-            document.getElementById("dashCompletedOrders").innerText = orders.filter(o => o.status === 'completed').length;
-            document.getElementById("dashPendingOrders").innerText = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
-            
-            const totalSpentUSD = orders.reduce((acc, curr) => acc + (curr.status !== 'cancelled' ? parseFloat(curr.charge || 0) : 0), 0);
-            document.getElementById("dashTotalSpent").innerText = formatPrice(totalSpentUSD);
+            if (!currentUser || !supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from("orders")
+                    .select("id, order_number, created_at, quantity, charge, status, service_id")
+                    .eq("user_id", currentUser.id)
+                    .order("created_at", { ascending: false });
 
-            const recentBody = document.getElementById("dashRecentOrdersBody");
-            if (orders.length === 0) {
-                recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>`;
-            } else {
-                recentBody.innerHTML = orders.slice(0, 5).map(o => `
-                    <tr>
-                        <td><strong>#${o.order_number || o.id.substring(0,4)}</strong></td>
-                        <td>${new Date(o.created_at).toLocaleDateString()}</td>
-                        <td>${o.services ? o.services.name : 'Service'}</td>
-                        <td>${o.quantity}</td>
-                        <td style="color: var(--accent-orange); font-weight:700;">${formatPrice(parseFloat(o.charge))}</td>
-                        <td><span class="badge badge-${o.status}">${o.status.toUpperCase()}</span></td>
-                    </tr>
-                `).join("");
-            }
+                const orders = data || [];
+                document.getElementById("dashTotalOrders").innerText = orders.length;
+                document.getElementById("dashCompletedOrders").innerText = orders.filter(o => o.status === 'completed').length;
+                document.getElementById("dashPendingOrders").innerText = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
+                
+                const totalSpentUSD = orders.reduce((acc, curr) => acc + (curr.status !== 'cancelled' ? parseFloat(curr.charge || 0) : 0), 0);
+                document.getElementById("dashTotalSpent").innerText = formatPrice(totalSpentUSD);
 
-            const list = document.getElementById("customerOrdersList");
-            if (orders.length === 0) {
-                list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No orders placed yet.</p>`;
-            } else {
-                list.innerHTML = orders.map(o => `
-                    <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                            <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong>
-                            <span class="badge badge-${o.status}">${o.status.toUpperCase()}</span>
-                        </div>
-                        <div style="font-size: 0.78rem;">${o.services ? o.services.name : 'Service'}</div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
-                            <span>Qty: ${o.quantity}</span>
-                            <strong style="color: #fff;">${formatPrice(parseFloat(o.charge))}</strong>
-                        </div>
-                    </div>
-                `).join("");
+                const recentBody = document.getElementById("dashRecentOrdersBody");
+                if (orders.length === 0) {
+                    recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 14px 0;">No orders yet.</td></tr>`;
+                } else {
+                    recentBody.innerHTML = orders.slice(0, 5).map(o => {
+                        const srv = allServices.find(s => String(s.id) === String(o.service_id));
+                        return `
+                            <tr>
+                                <td><strong>#${o.order_number || o.id.substring(0,4)}</strong></td>
+                                <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                                <td>${srv ? srv.name : 'Service'}</td>
+                                <td>${o.quantity}</td>
+                                <td style="color: var(--accent-orange); font-weight:700;">${formatPrice(parseFloat(o.charge))}</td>
+                                <td><span class="badge badge-${o.status}">${o.status.toUpperCase()}</span></td>
+                            </tr>
+                        `;
+                    }).join("");
+                }
+
+                const list = document.getElementById("customerOrdersList");
+                if (orders.length === 0) {
+                    list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">No orders placed yet.</p>`;
+                } else {
+                    list.innerHTML = orders.map(o => {
+                        const srv = allServices.find(s => String(s.id) === String(o.service_id));
+                        return `
+                            <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
+                                    <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong>
+                                    <span class="badge badge-${o.status}">${o.status.toUpperCase()}</span>
+                                </div>
+                                <div style="font-size: 0.78rem;">${srv ? srv.name : 'Service'}</div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
+                                    <span>Qty: ${o.quantity}</span>
+                                    <strong style="color: #fff;">${formatPrice(parseFloat(o.charge))}</strong>
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+                }
+            } catch (err) {
+                console.error("Orders load error:", err);
+                document.getElementById("customerOrdersList").innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">No orders placed yet.</p>`;
             }
         }
 
@@ -1234,38 +1327,44 @@
         }
 
         async function loadTransactions() {
-            if (!currentUser) return;
-            const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-            const container = document.getElementById("transactionsListContainer");
-            if (!data || data.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No transactions yet.</p>`;
-                return;
+            if (!currentUser || !supabaseClient) return;
+            try {
+                const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false });
+                const container = document.getElementById("transactionsListContainer");
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 15px 0;">No transactions yet.</p>`;
+                    return;
+                }
+                container.innerHTML = `
+                    <table>
+                        <thead><tr><th>Date</th><th>Type</th><th>Desc</th><th>Amount</th></tr></thead>
+                        <tbody>${data.map(t => `
+                            <tr>
+                                <td>${new Date(t.created_at).toLocaleDateString()}</td>
+                                <td><span class="badge badge-completed">${t.type}</span></td>
+                                <td>${t.description}</td>
+                                <td style="color:${t.amount<0?'var(--accent-orange)':'#10B981'}; font-weight:700;">${formatPrice(parseFloat(t.amount))}</td>
+                            </tr>
+                        `).join("")}</tbody>
+                    </table>
+                `;
+            } catch (e) {
+                document.getElementById("transactionsListContainer").innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 15px 0;">No transactions yet.</p>`;
             }
-            container.innerHTML = `
-                <table>
-                    <thead><tr><th>Date</th><th>Type</th><th>Desc</th><th>Amount</th></tr></thead>
-                    <tbody>${data.map(t => `
-                        <tr>
-                            <td>${new Date(t.created_at).toLocaleDateString()}</td>
-                            <td><span class="badge badge-completed">${t.type}</span></td>
-                            <td>${t.description}</td>
-                            <td style="color:${t.amount<0?'var(--accent-orange)':'#10B981'}; font-weight:700;">${formatPrice(parseFloat(t.amount))}</td>
-                        </tr>
-                    `).join("")}</tbody>
-                </table>
-            `;
         }
 
         async function loadCustomerChat() {
-            if (!currentUser) return;
-            const { data } = await supabaseClient.from("chat_messages").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true });
-            const body = document.getElementById("customerChatWindow");
-            if (data && data.length > 0) {
-                body.innerHTML = data.map(m => `
-                    <div class="${m.sender_type==='admin'?'bubble-admin':'bubble-user'}">${m.message}</div>
-                `).join("");
-                body.scrollTop = body.scrollHeight;
-            }
+            if (!currentUser || !supabaseClient) return;
+            try {
+                const { data } = await supabaseClient.from("chat_messages").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true });
+                const body = document.getElementById("customerChatWindow");
+                if (data && data.length > 0) {
+                    body.innerHTML = data.map(m => `
+                        <div class="${m.sender_type==='admin'?'bubble-admin':'bubble-user'}">${m.message}</div>
+                    `).join("");
+                    body.scrollTop = body.scrollHeight;
+                }
+            } catch (e) {}
         }
 
         async function handleSendCustomerChat(e) {
