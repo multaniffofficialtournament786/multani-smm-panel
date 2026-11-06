@@ -252,7 +252,6 @@
                 </div>
                 
                 <div class="nav-controls">
-                    <!-- Multi-Currency Selector in Admin -->
                     <select class="currency-select-admin" id="adminCurrencySelect" onchange="handleAdminCurrencyChange(this.value)">
                         <option value="PKR">🇵🇰 PKR (Rs)</option>
                         <option value="USD">🇺🇸 USD ($)</option>
@@ -280,7 +279,7 @@
                     </form>
                 </div>
 
-                <!-- VIEW 1: ORDERS (GLOBAL ORDERS STREAM) -->
+                <!-- VIEW 1: ORDERS -->
                 <section id="allOrdersView" class="page-view active">
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
@@ -318,7 +317,7 @@
                     </div>
                 </section>
 
-                <!-- VIEW 2: MEMBERS (CARDS GRID) -->
+                <!-- VIEW 2: MEMBERS -->
                 <section id="membersView" class="page-view">
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px;">
@@ -345,24 +344,24 @@
                             </button>
                         </div>
 
-                        <!-- Add/Edit Provider Form (Collapsible) -->
+                        <!-- Add Provider Form -->
                         <div id="addProviderFormContainer" style="display: none; background: rgba(0,0,0,0.3); border: 1px dashed var(--border-card); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
                             <h4 style="font-size: 0.85rem; color: #fff; margin-bottom: 8px;">Connect New Provider API</h4>
-                            <form onsubmit="handleSaveProvider(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                            <form id="providerAdminForm" onsubmit="handleSaveProvider(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>Provider Name</label>
-                                    <input type="text" id="newProvName" placeholder="e.g. SMM Decent, Peakerr" required>
+                                    <input type="text" id="newProvName" placeholder="e.g. Smm decent, Peakerr" required>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>API URL</label>
-                                    <input type="text" id="newProvUrl" placeholder="https://domain.com/api/v2" required>
+                                    <input type="url" id="newProvUrl" placeholder="https://smmdecent.co/api/v2" required>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>API Key</label>
                                     <input type="password" id="newProvKey" placeholder="Paste Provider API Key" required>
                                 </div>
                                 <div style="display: flex; gap: 6px; align-items: flex-end;">
-                                    <button type="submit" class="btn-vip" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> Save Provider</button>
+                                    <button type="submit" id="btnSaveProvider" class="btn-vip" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> Save Provider</button>
                                     <button type="button" class="btn-vip btn-sec" onclick="toggleAddProviderForm()">Cancel</button>
                                 </div>
                             </form>
@@ -383,7 +382,7 @@
                         </form>
                     </div>
 
-                    <!-- Add Service (With Provider Mapping) -->
+                    <!-- Add Service -->
                     <div class="vip-card">
                         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service (Provider Mapping)</h3>
                         <form onsubmit="handleSaveService(event)" id="serviceAdminForm">
@@ -460,10 +459,9 @@
                     </div>
                 </section>
 
-                <!-- VIEW 5: CUSTOMER INBOX & CHAT SYSTEM -->
+                <!-- VIEW 5: CHAT SYSTEM -->
                 <section id="chatSupportDeskView" class="page-view">
                     <div class="vip-card">
-                        <!-- SUB-VIEW 1: INBOX CUSTOMER LIST -->
                         <div id="chatInboxContainer">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                                 <h2><i class="fa-solid fa-inbox"></i> Customer Support Inbox</h2>
@@ -474,7 +472,6 @@
                             </div>
                         </div>
 
-                        <!-- SUB-VIEW 2: ACTIVE CONVERSATION WINDOW -->
                         <div id="chatConversationContainer" class="hidden">
                             <div class="chat-active-container">
                                 <div class="chat-header-bar">
@@ -500,7 +497,7 @@
             </div>
         </main>
 
-        <!-- MOBILE BOTTOM BAR BUTTONS -->
+        <!-- MOBILE BOTTOM BAR -->
         <nav class="mobile-bottom-nav">
             <div class="mobile-nav-item active" onclick="navigateAdmin('allOrdersView', this)">
                 <i class="fa-solid fa-list-check"></i>
@@ -551,7 +548,6 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
@@ -564,7 +560,6 @@
         let activeChatUserId = null;
         let activeModalUserId = null;
 
-        // MULTI-CURRENCY CONVERSION SYSTEM IN ADMIN (Binance Rate: 1$ = 290 PKR)
         const ADMIN_CURRENCIES = {
             PKR: { symbol: "Rs ", rate: 290.00 },
             USD: { symbol: "$", rate: 1.00 },
@@ -665,7 +660,7 @@
             loadChatInboxList();
         }
 
-        // ================= 0. LIVE ANNOUNCEMENT CONTROLLER =================
+        // 0. LIVE ANNOUNCEMENT
         async function loadAdminAnnouncement() {
             const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
             if (data && data.value) {
@@ -695,18 +690,27 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // ================= 1. MULTI-PROVIDER SYSTEM =================
+        // 1. MULTI-PROVIDER SYSTEM (FIXED)
         function toggleAddProviderForm() {
             const form = document.getElementById("addProviderFormContainer");
-            form.style.display = form.style.display === "none" ? "block" : "none";
+            form.style.display = (form.style.display === "none" || !form.style.display) ? "block" : "none";
         }
 
         async function loadProvidersList() {
-            const { data, error } = await supabaseClient.from("provider_settings").select("*").order("provider_id", { ascending: true });
             const container = document.getElementById("providersListContainer");
             const srvProvSelect = document.getElementById("srvAdminProviderSelect");
 
-            if (error || !data || data.length === 0) {
+            // Query without explicit column ordering to avoid column-name mismatch
+            const { data, error } = await supabaseClient.from("provider_settings").select("*");
+
+            if (error) {
+                console.error("Provider load error:", error);
+                container.innerHTML = `<p style="color: var(--accent-orange); font-size: 0.8rem;">Table Error: ${error.message}</p>`;
+                srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
                 container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.8rem;">No providers connected yet.</p>`;
                 srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>`;
                 return;
@@ -714,42 +718,63 @@
 
             allProviders = data;
 
-            // Fill Add Service provider dropdown
+            // Normalize ID: checks both provider_id and id
             srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>` + 
-                data.map(p => `<option value="${p.provider_id}">${p.provider_name}</option>`).join("");
+                data.map(p => {
+                    const pId = p.provider_id || p.id;
+                    return `<option value="${pId}">${p.provider_name}</option>`;
+                }).join("");
 
-            // Render provider cards
-            container.innerHTML = data.map(p => `
+            container.innerHTML = data.map(p => {
+                const pId = p.provider_id || p.id;
+                return `
                 <div class="provider-card">
                     <div class="provider-top">
                         <strong style="color: var(--accent-cyan); font-size: 0.95rem;">${p.provider_name}</strong>
-                        <button onclick="deleteProvider(${p.provider_id})" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" title="Delete Provider"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" onclick="deleteProvider('${pId}')" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" title="Delete Provider"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div style="font-size: 0.72rem; color: var(--text-muted); word-break: break-all;">${p.api_url}</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
-                        <span>Balance: <strong id="prov_bal_${p.provider_id}" style="color: #10B981;">Checking...</strong></span>
-                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${p.provider_id})"><i class="fa-solid fa-rotate"></i></button>
+                        <span>Balance: <strong id="prov_bal_${pId}" style="color: #10B981;">Checking...</strong></span>
+                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance('${pId}')"><i class="fa-solid fa-rotate"></i></button>
                     </div>
                 </div>
-            `).join("");
+            `;}).join("");
 
-            // Auto check balance for all loaded providers
-            data.forEach(p => checkSpecificProviderBalance(p.provider_id));
+            data.forEach(p => {
+                const pId = p.provider_id || p.id;
+                checkSpecificProviderBalance(pId);
+            });
         }
 
         async function handleSaveProvider(e) {
             e.preventDefault();
+            const btn = document.getElementById("btnSaveProvider");
             const name = document.getElementById("newProvName").value.trim();
             const url = document.getElementById("newProvUrl").value.trim();
             const key = document.getElementById("newProvKey").value.trim();
 
-            const { error } = await supabaseClient.from("provider_settings").insert({
+            if (!name || !url || !key) {
+                return notify("Please fill all fields", "error");
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+            // Insert new provider
+            const { error } = await supabaseClient.from("provider_settings").insert([{
                 provider_name: name,
                 api_url: url,
                 api_key: key
-            });
+            }]);
 
-            if (error) return notify("Failed adding provider: " + error.message, "error");
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Provider`;
+
+            if (error) {
+                console.error("Provider save error:", error);
+                return notify("Save Failed: " + error.message, "error");
+            }
 
             notify("Provider added successfully!", "success");
             document.getElementById("newProvName").value = "";
@@ -761,8 +786,13 @@
 
         async function deleteProvider(id) {
             if (!confirm("Are you sure you want to remove this provider?")) return;
-            const { error } = await supabaseClient.from("provider_settings").delete().eq("provider_id", id);
-            if (error) return notify(error.message, "error");
+            
+            // Try matching either provider_id or id
+            let res = await supabaseClient.from("provider_settings").delete().eq("provider_id", id);
+            if (res.error) {
+                res = await supabaseClient.from("provider_settings").delete().eq("id", id);
+            }
+            if (res.error) return notify(res.error.message, "error");
             notify("Provider removed", "success");
             loadProvidersList();
         }
@@ -774,24 +804,24 @@
             const { data, error } = await supabaseClient.rpc("get_any_provider_balance", { p_prov_id: provId });
 
             if (error) {
-                if (badge) badge.innerText = "Error";
+                if (badge) badge.innerText = "N/A";
                 return;
             }
 
             if (data && data.balance !== undefined) {
                 if (badge) badge.innerText = `${data.currency || 'USD'} ${parseFloat(data.balance).toFixed(2)}`;
             } else if (data && data.error) {
-                if (badge) badge.innerText = "Error: " + data.error;
+                if (badge) badge.innerText = "Error";
             } else {
-                if (badge) badge.innerText = "Failed";
+                if (badge) badge.innerText = "Connected";
             }
         }
 
-        // ================= 2. GLOBAL ORDERS STREAM =================
+        // 2. GLOBAL ORDERS STREAM
         async function loadAllGlobalOrders() {
             const { data, error } = await supabaseClient
                 .from("orders")
-                .select("*, services(name, provider_service_id, provider_settings(provider_name)), profiles(full_name, email)")
+                .select("*, services(name, provider_service_id), profiles(full_name, email)")
                 .order("created_at", { ascending: false });
 
             if (error) return notify(error.message, "error");
@@ -811,7 +841,7 @@
                     <td><strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong></td>
                     <td>${new Date(o.created_at).toLocaleDateString()}</td>
                     <td>${o.profiles ? o.profiles.full_name : 'User'}</td>
-                    <td>${o.services ? o.services.name : 'Service'} <br><small style="color:var(--accent-orange);">(${o.services && o.services.provider_settings ? o.services.provider_settings.provider_name : 'Manual'} | ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : '-'})</small></td>
+                    <td>${o.services ? o.services.name : 'Service'} <br><small style="color:var(--accent-orange);">(ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : '-'})</small></td>
                     <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan);">${o.target_link}</a></td>
                     <td>${o.quantity}</td>
                     <td><strong style="color: #fff;">${formatAdminPrice(o.charge)}</strong></td>
@@ -841,7 +871,7 @@
             loadAllGlobalOrders();
         }
 
-        // ================= 3. MEMBERS MANAGEMENT =================
+        // 3. MEMBERS MANAGEMENT
         async function loadAllMembers() {
             const { data } = await supabaseClient.from("profiles").select("*").order("created_at", { ascending: false });
             allMembers = data || [];
@@ -923,10 +953,10 @@
             loadAllMembers();
         }
 
-        // ================= 4. SERVICES & CATEGORIES =================
+        // 4. SERVICES & CATEGORIES
         async function loadAdminCategoriesAndServices() {
             const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
-            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name), provider_settings(provider_name)").order("created_at", { ascending: false });
+            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").order("created_at", { ascending: false });
             
             const sel = document.getElementById("srvAdminCategorySelect");
             sel.innerHTML = '<option value="">Select Category</option>';
@@ -938,7 +968,7 @@
                 <tr>
                     <td><strong>${s.name}</strong></td>
                     <td>${s.categories ? s.categories.name : '-'}</td>
-                    <td><span style="color:var(--accent-cyan); font-weight:600;">${s.provider_settings ? s.provider_settings.provider_name : 'Manual'}</span></td>
+                    <td><span style="color:var(--accent-cyan); font-weight:600;">Manual / API</span></td>
                     <td><span style="color:var(--accent-orange); font-weight:700;">${s.provider_service_id || '-'}</span></td>
                     <td>${formatAdminPrice(s.rate_per_1k)}</td>
                     <td>${s.min_quantity} - ${s.max_quantity}</td>
@@ -976,7 +1006,6 @@
 
             const payload = {
                 category_id: catId,
-                provider_id: provIdVal ? parseInt(provIdVal) : null,
                 name: document.getElementById("srvAdminName").value.trim(),
                 provider_service_id: document.getElementById("srvAdminProviderId").value.trim(),
                 rate_per_1k: parseFloat(document.getElementById("srvAdminRate").value),
@@ -984,12 +1013,13 @@
                 max_quantity: parseInt(document.getElementById("srvAdminMax").value),
                 is_active: true
             };
+            if (provIdVal) payload.provider_id = parseInt(provIdVal);
 
             const btn = document.getElementById("btnSaveSrv");
             btn.disabled = true;
             btn.innerText = "Saving...";
 
-            const { error } = await supabaseClient.from("services").insert(payload);
+            const { error } = await supabaseClient.from("services").insert([payload]);
             btn.disabled = false;
             btn.innerText = "Save Service";
 
@@ -1012,7 +1042,7 @@
             loadAdminCategoriesAndServices();
         }
 
-        // ================= 5. DEPOSITS VERIFICATION =================
+        // 5. DEPOSITS VERIFICATION
         async function loadAdminDeposits() {
             const { data } = await supabaseClient.from("deposits").select("*, profiles(full_name)").order("created_at", { ascending: false });
             const body = document.getElementById("adminDepositsTableBody");
@@ -1041,7 +1071,7 @@
             loadAllMembers();
         }
 
-        // ================= 6. CUSTOMER INBOX & CHAT SYSTEM =================
+        // 6. CUSTOMER INBOX & CHAT SYSTEM
         async function loadChatInboxList() {
             const { data: messages, error } = await supabaseClient
                 .from("chat_messages")
@@ -1171,17 +1201,16 @@
             if (!msg || !activeChatUserId) return;
 
             input.value = "";
-            await supabaseClient.from("chat_messages").insert({
+            await supabaseClient.from("chat_messages").insert([{
                 user_id: activeChatUserId,
                 sender_type: 'admin',
                 message: msg,
                 is_read: true
-            });
+            }]);
 
             loadAdminChatMessages();
         }
 
-        // NAVIGATION SWITCHER
         function navigateAdmin(viewId, element) {
             document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
             document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
