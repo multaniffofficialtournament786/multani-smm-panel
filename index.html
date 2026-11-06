@@ -393,7 +393,7 @@
 
     <div id="toastContainer"></div>
 
-    <!-- VIP CONFIRMATION POPUP MODAL (REPLACES BROWSER DEFAULT POPUP) -->
+    <!-- VIP CONFIRMATION POPUP MODAL -->
     <div id="vipConfirmModal" class="vip-modal-overlay">
         <div class="vip-modal-box">
             <div id="vipModalIcon" class="vip-modal-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
@@ -406,8 +406,8 @@
         </div>
     </div>
 
-    <!-- 0. LOGIN & SIGNUP SCREEN (SHOWS ONLY WHEN USER IS LOGGED OUT) -->
-    <div id="authGateContainer" class="hidden">
+    <!-- 0. LOGIN & SIGNUP SCREEN -->
+    <div id="authGateContainer">
         <div class="auth-card">
             <div style="text-align: center; margin-bottom: 16px;">
                 <i class="fa-solid fa-crown" style="font-size: 2.2rem; color: var(--accent-orange); margin-bottom: 4px;"></i>
@@ -415,7 +415,7 @@
                 <p style="font-size: 0.78rem; color: var(--text-muted);">Login or Register to access services</p>
             </div>
 
-            <!-- ONE-CLICK GOOGLE LOGIN BUTTON -->
+            <!-- GOOGLE LOGIN BUTTON -->
             <button type="button" class="btn-google-auth" onclick="handleGoogleOAuthLogin()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                 Sign in with Google
@@ -460,7 +460,7 @@
         </div>
     </div>
 
-    <!-- MAIN PANEL APPLICATION (SHOWS ONLY AFTER SUCCESSFUL LOGIN) -->
+    <!-- MAIN PANEL APPLICATION -->
     <div id="mainAppWrapper" class="hidden">
 
         <!-- 1. TOP NAVBAR -->
@@ -471,7 +471,6 @@
                     <i class="fa-solid fa-wallet"></i>
                     <span id="headerBalanceDisplay">Rs 0.00</span>
                 </div>
-                <!-- Multi-Currency Selector -->
                 <select class="currency-select" id="currencySelect" onchange="handleCurrencyChange(this.value)">
                     <option value="PKR">🇵🇰 PKR (Rs)</option>
                     <option value="USD">🇺🇸 USD ($)</option>
@@ -514,7 +513,6 @@
                 <li><a onclick="handleShareApp()"><i class="fa-solid fa-share-nodes" style="color: var(--accent-cyan);"></i> Share App</a></li>
                 <li><a onclick="switchTab('viewSupport', this)"><i class="fa-solid fa-comments"></i> Live Support</a></li>
                 <li><a onclick="switchTab('viewProfile', this)"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
-                <!-- LOGOUT BUTTON (OPENS VIP MODAL) -->
                 <li><a class="logout-btn" onclick="askCustomerLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
             </ul>
         </aside>
@@ -746,7 +744,7 @@
 
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmiedwzabkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
         let currentUser = null;
@@ -755,7 +753,6 @@
         let selectedService = null;
         let onConfirmAction = null;
 
-        // MULTI-CURRENCY CONVERSION (Binance Rate: 1$ = 290 PKR)
         const CURRENCIES = {
             PKR: { symbol: "Rs ", rate: 290.00 },
             USD: { symbol: "$", rate: 1.00 },
@@ -789,7 +786,6 @@
             setTimeout(() => toast.remove(), 3500);
         }
 
-        // VIP MODAL CONFIRMATION DIALOG (NO BROWSER POPUPS)
         function showVipModal(title, desc, iconClass, callback) {
             document.getElementById("vipModalTitle").innerText = title;
             document.getElementById("vipModalDesc").innerText = desc;
@@ -817,59 +813,74 @@
             const shareData = {
                 title: 'MULTANI SMM PANEL',
                 text: 'Join MULTANI SMM Panel for the best and fastest social media services!',
-                url: window.location.href
+                url: window.location.origin + window.location.pathname
             };
 
             if (navigator.share) {
                 navigator.share(shareData).catch(() => {});
             } else {
-                navigator.clipboard.writeText(window.location.href);
+                navigator.clipboard.writeText(window.location.origin + window.location.pathname);
                 notify("Website link copied to clipboard!", "success");
             }
             toggleSidebar();
         }
 
-        // AUTH & SESSION MANAGEMENT
-        window.addEventListener("DOMContentLoaded", async () => {
-            document.getElementById("currencySelect").value = activeCurrency;
-            await loadSiteAnnouncement();
+        function showAuthScreen() {
+            const auth = document.getElementById("authGateContainer");
+            const app = document.getElementById("mainAppWrapper");
+            if (auth) auth.classList.remove("hidden");
+            if (app) app.classList.add("hidden");
+        }
 
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session && session.user) {
-                currentUser = session.user;
-                showPanelScreen();
-                await ensureUserProfile(session.user);
-                await loadUserProfile();
-                loadCustomerOrders();
-                loadCustomerChat();
-                loadTransactions();
-                await loadServicesAndCategories();
-            } else {
+        function showPanelScreen() {
+            const auth = document.getElementById("authGateContainer");
+            const app = document.getElementById("mainAppWrapper");
+            if (auth) auth.classList.add("hidden");
+            if (app) app.classList.remove("hidden");
+        }
+
+        // INITIALIZATION & REALTIME AUTH LISTENER
+        window.addEventListener("DOMContentLoaded", async () => {
+            const currSel = document.getElementById("currencySelect");
+            if (currSel) currSel.value = activeCurrency;
+            
+            loadSiteAnnouncement();
+
+            if (!supabaseClient) {
+                notify("Supabase initialization error!", "error");
                 showAuthScreen();
+                return;
             }
 
-            // Real-time Auth State Change Listener (Useful for Google OAuth Redirect)
+            // Realtime Auth State Listener (Instant UI Switch without reload)
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 if (session && session.user) {
                     currentUser = session.user;
                     showPanelScreen();
-                    await ensureUserProfile(session.user);
-                    await loadUserProfile();
-                } else if (event === 'SIGNED_OUT') {
+                    
+                    // Background data fetch
+                    ensureUserProfile(session.user).then(() => {
+                        loadUserProfile();
+                        loadCustomerOrders();
+                        loadCustomerChat();
+                        loadTransactions();
+                        loadServicesAndCategories();
+                    });
+                } else {
+                    currentUser = null;
                     showAuthScreen();
                 }
             });
+
+            // Fallback initial check
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) {
+                currentUser = session.user;
+                showPanelScreen();
+            } else {
+                showAuthScreen();
+            }
         });
-
-        function showAuthScreen() {
-            document.getElementById("authGateContainer").classList.remove("hidden");
-            document.getElementById("mainAppWrapper").classList.add("hidden");
-        }
-
-        function showPanelScreen() {
-            document.getElementById("authGateContainer").classList.add("hidden");
-            document.getElementById("mainAppWrapper").classList.remove("hidden");
-        }
 
         function switchAuthTab(mode) {
             const tabLog = document.getElementById("tabBtnLogin");
@@ -892,10 +903,11 @@
 
         // GOOGLE OAUTH ONE-TAP SIGN-IN
         async function handleGoogleOAuthLogin() {
+            const targetRedirect = window.location.origin + window.location.pathname;
             const { error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: window.location.href.split('#')[0]
+                    redirectTo: targetRedirect
                 }
             });
             if (error) {
@@ -919,7 +931,7 @@
             if (error) return notify(error.message, "error");
 
             notify("Login successful!", "success");
-            location.reload();
+            showPanelScreen();
         }
 
         async function handleCustomerRegister(e) {
@@ -951,33 +963,36 @@
                 await ensureUserProfile(data.user, fullName);
             }
 
-            notify("Account created successfully! Logging you in...", "success");
-            location.reload();
+            notify("Account created successfully!", "success");
+            showPanelScreen();
         }
 
-        // ENSURE PROFILE EXISTS (Both for Email & Google OAuth)
+        // NON-BLOCKING PROFILE CREATION
         async function ensureUserProfile(user, fallbackName = null) {
-            const meta = user.user_metadata || {};
-            const resolvedName = fallbackName || meta.full_name || meta.name || user.email.split('@')[0];
-            const resolvedAvatar = meta.avatar_url || meta.picture || null;
+            try {
+                const meta = user.user_metadata || {};
+                const resolvedName = fallbackName || meta.full_name || meta.name || user.email.split('@')[0];
+                const resolvedAvatar = meta.avatar_url || meta.picture || null;
 
-            const { data: existing } = await supabaseClient.from("profiles").select("id").eq("id", user.id).maybeSingle();
-            if (!existing) {
-                await supabaseClient.from("profiles").insert({
-                    id: user.id,
-                    full_name: resolvedName,
-                    email: user.email,
-                    avatar_url: resolvedAvatar,
-                    balance: 0.0000
-                });
-            } else if (resolvedAvatar) {
-                await supabaseClient.from("profiles").update({
-                    avatar_url: resolvedAvatar
-                }).eq("id", user.id);
+                const { data: existing } = await supabaseClient.from("profiles").select("id").eq("id", user.id).maybeSingle();
+                if (!existing) {
+                    await supabaseClient.from("profiles").insert({
+                        id: user.id,
+                        full_name: resolvedName,
+                        email: user.email,
+                        avatar_url: resolvedAvatar,
+                        balance: 0.0000
+                    });
+                } else if (resolvedAvatar) {
+                    await supabaseClient.from("profiles").update({
+                        avatar_url: resolvedAvatar
+                    }).eq("id", user.id);
+                }
+            } catch (err) {
+                console.warn("Profile sync warning:", err);
             }
         }
 
-        // LOGOUT WITH VIP POPUP
         function askCustomerLogout() {
             toggleSidebar();
             showVipModal(
@@ -1012,18 +1027,20 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 1. LIVE NOTICE TICKER
         async function loadSiteAnnouncement() {
-            const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
-            if (data && data.value) {
-                document.getElementById("scrollingAnnouncementText").innerText = data.value;
+            try {
+                const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
+                if (data && data.value) {
+                    document.getElementById("scrollingAnnouncementText").innerText = data.value;
+                }
+            } catch (e) {
+                console.warn("Notice ticker info:", e);
             }
         }
 
-        // 2. USER PROFILE & STATS
         async function loadUserProfile() {
             if (!currentUser) return;
-            const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).single();
+            const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).maybeSingle();
             if (data) {
                 currentUserProfile = data;
                 const name = data.full_name || 'M Nadeem';
@@ -1057,7 +1074,6 @@
             loadUserProfile();
         }
 
-        // 3. SERVICES & CATEGORIES
         async function loadServicesAndCategories() {
             const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
             const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").eq("is_active", true);
@@ -1065,9 +1081,11 @@
             allServices = srvs || [];
 
             const catSelect = document.getElementById("orderCatSelect");
-            catSelect.innerHTML = '<option value="">Select Category</option>';
-            if (cats) {
-                cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+            if (catSelect) {
+                catSelect.innerHTML = '<option value="">Select Category</option>';
+                if (cats) {
+                    cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+                }
             }
             renderServicesPageTable();
         }
@@ -1078,6 +1096,7 @@
 
         function renderServiceDropdown(catId) {
             const srvSelect = document.getElementById("orderServiceSelect");
+            if (!srvSelect) return;
             srvSelect.innerHTML = '<option value="">Select Service</option>';
             if (!catId) return;
 
@@ -1089,6 +1108,7 @@
 
         function renderServicesPageTable() {
             const body = document.getElementById("servicesListBody");
+            if (!body) return;
             if (!allServices || allServices.length === 0) {
                 body.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No services available.</td></tr>`;
                 return;
@@ -1120,7 +1140,6 @@
             document.getElementById("orderTotalDisplay").innerText = formatPrice(chargeUSD);
         }
 
-        // 4. ORDER PLACEMENT WITH AUTO-FORWARDING & REFUND
         async function handlePlaceOrder(e) {
             e.preventDefault();
             if (!currentUser) return notify("Please login first!", "error");
@@ -1132,7 +1151,7 @@
             }
 
             const chargeUSD = (qty / 1000) * parseFloat(selectedService.rate_per_1k);
-            if (parseFloat(currentUserProfile.balance) < chargeUSD) {
+            if (parseFloat((currentUserProfile && currentUserProfile.balance) || 0) < chargeUSD) {
                 return notify("Insufficient wallet balance. Please deposit funds.", "error");
             }
 
@@ -1141,7 +1160,6 @@
             btn.disabled = true;
             btn.innerText = "Placing Order...";
 
-            // 1. Order insert
             const { data: newOrderData, error: orderErr } = await supabaseClient.from("orders").insert({
                 user_id: currentUser.id,
                 service_id: selectedService.id,
@@ -1157,14 +1175,12 @@
                 return notify("Order failed: " + orderErr.message, "error");
             }
 
-            // 2. Wallet balance deduct
             await supabaseClient.from("profiles").update({
                 balance: parseFloat(currentUserProfile.balance) - chargeUSD
             }).eq("id", currentUser.id);
 
             btn.innerText = "Submitting to Provider...";
 
-            // 3. Direct Server-Side Auto-Forward to Provider API
             const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc("place_auto_provider_order", {
                 p_order_id: newOrderData.id
             });
@@ -1190,7 +1206,6 @@
             loadCustomerOrders();
         }
 
-        // 5. ORDERS & DASHBOARD STATS
         async function loadCustomerOrders() {
             if (!currentUser) return;
             const { data } = await supabaseClient.from("orders").select("*, services(name)").eq("user_id", currentUser.id).order("created_at", { ascending: false });
@@ -1203,7 +1218,6 @@
             const totalSpentUSD = orders.reduce((acc, curr) => acc + (curr.status !== 'cancelled' ? parseFloat(curr.charge || 0) : 0), 0);
             document.getElementById("dashTotalSpent").innerText = formatPrice(totalSpentUSD);
 
-            // Recent Table
             const recentBody = document.getElementById("dashRecentOrdersBody");
             if (orders.length === 0) {
                 recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>`;
@@ -1220,7 +1234,6 @@
                 `).join("");
             }
 
-            // Orders list view
             const list = document.getElementById("customerOrdersList");
             if (orders.length === 0) {
                 list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">No orders placed yet.</p>`;
@@ -1241,7 +1254,6 @@
             }
         }
 
-        // 6. DEPOSITS
         function calculateDepositUSD() {
             const pkr = parseFloat(document.getElementById("depAmountPKR").value) || 0;
             const usd = (pkr / 290.00).toFixed(4);
@@ -1283,7 +1295,6 @@
             document.getElementById("depUSDHint").innerText = "";
         }
 
-        // 7. TRANSACTIONS
         async function loadTransactions() {
             if (!currentUser) return;
             const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false });
@@ -1307,7 +1318,6 @@
             `;
         }
 
-        // 8. CHAT
         async function loadCustomerChat() {
             if (!currentUser) return;
             const { data } = await supabaseClient.from("chat_messages").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true });
