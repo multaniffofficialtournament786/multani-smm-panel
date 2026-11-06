@@ -182,6 +182,17 @@
             color: #fff;
             border-left: 3px solid var(--accent-orange);
         }
+        .sidebar-menu li a.logout-btn {
+            color: #EF4444;
+            margin-top: 10px;
+            border-top: 1px dashed var(--border-card);
+            padding-top: 12px;
+        }
+        .sidebar-menu li a.logout-btn:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-left: 3px solid #EF4444;
+            color: #fff;
+        }
 
         /* Content Layout */
         .content-body { padding: 14px; max-width: 650px; width: 100%; margin: 0 auto; }
@@ -274,7 +285,7 @@
         </div>
     </div>
 
-    <!-- 3. SIDEBAR DRAWER -->
+    <!-- 3. SIDEBAR DRAWER (WITH LOGOUT OPTION) -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <aside class="sidebar" id="sidebarDrawer">
         <div class="sidebar-header">
@@ -291,6 +302,8 @@
             <li><a onclick="handleShareApp()"><i class="fa-solid fa-share-nodes" style="color: var(--accent-cyan);"></i> Share App</a></li>
             <li><a onclick="switchTab('viewSupport', this)"><i class="fa-solid fa-comments"></i> Live Support</a></li>
             <li><a onclick="switchTab('viewProfile', this)"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
+            <!-- LOGOUT BUTTON -->
+            <li><a class="logout-btn" onclick="handleCustomerLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
         </ul>
     </aside>
 
@@ -580,6 +593,16 @@
                 notify("Website link copied to clipboard!", "success");
             }
             toggleSidebar();
+        }
+
+        // LOGOUT LOGIC
+        async function handleCustomerLogout() {
+            if (!confirm("Are you sure you want to logout?")) return;
+            await supabaseClient.auth.signOut();
+            notify("Logged out successfully!", "info");
+            setTimeout(() => {
+                location.reload();
+            }, 600);
         }
 
         function switchTab(viewId, element) {
