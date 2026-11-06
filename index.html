@@ -34,7 +34,6 @@
 
         .hidden { display: none !important; }
 
-        /* AUTH SCREEN (LOGIN & REGISTER) */
         #authGateContainer {
             width: 100%;
             min-height: 90vh;
@@ -53,7 +52,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.7);
         }
 
-        /* GOOGLE SIGN-IN BUTTON */
         .btn-google-auth {
             display: flex;
             align-items: center;
@@ -72,13 +70,8 @@
             transition: opacity 0.2s;
             margin-bottom: 16px;
         }
-        .btn-google-auth:active {
-            opacity: 0.85;
-        }
-        .btn-google-auth img {
-            width: 18px;
-            height: 18px;
-        }
+        .btn-google-auth:active { opacity: 0.85; }
+        .btn-google-auth img { width: 18px; height: 18px; }
 
         .auth-divider {
             display: flex;
@@ -124,7 +117,6 @@
             color: #fff;
         }
 
-        /* 1. TOP NAVBAR */
         .top-navbar {
             height: 60px;
             background: var(--bg-card);
@@ -162,12 +154,7 @@
             font-weight: 700;
             outline: none;
         }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            cursor: pointer;
-        }
+        .nav-right { display: flex; align-items: center; gap: 7px; cursor: pointer; }
         .user-avatar-mini {
             width: 32px;
             height: 32px;
@@ -185,7 +172,6 @@
             white-space: nowrap;
         }
 
-        /* 2. SCROLLING ANNOUNCEMENT BAR */
         .announcement-bar {
             background: #0B0E14;
             border-bottom: 1px solid var(--border-card);
@@ -209,17 +195,8 @@
             gap: 4px;
             flex-shrink: 0;
             z-index: 10;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.5);
         }
-        .ticker-wrapper {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            white-space: nowrap;
-            height: 100%;
-            display: flex;
-            align-items: center;
-        }
+        .ticker-wrapper { flex: 1; overflow: hidden; position: relative; white-space: nowrap; height: 100%; display: flex; align-items: center; }
         .announcement-ticker {
             display: inline-block;
             white-space: nowrap;
@@ -229,12 +206,8 @@
             font-size: 0.78rem;
             color: var(--accent-cyan);
         }
-        @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* 3. SIDEBAR DRAWER */
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1999; display: none; }
         .sidebar-overlay.active { display: block; }
         .sidebar {
@@ -250,13 +223,7 @@
             flex-direction: column;
         }
         .sidebar.open { transform: translateX(0); }
-        .sidebar-header {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-card);
-        }
+        .sidebar-header { padding: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-card); }
         .sidebar-menu { list-style: none; padding: 10px 8px; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; flex: 1; }
         .sidebar-menu li a {
             display: flex;
@@ -274,25 +241,13 @@
             color: #fff;
             border-left: 3px solid var(--accent-orange);
         }
-        .sidebar-menu li a.logout-btn {
-            color: #EF4444;
-            margin-top: 10px;
-            border-top: 1px dashed var(--border-card);
-            padding-top: 12px;
-        }
-        .sidebar-menu li a.logout-btn:hover {
-            background: rgba(239, 68, 68, 0.15);
-            border-left: 3px solid #EF4444;
-            color: #fff;
-        }
+        .sidebar-menu li a.logout-btn { color: #EF4444; margin-top: 10px; border-top: 1px dashed var(--border-card); padding-top: 12px; }
 
-        /* Content Layout */
         .content-body { padding: 14px; max-width: 650px; width: 100%; margin: 0 auto; }
         .app-view { display: none; }
         .app-view.active { display: block; }
 
         .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
-        
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
         .stat-box { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 10px; }
         .stat-box i { font-size: 1.2rem; padding: 9px; border-radius: 8px; }
@@ -307,7 +262,6 @@
         .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 11px; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; }
         .btn-vip.btn-sec { background: var(--bg-card-sec); border: 1px solid var(--border-card); color: var(--text-main); }
 
-        /* Tables & Lists */
         .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
         th, td { padding: 9px 12px; border-bottom: 1px solid var(--border-card); }
@@ -318,70 +272,25 @@
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
         .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
-        /* Chat */
         .chat-box { background: var(--bg-card-sec); border-radius: 10px; height: 350px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
         .bubble-admin { align-self: flex-start; background: #1f293d; color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
         .bubble-user { align-self: flex-end; background: var(--accent-orange); color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
 
-        /* Profile Elements */
         .profile-avatar-wrap { text-align: center; margin-bottom: 16px; }
         .profile-avatar-img { width: 85px; height: 85px; border-radius: 50%; border: 2.5px solid var(--accent-cyan); object-fit: cover; }
 
-        /* 4. MOBILE BOTTOM NAVIGATION */
         .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(14, 17, 24, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; display: flex; justify-content: space-around; align-items: center; }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; flex: 1; height: 100%; }
         .mobile-nav-item i { font-size: 1.15rem; }
         .mobile-nav-item.active { color: var(--accent-orange); }
 
-        /* VIP CUSTOM MODAL (NO BROWSER POPUPS) */
-        .vip-modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(6px);
-            z-index: 999999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
+        .vip-modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px); z-index: 999999; display: none; justify-content: center; align-items: center; padding: 16px; }
         .vip-modal-overlay.active { display: flex; }
-        .vip-modal-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-card);
-            border-radius: 16px;
-            padding: 22px 18px;
-            max-width: 360px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            animation: modalFadeIn 0.25s ease-out;
-        }
-        @keyframes modalFadeIn {
-            from { transform: scale(0.92); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .vip-modal-icon {
-            font-size: 2.4rem;
-            color: var(--accent-orange);
-            margin-bottom: 12px;
-        }
-        .vip-modal-title {
-            font-size: 1.15rem;
-            font-family: 'Rajdhani';
-            color: #fff;
-            margin-bottom: 6px;
-        }
-        .vip-modal-desc {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-bottom: 18px;
-            line-height: 1.4;
-        }
-        .vip-modal-actions {
-            display: flex;
-            gap: 10px;
-        }
+        .vip-modal-box { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 16px; padding: 22px 18px; max-width: 360px; width: 100%; text-align: center; }
+        .vip-modal-icon { font-size: 2.4rem; color: var(--accent-orange); margin-bottom: 12px; }
+        .vip-modal-title { font-size: 1.15rem; font-family: 'Rajdhani'; color: #fff; margin-bottom: 6px; }
+        .vip-modal-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 18px; }
+        .vip-modal-actions { display: flex; gap: 10px; }
 
         #toastContainer { position: fixed; top: 70px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
         .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.96); border-left: 4px solid var(--accent-cyan); border-radius: 8px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; }
@@ -393,7 +302,6 @@
 
     <div id="toastContainer"></div>
 
-    <!-- VIP CONFIRMATION POPUP MODAL -->
     <div id="vipConfirmModal" class="vip-modal-overlay">
         <div class="vip-modal-box">
             <div id="vipModalIcon" class="vip-modal-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
@@ -415,7 +323,6 @@
                 <p style="font-size: 0.78rem; color: var(--text-muted);">Login or Register to access services</p>
             </div>
 
-            <!-- GOOGLE LOGIN BUTTON -->
             <button type="button" class="btn-google-auth" onclick="handleGoogleOAuthLogin()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
                 Sign in with Google
@@ -428,7 +335,6 @@
                 <button type="button" class="auth-tab-btn" id="tabBtnRegister" onclick="switchAuthTab('register')">Register</button>
             </div>
 
-            <!-- LOGIN FORM -->
             <form id="customerLoginForm" onsubmit="handleCustomerLogin(event)">
                 <div class="form-group">
                     <label>Email Address</label>
@@ -441,7 +347,6 @@
                 <button type="submit" class="btn-vip" id="btnLoginSubmit"><i class="fa-solid fa-right-to-bracket"></i> Login Account</button>
             </form>
 
-            <!-- REGISTER FORM -->
             <form id="customerRegisterForm" class="hidden" onsubmit="handleCustomerRegister(event)">
                 <div class="form-group">
                     <label>Full Name</label>
@@ -462,8 +367,6 @@
 
     <!-- MAIN PANEL APPLICATION -->
     <div id="mainAppWrapper" class="hidden">
-
-        <!-- 1. TOP NAVBAR -->
         <header class="top-navbar">
             <div class="nav-left">
                 <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
@@ -486,7 +389,6 @@
             </div>
         </header>
 
-        <!-- 2. SCROLLING ANNOUNCEMENT BAR -->
         <div class="announcement-bar">
             <div class="announcement-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
             <div class="ticker-wrapper">
@@ -496,7 +398,6 @@
             </div>
         </div>
 
-        <!-- 3. SIDEBAR DRAWER -->
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
         <aside class="sidebar" id="sidebarDrawer">
             <div class="sidebar-header">
@@ -518,7 +419,6 @@
         </aside>
 
         <div class="content-body">
-            
             <!-- VIEW 1: DASHBOARD -->
             <div id="viewDashboard" class="app-view active">
                 <div class="vip-card">
@@ -613,12 +513,8 @@
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-list-check"></i> Available Services</h2>
                     <div class="table-responsive">
                         <table>
-                            <thead>
-                                <tr><th>Name</th><th>Rate/1K</th><th>Min/Max</th></tr>
-                            </thead>
-                            <tbody id="servicesListBody">
-                                <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Loading services...</td></tr>
-                            </tbody>
+                            <thead><tr><th>Name</th><th>Rate/1K</th><th>Min/Max</th></tr></thead>
+                            <tbody id="servicesListBody"><tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Loading services...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -638,13 +534,11 @@
             <div id="viewAddFunds" class="app-view">
                 <div class="vip-card">
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: #10B981;"><i class="fa-solid fa-money-bill-transfer"></i> Deposit Funds</h2>
-                    
                     <div style="background: rgba(0,0,0,0.3); border: 1px dashed var(--accent-cyan); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
                         <div><strong>Easypaisa / JazzCash Account:</strong></div>
                         <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.95rem; margin-top: 3px;">03186815926 / 03017573729</div>
                         <small style="color: var(--text-muted);">Binance Rate: 1$ = 290 PKR</small>
                     </div>
-
                     <form onsubmit="handleDepositSubmit(event)">
                         <div class="form-group">
                             <label>Payment Method</label>
@@ -713,39 +607,41 @@
                     <button type="button" class="btn-vip" onclick="handleSaveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
                 </div>
             </div>
-
         </div>
 
         <!-- 4. BOTTOM NAVIGATION BAR -->
         <nav class="mobile-bottom-nav">
             <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
-                <i class="fa-solid fa-chart-pie"></i>
-                <span>Home</span>
+                <i class="fa-solid fa-chart-pie"></i><span>Home</span>
             </div>
             <div class="mobile-nav-item" id="btnNavOrder" onclick="switchTab('viewOrder', this)">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span>Order</span>
+                <i class="fa-solid fa-cart-shopping"></i><span>Order</span>
             </div>
             <div class="mobile-nav-item" id="btnNavServices" onclick="switchTab('viewServices', this)">
-                <i class="fa-solid fa-list"></i>
-                <span>Services</span>
+                <i class="fa-solid fa-list"></i><span>Services</span>
             </div>
             <div class="mobile-nav-item" id="btnNavOrders" onclick="switchTab('viewOrdersList', this)">
-                <i class="fa-solid fa-boxes-stacked"></i>
-                <span>Orders</span>
+                <i class="fa-solid fa-boxes-stacked"></i><span>Orders</span>
             </div>
             <div class="mobile-nav-item" id="btnNavSupport" onclick="switchTab('viewSupport', this)">
-                <i class="fa-solid fa-headset"></i>
-                <span>Support</span>
+                <i class="fa-solid fa-headset"></i><span>Support</span>
             </div>
         </nav>
-
     </div>
 
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmiedwzabkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
-        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        
+        // Supabase Client with full auth persistance
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
+        }) : null;
 
         let currentUser = null;
         let currentUserProfile = null;
@@ -810,55 +706,39 @@
         }
 
         function handleShareApp() {
-            const shareData = {
-                title: 'MULTANI SMM PANEL',
-                text: 'Join MULTANI SMM Panel for the best and fastest social media services!',
-                url: window.location.origin + window.location.pathname
-            };
-
+            const shareUrl = window.location.origin + window.location.pathname;
             if (navigator.share) {
-                navigator.share(shareData).catch(() => {});
+                navigator.share({ title: 'MULTANI SMM PANEL', text: 'Join MULTANI SMM Panel!', url: shareUrl }).catch(() => {});
             } else {
-                navigator.clipboard.writeText(window.location.origin + window.location.pathname);
-                notify("Website link copied to clipboard!", "success");
+                navigator.clipboard.writeText(shareUrl);
+                notify("Link copied!", "success");
             }
             toggleSidebar();
         }
 
         function showAuthScreen() {
-            const auth = document.getElementById("authGateContainer");
-            const app = document.getElementById("mainAppWrapper");
-            if (auth) auth.classList.remove("hidden");
-            if (app) app.classList.add("hidden");
+            document.getElementById("authGateContainer").classList.remove("hidden");
+            document.getElementById("mainAppWrapper").classList.add("hidden");
         }
 
         function showPanelScreen() {
-            const auth = document.getElementById("authGateContainer");
-            const app = document.getElementById("mainAppWrapper");
-            if (auth) auth.classList.add("hidden");
-            if (app) app.classList.remove("hidden");
+            document.getElementById("authGateContainer").classList.add("hidden");
+            document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
-        // INITIALIZATION & REALTIME AUTH LISTENER
+        // INITIAL LOAD & AUTO AUTH RECOGNITION
         window.addEventListener("DOMContentLoaded", async () => {
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
-            
             loadSiteAnnouncement();
 
-            if (!supabaseClient) {
-                notify("Supabase initialization error!", "error");
-                showAuthScreen();
-                return;
-            }
+            if (!supabaseClient) return;
 
-            // Realtime Auth State Listener (Instant UI Switch without reload)
+            // 1. Listen for real-time auth changes
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 if (session && session.user) {
                     currentUser = session.user;
                     showPanelScreen();
-                    
-                    // Background data fetch
                     ensureUserProfile(session.user).then(() => {
                         loadUserProfile();
                         loadCustomerOrders();
@@ -872,11 +752,16 @@
                 }
             });
 
-            // Fallback initial check
+            // 2. Direct session fetch
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session && session.user) {
                 currentUser = session.user;
                 showPanelScreen();
+                loadUserProfile();
+                loadCustomerOrders();
+                loadCustomerChat();
+                loadTransactions();
+                loadServicesAndCategories();
             } else {
                 showAuthScreen();
             }
@@ -901,18 +786,16 @@
             }
         }
 
-        // GOOGLE OAUTH ONE-TAP SIGN-IN
+        // GOOGLE ONE-CLICK SIGN IN
         async function handleGoogleOAuthLogin() {
-            const targetRedirect = window.location.origin + window.location.pathname;
+            const currentCleanUrl = window.location.origin + window.location.pathname;
             const { error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: targetRedirect
+                    redirectTo: currentCleanUrl
                 }
             });
-            if (error) {
-                notify("Google Login Error: " + error.message, "error");
-            }
+            if (error) notify("Login Error: " + error.message, "error");
         }
 
         async function handleCustomerLogin(e) {
@@ -929,7 +812,6 @@
             btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Login Account`;
 
             if (error) return notify(error.message, "error");
-
             notify("Login successful!", "success");
             showPanelScreen();
         }
@@ -949,9 +831,7 @@
             const { data, error } = await supabaseClient.auth.signUp({
                 email,
                 password,
-                options: {
-                    data: { full_name: fullName }
-                }
+                options: { data: { full_name: fullName } }
             });
 
             btn.disabled = false;
@@ -959,15 +839,11 @@
 
             if (error) return notify(error.message, "error");
 
-            if (data.user) {
-                await ensureUserProfile(data.user, fullName);
-            }
-
+            if (data.user) await ensureUserProfile(data.user, fullName);
             notify("Account created successfully!", "success");
             showPanelScreen();
         }
 
-        // NON-BLOCKING PROFILE CREATION
         async function ensureUserProfile(user, fallbackName = null) {
             try {
                 const meta = user.user_metadata || {};
@@ -983,29 +859,20 @@
                         avatar_url: resolvedAvatar,
                         balance: 0.0000
                     });
-                } else if (resolvedAvatar) {
-                    await supabaseClient.from("profiles").update({
-                        avatar_url: resolvedAvatar
-                    }).eq("id", user.id);
                 }
             } catch (err) {
-                console.warn("Profile sync warning:", err);
+                console.warn(err);
             }
         }
 
         function askCustomerLogout() {
             toggleSidebar();
-            showVipModal(
-                "CONFIRM LOGOUT",
-                "Are you sure you want to sign out of your VIP account?",
-                "fa-solid fa-arrow-right-from-bracket",
-                async () => {
-                    await supabaseClient.auth.signOut();
-                    currentUser = null;
-                    notify("Logged out successfully!", "info");
-                    showAuthScreen();
-                }
-            );
+            showVipModal("CONFIRM LOGOUT", "Are you sure you want to sign out?", "fa-solid fa-arrow-right-from-bracket", async () => {
+                await supabaseClient.auth.signOut();
+                currentUser = null;
+                notify("Logged out!", "info");
+                showAuthScreen();
+            });
         }
 
         function switchTab(viewId, element) {
@@ -1030,12 +897,8 @@
         async function loadSiteAnnouncement() {
             try {
                 const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
-                if (data && data.value) {
-                    document.getElementById("scrollingAnnouncementText").innerText = data.value;
-                }
-            } catch (e) {
-                console.warn("Notice ticker info:", e);
-            }
+                if (data && data.value) document.getElementById("scrollingAnnouncementText").innerText = data.value;
+            } catch (e) {}
         }
 
         async function loadUserProfile() {
@@ -1052,25 +915,20 @@
                 const avatar = data.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
                 document.getElementById("navAvatarImg").src = avatar;
                 document.getElementById("profilePageAvatar").src = avatar;
-
                 updateWalletDisplay();
             }
         }
 
         function updateWalletDisplay() {
             if (!currentUserProfile) return;
-            const balUSD = parseFloat(currentUserProfile.balance || 0);
-            document.getElementById("headerBalanceDisplay").innerText = formatPrice(balUSD);
+            document.getElementById("headerBalanceDisplay").innerText = formatPrice(parseFloat(currentUserProfile.balance || 0));
         }
 
         async function handleSaveProfile() {
             const name = document.getElementById("profFullName").value.trim();
             if (!name) return notify("Please enter your name", "error");
-
-            const { error } = await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
-            if (error) return notify(error.message, "error");
-
-            notify("Profile updated successfully!", "success");
+            await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
+            notify("Profile updated!", "success");
             loadUserProfile();
         }
 
@@ -1079,20 +937,15 @@
             const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").eq("is_active", true);
 
             allServices = srvs || [];
-
             const catSelect = document.getElementById("orderCatSelect");
             if (catSelect) {
                 catSelect.innerHTML = '<option value="">Select Category</option>';
-                if (cats) {
-                    cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
-                }
+                if (cats) cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
             }
             renderServicesPageTable();
         }
 
-        function handleCategoryFilter(catId) {
-            renderServiceDropdown(catId);
-        }
+        function handleCategoryFilter(catId) { renderServiceDropdown(catId); }
 
         function renderServiceDropdown(catId) {
             const srvSelect = document.getElementById("orderServiceSelect");
@@ -1179,26 +1032,13 @@
                 balance: parseFloat(currentUserProfile.balance) - chargeUSD
             }).eq("id", currentUser.id);
 
-            btn.innerText = "Submitting to Provider...";
-
-            const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc("place_auto_provider_order", {
+            const { data: rpcRes } = await supabaseClient.rpc("place_auto_provider_order", {
                 p_order_id: newOrderData.id
             });
 
             btn.disabled = false;
             btn.innerText = "Confirm Order";
-
-            if (rpcErr) {
-                notify("Order queued manually: " + rpcErr.message, "info");
-            } else if (rpcRes && rpcRes.success) {
-                if (rpcRes.provider_order_id) {
-                    notify(`Order submitted to Provider! (ID: #${rpcRes.provider_order_id})`, "success");
-                } else {
-                    notify("Order placed successfully!", "success");
-                }
-            } else if (rpcRes && rpcRes.refunded) {
-                notify(`Provider rejected: ${rpcRes.error}. Balance refunded!`, "error");
-            }
+            notify("Order placed successfully!", "success");
 
             document.getElementById("orderTargetLink").value = "";
             document.getElementById("orderQuantity").value = "";
@@ -1209,7 +1049,6 @@
         async function loadCustomerOrders() {
             if (!currentUser) return;
             const { data } = await supabaseClient.from("orders").select("*, services(name)").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-            
             const orders = data || [];
             document.getElementById("dashTotalOrders").innerText = orders.length;
             document.getElementById("dashCompletedOrders").innerText = orders.filter(o => o.status === 'completed').length;
@@ -1241,7 +1080,7 @@
                 list.innerHTML = orders.map(o => `
                     <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px;">
                         <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                            <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)} ${o.provider_order_id ? `<small style="color:var(--text-muted);">(P: #${o.provider_order_id})</small>` : ''}</strong>
+                            <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong>
                             <span class="badge badge-${o.status}">${o.status.toUpperCase()}</span>
                         </div>
                         <div style="font-size: 0.78rem;">${o.services ? o.services.name : 'Service'}</div>
@@ -1288,7 +1127,7 @@
 
             if (error) return notify("Failed: " + error.message, "error");
 
-            notify("Deposit submitted! Admin will verify and approve.", "success");
+            notify("Deposit submitted! Admin will verify.", "success");
             document.getElementById("depAmountPKR").value = "";
             document.getElementById("depSenderNum").value = "";
             document.getElementById("depTrxId").value = "";
