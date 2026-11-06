@@ -32,7 +32,7 @@
         body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; width: 100%; padding-bottom: 75px; }
         h1, h2, h3, h4, .brand-font { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* 1. TOP NAVBAR (SB SE PEHLE - MENU, BALANCE, CURRENCY, PROFILE) */
+        /* 1. TOP NAVBAR */
         .top-navbar {
             height: 60px;
             background: var(--bg-card);
@@ -93,7 +93,7 @@
             white-space: nowrap;
         }
 
-        /* 2. SCROLLING ANNOUNCEMENT BAR (HEADER K NECHE AUR OVERLAP-FREE) */
+        /* 2. SCROLLING ANNOUNCEMENT BAR */
         .announcement-bar {
             background: #0B0E14;
             border-bottom: 1px solid var(--border-card);
@@ -142,7 +142,7 @@
             100% { transform: translate(-100%, 0); }
         }
 
-        /* 3. SIDEBAR DRAWER (SHARE BUTTON RESTORED) */
+        /* 3. SIDEBAR DRAWER */
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1999; display: none; }
         .sidebar-overlay.active { display: block; }
         .sidebar {
@@ -211,7 +211,9 @@
         th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
         .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
         .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; }
+        .badge-processing { background: rgba(0, 213, 255, 0.15); color: #00D5FF; }
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+        .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
         /* Chat */
         .chat-box { background: var(--bg-card-sec); border-radius: 10px; height: 350px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
@@ -222,7 +224,7 @@
         .profile-avatar-wrap { text-align: center; margin-bottom: 16px; }
         .profile-avatar-img { width: 85px; height: 85px; border-radius: 50%; border: 2.5px solid var(--accent-cyan); object-fit: cover; }
 
-        /* 4. MOBILE BOTTOM NAVIGATION (ORIGINAL 5 BUTTONS) */
+        /* 4. MOBILE BOTTOM NAVIGATION */
         .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(14, 17, 24, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; display: flex; justify-content: space-around; align-items: center; }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; flex: 1; height: 100%; }
         .mobile-nav-item i { font-size: 1.15rem; }
@@ -238,7 +240,7 @@
 
     <div id="toastContainer"></div>
 
-    <!-- 1. TOP NAVBAR (PEHLE SHOW HOGA: 3-LINE MENU, RS/PKR BALANCE, CURRENCY, PROFILE) -->
+    <!-- 1. TOP NAVBAR -->
     <header class="top-navbar">
         <div class="nav-left">
             <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
@@ -262,7 +264,7 @@
         </div>
     </header>
 
-    <!-- 2. LIVE SCROLLING ANNOUNCEMENT BAR (TOP NAVBAR KE NECHE + OVERLAP FIXED) -->
+    <!-- 2. SCROLLING ANNOUNCEMENT BAR -->
     <div class="announcement-bar">
         <div class="announcement-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
         <div class="ticker-wrapper">
@@ -272,7 +274,7 @@
         </div>
     </div>
 
-    <!-- 3. SIDEBAR DRAWER (REFERRALS KI JAGAH DIRECT SHARE BUTTON) -->
+    <!-- 3. SIDEBAR DRAWER -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <aside class="sidebar" id="sidebarDrawer">
         <div class="sidebar-header">
@@ -286,7 +288,6 @@
             <li><a onclick="switchTab('viewOrdersList', this)"><i class="fa-solid fa-box-archive"></i> My Orders</a></li>
             <li><a onclick="switchTab('viewAddFunds', this)"><i class="fa-solid fa-wallet"></i> Add Funds</a></li>
             <li><a onclick="switchTab('viewTransactions', this)"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a></li>
-            <!-- REPLACED REFERRALS WITH SHARE -->
             <li><a onclick="handleShareApp()"><i class="fa-solid fa-share-nodes" style="color: var(--accent-cyan);"></i> Share App</a></li>
             <li><a onclick="switchTab('viewSupport', this)"><i class="fa-solid fa-comments"></i> Live Support</a></li>
             <li><a onclick="switchTab('viewProfile', this)"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
@@ -338,10 +339,10 @@
                 <div class="table-responsive">
                     <table>
                         <thead>
-                            <tr><th>Order #</th><th>Date</th><th>Service</th><th>Qty</th><th>Charge</th></tr>
+                            <tr><th>Order #</th><th>Date</th><th>Service</th><th>Qty</th><th>Charge</th><th>Status</th></tr>
                         </thead>
                         <tbody id="dashRecentOrdersBody">
-                            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>
+                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -492,7 +493,7 @@
 
     </div>
 
-    <!-- 4. BOTTOM NAVIGATION BAR (ORIGINAL 5 BUTTONS) -->
+    <!-- 4. BOTTOM NAVIGATION BAR -->
     <nav class="mobile-bottom-nav">
         <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
             <i class="fa-solid fa-chart-pie"></i>
@@ -565,7 +566,6 @@
             document.getElementById("sidebarOverlay").classList.toggle("active");
         }
 
-        // SHARE APP FUNCTION (NATIVE MOBILE SHARE & CLIPBOARD FALLBACK)
         function handleShareApp() {
             const shareData = {
                 title: 'MULTANI SMM PANEL',
@@ -590,7 +590,6 @@
             const target = document.getElementById(viewId);
             if (target) target.classList.add("active");
 
-            // Sync Bottom Bar Active Class
             if (viewId === 'viewDashboard') document.getElementById("btnNavHome").classList.add("active");
             else if (viewId === 'viewOrder') document.getElementById("btnNavOrder").classList.add("active");
             else if (viewId === 'viewServices') document.getElementById("btnNavServices").classList.add("active");
@@ -724,7 +723,7 @@
             document.getElementById("orderTotalDisplay").innerText = formatPrice(chargeUSD);
         }
 
-        // 4. ORDER PLACEMENT
+        // 4. ORDER PLACEMENT (WITH AUTOMATIC PROVIDER SUBMISSION & AUTO-REFUND)
         async function handlePlaceOrder(e) {
             e.preventDefault();
             if (!currentUser) return notify("Please login first!", "error");
@@ -743,28 +742,51 @@
             const link = document.getElementById("orderTargetLink").value.trim();
             const btn = document.getElementById("btnPlaceOrder");
             btn.disabled = true;
-            btn.innerText = "Processing...";
+            btn.innerText = "Placing Order...";
 
-            const { data, error } = await supabaseClient.from("orders").insert({
+            // 1. Order insert karein
+            const { data: newOrderData, error: orderErr } = await supabaseClient.from("orders").insert({
                 user_id: currentUser.id,
                 service_id: selectedService.id,
                 target_link: link,
                 quantity: qty,
                 charge: chargeUSD,
                 status: 'pending'
-            }).select();
+            }).select().single();
 
-            btn.disabled = false;
-            btn.innerText = "Confirm Order";
+            if (orderErr) {
+                btn.disabled = false;
+                btn.innerText = "Confirm Order";
+                return notify("Order failed: " + orderErr.message, "error");
+            }
 
-            if (error) return notify("Order failed: " + error.message, "error");
-
-            // Deduct balance
+            // 2. Balance deduct karein
             await supabaseClient.from("profiles").update({
                 balance: parseFloat(currentUserProfile.balance) - chargeUSD
             }).eq("id", currentUser.id);
 
-            notify("Order placed successfully!", "success");
+            btn.innerText = "Submitting to Provider...";
+
+            // 3. Direct Server-Side Auto-Forward to Provider API
+            const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc("place_auto_provider_order", {
+                p_order_id: newOrderData.id
+            });
+
+            btn.disabled = false;
+            btn.innerText = "Confirm Order";
+
+            if (rpcErr) {
+                notify("Order placed (Manual queue): " + rpcErr.message, "info");
+            } else if (rpcRes && rpcRes.success) {
+                if (rpcRes.provider_order_id) {
+                    notify(`Order sent to Provider! (ID: #${rpcRes.provider_order_id})`, "success");
+                } else {
+                    notify("Order placed successfully!", "success");
+                }
+            } else if (rpcRes && rpcRes.refunded) {
+                notify(`Provider rejected: ${rpcRes.error}. Balance refunded!`, "error");
+            }
+
             document.getElementById("orderTargetLink").value = "";
             document.getElementById("orderQuantity").value = "";
             loadUserProfile();
@@ -779,15 +801,15 @@
             const orders = data || [];
             document.getElementById("dashTotalOrders").innerText = orders.length;
             document.getElementById("dashCompletedOrders").innerText = orders.filter(o => o.status === 'completed').length;
-            document.getElementById("dashPendingOrders").innerText = orders.filter(o => o.status === 'pending').length;
+            document.getElementById("dashPendingOrders").innerText = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
             
-            const totalSpentUSD = orders.reduce((acc, curr) => acc + parseFloat(curr.charge || 0), 0);
+            const totalSpentUSD = orders.reduce((acc, curr) => acc + (curr.status !== 'cancelled' ? parseFloat(curr.charge || 0) : 0), 0);
             document.getElementById("dashTotalSpent").innerText = formatPrice(totalSpentUSD);
 
             // Recent Table
             const recentBody = document.getElementById("dashRecentOrdersBody");
             if (orders.length === 0) {
-                recentBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>`;
+                recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>`;
             } else {
                 recentBody.innerHTML = orders.slice(0, 5).map(o => `
                     <tr>
@@ -796,6 +818,7 @@
                         <td>${o.services ? o.services.name : 'Service'}</td>
                         <td>${o.quantity}</td>
                         <td style="color: var(--accent-orange); font-weight:700;">${formatPrice(parseFloat(o.charge))}</td>
+                        <td><span class="badge badge-${o.status}">${o.status.toUpperCase()}</span></td>
                     </tr>
                 `).join("");
             }
@@ -808,8 +831,8 @@
                 list.innerHTML = orders.map(o => `
                     <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px;">
                         <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                            <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong>
-                            <span class="badge ${o.status==='completed'?'badge-completed':'badge-pending'}">${o.status.toUpperCase()}</span>
+                            <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)} ${o.provider_order_id ? `<small style="color:var(--text-muted);">(P: #${o.provider_order_id})</small>` : ''}</strong>
+                            <span class="badge badge-${o.status}">${o.status.toUpperCase()}</span>
                         </div>
                         <div style="font-size: 0.78rem;">${o.services ? o.services.name : 'Service'}</div>
                         <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
