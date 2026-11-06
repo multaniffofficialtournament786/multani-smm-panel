@@ -549,8 +549,9 @@
     </div>
 
     <script>
+        // Supabase Configuration with Exact Anon Key
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmiedwzabkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
         let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: {
@@ -697,7 +698,7 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // 1. MULTI-PROVIDER SYSTEM (EXACT MATCH FOR provider_settings TABLE)
+        // 1. MULTI-PROVIDER SYSTEM
         function toggleAddProviderForm() {
             const form = document.getElementById("addProviderFormContainer");
             form.style.display = (form.style.display === "none" || !form.style.display) ? "block" : "none";
@@ -728,26 +729,21 @@
             allProviders = data;
 
             srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>` + 
-                data.map(p => {
-                    const pKeyId = p.id;
-                    return `<option value="${pKeyId}">${p.provider_name}</option>`;
-                }).join("");
+                data.map(p => `<option value="${p.id}">${p.provider_name}</option>`).join("");
 
-            container.innerHTML = data.map(p => {
-                const pKeyId = p.id;
-                return `
+            container.innerHTML = data.map(p => `
                 <div class="provider-card">
                     <div class="provider-top">
                         <strong style="color: var(--accent-cyan); font-size: 0.95rem;">${p.provider_name}</strong>
-                        <button type="button" onclick="deleteProvider(${pKeyId})" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" title="Delete Provider"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" onclick="deleteProvider(${p.id})" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" title="Delete Provider"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div style="font-size: 0.72rem; color: var(--text-muted); word-break: break-all;">${p.api_url}</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
-                        <span>Balance: <strong id="prov_bal_${pKeyId}" style="color: #10B981;">Checking...</strong></span>
-                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${pKeyId})"><i class="fa-solid fa-rotate"></i></button>
+                        <span>Balance: <strong id="prov_bal_${p.id}" style="color: #10B981;">Checking...</strong></span>
+                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${p.id})"><i class="fa-solid fa-rotate"></i></button>
                     </div>
                 </div>
-            `;}).join("");
+            `).join("");
 
             data.forEach(p => {
                 checkSpecificProviderBalance(p.id);
@@ -769,6 +765,7 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
 
             try {
+                // Table schema match ke sath safe insert
                 const { data, error } = await supabaseClient
                     .from("provider_settings")
                     .insert([{
