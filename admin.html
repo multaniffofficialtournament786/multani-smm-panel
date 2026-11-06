@@ -65,7 +65,7 @@
 
         .main-content { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 75px; width: 100%; overflow-x: hidden; }
         
-        /* TOP NAVBAR WITH CURRENCY SELECTOR */
+        /* TOP NAVBAR */
         .top-navbar { height: 56px; background: var(--bg-card); border-bottom: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 90; }
         .nav-controls { display: flex; align-items: center; gap: 8px; }
         .currency-select-admin {
@@ -126,21 +126,8 @@
             border-color: var(--accent-cyan);
             background: rgba(0, 213, 255, 0.05);
         }
-        .inbox-user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-            overflow: hidden;
-        }
-        .inbox-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 1.5px solid var(--accent-orange);
-            object-fit: cover;
-            flex-shrink: 0;
-        }
+        .inbox-user-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
+        .inbox-avatar { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--accent-orange); object-fit: cover; flex-shrink: 0; }
         .inbox-texts { flex: 1; overflow: hidden; }
         .inbox-texts h4 { font-size: 0.95rem; color: #fff; margin-bottom: 2px; }
         .inbox-last-msg { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
@@ -684,7 +671,7 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // ================= 1. SMM DECENT PROVIDER SETTINGS & BALANCE =================
+        // ================= 1. SMM DECENT PROVIDER SETTINGS & BALANCE (CORS FIXED) =================
         async function loadProviderApiSettings() {
             const { data } = await supabaseClient.from("provider_settings").select("*").eq("id", 1).maybeSingle();
             if (data) {
@@ -725,16 +712,25 @@
                 formData.append("key", prov.api_key);
                 formData.append("action", "balance");
 
-                const res = await fetch(prov.api_url, {
+                // CORS bypass proxy taake browser request block na kare
+                const targetUrl = `https://corsproxy.io/?${encodeURIComponent(prov.api_url)}`;
+
+                const res = await fetch(targetUrl, {
                     method: "POST",
-                    body: formData
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: formData.toString()
                 });
+                
                 const result = await res.json();
 
                 if (result.balance !== undefined) {
                     disp.innerText = `${result.currency || 'PKR'} ${parseFloat(result.balance).toFixed(2)}`;
                 } else if (result.error) {
                     disp.innerText = "Error: " + result.error;
+                } else {
+                    disp.innerText = "Invalid Response";
                 }
             } catch (err) {
                 disp.innerText = "Fetch Error (Check Key)";
@@ -992,7 +988,7 @@
             loadAllMembers();
         }
 
-        // ================= 6. CUSTOMER INBOX & CHAT SYSTEM (WHATSAPP STYLE) =================
+        // ================= 6. CUSTOMER INBOX & CHAT SYSTEM =================
         async function loadChatInboxList() {
             const { data: messages, error } = await supabaseClient
                 .from("chat_messages")
