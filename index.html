@@ -535,7 +535,6 @@
                 <div class="vip-card">
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: #10B981;"><i class="fa-solid fa-money-bill-transfer"></i> Deposit Funds</h2>
                     
-                    <!-- Dynamic Account Display Box -->
                     <div style="background: rgba(0,0,0,0.4); border: 1.5px dashed var(--accent-cyan); padding: 14px; border-radius: 10px; margin-bottom: 15px;">
                         <div id="accountTitleDisplay" style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">Easypaisa Account:</div>
                         <div id="accountNumberDisplay" style="color: var(--accent-cyan); font-weight: 800; font-size: 1.15rem; margin-top: 3px; letter-spacing: 0.5px;">03186815926</div>
@@ -613,7 +612,6 @@
             </div>
         </div>
 
-        <!-- 4. BOTTOM NAVIGATION BAR -->
         <nav class="mobile-bottom-nav">
             <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
                 <i class="fa-solid fa-chart-pie"></i><span>Home</span>
@@ -653,7 +651,6 @@
         let selectedService = null;
         let onConfirmAction = null;
 
-        // Payment Accounts Configuration
         const PAYMENT_METHODS_DATA = {
             Easypaisa: {
                 title: "Easypaisa Account:",
@@ -784,7 +781,6 @@
             loadSiteAnnouncement();
             loadServicesAndCategories();
 
-            // 1. Google Redirect Check
             const hashData = getHashParams();
             if (hashData && hashData.access_token) {
                 const jwt = parseJwtPayload(hashData.access_token);
@@ -813,7 +809,6 @@
                 }
             }
 
-            // 2. Local Storage Session Check
             const savedStr = localStorage.getItem("multani_vip_session");
             if (savedStr) {
                 try {
@@ -833,7 +828,6 @@
                 } catch (e) {}
             }
 
-            // 3. Fallback Supabase Check
             if (supabaseClient) {
                 try {
                     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -1057,7 +1051,7 @@
             loadUserProfile();
         }
 
-        // ================= FAST & STABLE SERVICES & CATEGORIES FETCH =================
+        // ================= FAST SERVICES & CATEGORIES FETCH =================
         async function loadServicesAndCategories() {
             if (!supabaseClient) return;
             try {
@@ -1221,7 +1215,7 @@
             loadCustomerOrders();
         }
 
-        // ================= FAST & STABLE ORDERS FETCH =================
+        // ================= FAST ORDERS FETCH =================
         async function loadCustomerOrders() {
             if (!currentUser || !supabaseClient) return;
             try {
@@ -1291,39 +1285,51 @@
             document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
         }
 
+        // ================= SECURE DEPOSIT SUBMIT WITH INSTANT RESET =================
         async function handleDepositSubmit(e) {
             e.preventDefault();
+            const btn = document.getElementById("btnDepositSubmit");
+
             if (!currentUser) return notify("Please login first!", "error");
 
             const pkr = parseFloat(document.getElementById("depAmountPKR").value);
-            const usd = pkr / 290.00;
+            if (isNaN(pkr) || pkr <= 0) return notify("Please enter valid amount", "error");
+
+            const usd = parseFloat((pkr / 290.00).toFixed(4));
             const method = document.getElementById("depMethod").value;
             const sender = document.getElementById("depSenderNum").value.trim();
             const trx = document.getElementById("depTrxId").value.trim();
 
-            const btn = document.getElementById("btnDepositSubmit");
             btn.disabled = true;
             btn.innerText = "Submitting...";
 
-            const { error } = await supabaseClient.from("deposits").insert({
-                user_id: currentUser.id,
-                amount: usd,
-                payment_method: method,
-                sender_account: sender,
-                transaction_id: trx,
-                status: 'pending'
-            });
+            try {
+                const { data, error } = await supabaseClient.from("deposits").insert([{
+                    user_id: currentUser.id,
+                    amount: usd,
+                    payment_method: method,
+                    sender_account: sender,
+                    transaction_id: trx,
+                    status: 'pending'
+                }]).select();
 
-            btn.disabled = false;
-            btn.innerText = "Submit Deposit Request";
-
-            if (error) return notify("Failed: " + error.message, "error");
-
-            notify("Deposit submitted! Admin will verify.", "success");
-            document.getElementById("depAmountPKR").value = "";
-            document.getElementById("depSenderNum").value = "";
-            document.getElementById("depTrxId").value = "";
-            document.getElementById("depUSDHint").innerText = "";
+                if (error) {
+                    console.error("Deposit insert error:", error);
+                    notify("Failed: " + error.message, "error");
+                } else {
+                    notify("Deposit submitted successfully! Admin will verify.", "success");
+                    document.getElementById("depAmountPKR").value = "";
+                    document.getElementById("depSenderNum").value = "";
+                    document.getElementById("depTrxId").value = "";
+                    document.getElementById("depUSDHint").innerText = "";
+                }
+            } catch (err) {
+                console.error("Catch submit error:", err);
+                notify("Error: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Submit Deposit Request";
+            }
         }
 
         async function loadTransactions() {
