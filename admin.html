@@ -671,7 +671,7 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // ================= 1. SMM DECENT PROVIDER SETTINGS & BALANCE (CORS FIXED) =================
+        // ================= 1. SMM DECENT PROVIDER SETTINGS & BALANCE (FAILSAFE PROXY) =================
         async function loadProviderApiSettings() {
             const { data } = await supabaseClient.from("provider_settings").select("*").eq("id", 1).maybeSingle();
             if (data) {
@@ -712,17 +712,28 @@
                 formData.append("key", prov.api_key);
                 formData.append("action", "balance");
 
-                // CORS bypass proxy taake browser request block na kare
-                const targetUrl = `https://corsproxy.io/?${encodeURIComponent(prov.api_url)}`;
+                // Multi-Proxy Fetch (Bypasses legacy keyless block)
+                let res = null;
+                try {
+                    res = await fetch(`https://api.cors.lol/?url=${encodeURIComponent(prov.api_url)}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: formData.toString()
+                    });
+                } catch(e) { res = null; }
 
-                const res = await fetch(targetUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: formData.toString()
-                });
-                
+                if (!res || !res.ok) {
+                    try {
+                        res = await fetch(`https://thingproxy.freeboard.io/fetch/${prov.api_url}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                            body: formData.toString()
+                        });
+                    } catch(e) { res = null; }
+                }
+
+                if (!res) throw new Error("Connection failed");
+
                 const result = await res.json();
 
                 if (result.balance !== undefined) {
