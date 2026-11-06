@@ -98,6 +98,11 @@
         .member-balance-box { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; border: 1px dashed var(--border-card); }
         .member-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 
+        /* Provider Cards */
+        .providers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 10px; }
+        .provider-card { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .provider-top { display: flex; justify-content: space-between; align-items: center; }
+
         /* Tables */
         .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
@@ -231,7 +236,7 @@
             <ul class="sidebar-menu">
                 <li><a class="active" onclick="navigateAdmin('allOrdersView', this)"><i class="fa-solid fa-list-check"></i> Orders</a></li>
                 <li><a onclick="navigateAdmin('membersView', this)"><i class="fa-solid fa-users-gear"></i> Members</a></li>
-                <li><a onclick="navigateAdmin('servicesManageView', this)"><i class="fa-solid fa-cubes"></i> Services & Provider</a></li>
+                <li><a onclick="navigateAdmin('servicesManageView', this)"><i class="fa-solid fa-cubes"></i> Services & Providers</a></li>
                 <li><a onclick="navigateAdmin('depositsManageView', this)"><i class="fa-solid fa-money-bill-transfer"></i> Deposits</a></li>
                 <li><a onclick="navigateAdmin('chatSupportDeskView', this)"><i class="fa-solid fa-headset"></i> Live Chat <span id="sidebarUnreadDot" class="unread-pill hidden" style="margin-left: auto;">0</span></a></li>
                 <li style="margin-top: auto;"><a onclick="triggerAdminLogout()" style="color: var(--accent-orange);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
@@ -326,35 +331,47 @@
                     </div>
                 </section>
 
-                <!-- VIEW 3: SERVICES & SMM DECENT PROVIDER SETTINGS -->
+                <!-- VIEW 3: SERVICES & MULTI-PROVIDER SETTINGS -->
                 <section id="servicesManageView" class="page-view">
                     
-                    <!-- SMM DECENT API SETTINGS BOX -->
+                    <!-- MULTI-PROVIDER MANAGEMENT BOX -->
                     <div class="vip-card" style="margin-bottom: 15px; border-left: 4px solid var(--accent-cyan);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
                             <h3 style="font-size: 1rem; color: var(--accent-cyan);">
-                                <i class="fa-solid fa-server"></i> SMM Decent Provider API
+                                <i class="fa-solid fa-server"></i> API Providers (SMM Resellers)
                             </h3>
-                            <div style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 6px; font-size: 0.8rem;">
-                                <span>Balance: </span>
-                                <strong id="providerBalanceDisplay" style="color: #10B981;">Checking...</strong>
-                            </div>
+                            <button type="button" class="btn-vip btn-sec" style="font-size: 0.75rem; padding: 4px 8px;" onclick="toggleAddProviderForm()">
+                                <i class="fa-solid fa-plus"></i> Add New Provider
+                            </button>
                         </div>
-                        
-                        <form onsubmit="handleSaveProviderApi(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>API URL</label>
-                                <input type="text" id="provApiUrlInput" value="https://smmdecent.co/api/v2" required>
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label>API Key (SMM Decent)</label>
-                                <input type="password" id="provApiKeyInput" placeholder="Paste your API key here" required>
-                            </div>
-                            <div style="display: flex; gap: 8px; align-items: flex-end;">
-                                <button type="submit" class="btn-vip" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> Save Key</button>
-                                <button type="button" class="btn-vip btn-sec" onclick="checkProviderBalance()"><i class="fa-solid fa-rotate"></i> Check Balance</button>
-                            </div>
-                        </form>
+
+                        <!-- Add/Edit Provider Form (Collapsible) -->
+                        <div id="addProviderFormContainer" style="display: none; background: rgba(0,0,0,0.3); border: 1px dashed var(--border-card); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                            <h4 style="font-size: 0.85rem; color: #fff; margin-bottom: 8px;">Connect New Provider API</h4>
+                            <form onsubmit="handleSaveProvider(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>Provider Name</label>
+                                    <input type="text" id="newProvName" placeholder="e.g. SMM Decent, Peakerr" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>API URL</label>
+                                    <input type="text" id="newProvUrl" placeholder="https://domain.com/api/v2" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <label>API Key</label>
+                                    <input type="password" id="newProvKey" placeholder="Paste Provider API Key" required>
+                                </div>
+                                <div style="display: flex; gap: 6px; align-items: flex-end;">
+                                    <button type="submit" class="btn-vip" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> Save Provider</button>
+                                    <button type="button" class="btn-vip btn-sec" onclick="toggleAddProviderForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Providers List Grid -->
+                        <div class="providers-grid" id="providersListContainer">
+                            <p style="color: var(--text-muted); font-size: 0.8rem;">Loading providers...</p>
+                        </div>
                     </div>
 
                     <!-- Add Category -->
@@ -366,7 +383,7 @@
                         </form>
                     </div>
 
-                    <!-- Add Service -->
+                    <!-- Add Service (With Provider Mapping) -->
                     <div class="vip-card">
                         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service (Provider Mapping)</h3>
                         <form onsubmit="handleSaveService(event)" id="serviceAdminForm">
@@ -376,6 +393,12 @@
                                     <label>Category</label>
                                     <select id="srvAdminCategorySelect" required>
                                         <option value="">Select Category</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Provider</label>
+                                    <select id="srvAdminProviderSelect">
+                                        <option value="">Manual (No API)</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -411,7 +434,7 @@
                         <div class="table-responsive">
                             <table>
                                 <thead>
-                                    <tr><th>Name</th><th>Category</th><th>Prov ID</th><th>Rate/1K</th><th>Min/Max</th><th>Actions</th></tr>
+                                    <tr><th>Name</th><th>Category</th><th>Provider</th><th>Prov ID</th><th>Rate/1K</th><th>Min/Max</th><th>Actions</th></tr>
                                 </thead>
                                 <tbody id="adminServicesTableBody"></tbody>
                             </table>
@@ -537,6 +560,7 @@
         let currentAdminUser = null;
         let allGlobalOrders = [];
         let allMembers = [];
+        let allProviders = [];
         let activeChatUserId = null;
         let activeModalUserId = null;
 
@@ -633,7 +657,7 @@
             document.getElementById("adminAuthContainer").classList.add("hidden");
             document.getElementById("adminAppContainer").classList.remove("hidden");
             loadAdminAnnouncement();
-            loadProviderApiSettings();
+            loadProvidersList();
             loadAllGlobalOrders();
             loadAllMembers();
             loadAdminCategoriesAndServices();
@@ -671,50 +695,95 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // ================= 1. SMM DECENT PROVIDER SETTINGS & BALANCE (DIRECT SUPABASE RPC) =================
-        async function loadProviderApiSettings() {
-            const { data } = await supabaseClient.from("provider_settings").select("*").eq("id", 1).maybeSingle();
-            if (data) {
-                if (data.api_url) document.getElementById("provApiUrlInput").value = data.api_url;
-                if (data.api_key) {
-                    document.getElementById("provApiKeyInput").value = data.api_key;
-                    checkProviderBalance();
-                }
+        // ================= 1. MULTI-PROVIDER SYSTEM =================
+        function toggleAddProviderForm() {
+            const form = document.getElementById("addProviderFormContainer");
+            form.style.display = form.style.display === "none" ? "block" : "none";
+        }
+
+        async function loadProvidersList() {
+            const { data, error } = await supabaseClient.from("provider_settings").select("*").order("provider_id", { ascending: true });
+            const container = document.getElementById("providersListContainer");
+            const srvProvSelect = document.getElementById("srvAdminProviderSelect");
+
+            if (error || !data || data.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.8rem;">No providers connected yet.</p>`;
+                srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>`;
+                return;
             }
+
+            allProviders = data;
+
+            // Fill Add Service provider dropdown
+            srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>` + 
+                data.map(p => `<option value="${p.provider_id}">${p.provider_name}</option>`).join("");
+
+            // Render provider cards
+            container.innerHTML = data.map(p => `
+                <div class="provider-card">
+                    <div class="provider-top">
+                        <strong style="color: var(--accent-cyan); font-size: 0.95rem;">${p.provider_name}</strong>
+                        <button onclick="deleteProvider(${p.provider_id})" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" title="Delete Provider"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); word-break: break-all;">${p.api_url}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
+                        <span>Balance: <strong id="prov_bal_${p.provider_id}" style="color: #10B981;">Checking...</strong></span>
+                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${p.provider_id})"><i class="fa-solid fa-rotate"></i></button>
+                    </div>
+                </div>
+            `).join("");
+
+            // Auto check balance for all loaded providers
+            data.forEach(p => checkSpecificProviderBalance(p.provider_id));
         }
 
-        async function handleSaveProviderApi(e) {
+        async function handleSaveProvider(e) {
             e.preventDefault();
-            const url = document.getElementById("provApiUrlInput").value.trim();
-            const key = document.getElementById("provApiKeyInput").value.trim();
+            const name = document.getElementById("newProvName").value.trim();
+            const url = document.getElementById("newProvUrl").value.trim();
+            const key = document.getElementById("newProvKey").value.trim();
 
-            const { error } = await supabaseClient
-                .from("provider_settings")
-                .upsert({ id: 1, api_url: url, api_key: key, updated_at: new Date() });
+            const { error } = await supabaseClient.from("provider_settings").insert({
+                provider_name: name,
+                api_url: url,
+                api_key: key
+            });
 
-            if (error) return notify("Failed saving API: " + error.message, "error");
-            notify("API Key saved securely!", "success");
-            checkProviderBalance();
+            if (error) return notify("Failed adding provider: " + error.message, "error");
+
+            notify("Provider added successfully!", "success");
+            document.getElementById("newProvName").value = "";
+            document.getElementById("newProvUrl").value = "";
+            document.getElementById("newProvKey").value = "";
+            toggleAddProviderForm();
+            loadProvidersList();
         }
 
-        async function checkProviderBalance() {
-            const disp = document.getElementById("providerBalanceDisplay");
-            disp.innerText = "Checking...";
+        async function deleteProvider(id) {
+            if (!confirm("Are you sure you want to remove this provider?")) return;
+            const { error } = await supabaseClient.from("provider_settings").delete().eq("provider_id", id);
+            if (error) return notify(error.message, "error");
+            notify("Provider removed", "success");
+            loadProvidersList();
+        }
 
-            // Direct Supabase RPC Call - No Browser Proxy, No CORS blocking
-            const { data, error } = await supabaseClient.rpc("get_smmdecent_balance");
+        async function checkSpecificProviderBalance(provId) {
+            const badge = document.getElementById(`prov_bal_${provId}`);
+            if (badge) badge.innerText = "Checking...";
+
+            const { data, error } = await supabaseClient.rpc("get_any_provider_balance", { p_prov_id: provId });
 
             if (error) {
-                disp.innerText = "RPC Error";
+                if (badge) badge.innerText = "Error";
                 return;
             }
 
             if (data && data.balance !== undefined) {
-                disp.innerText = `${data.currency || 'PKR'} ${parseFloat(data.balance).toFixed(2)}`;
+                if (badge) badge.innerText = `${data.currency || 'USD'} ${parseFloat(data.balance).toFixed(2)}`;
             } else if (data && data.error) {
-                disp.innerText = "Error: " + data.error;
+                if (badge) badge.innerText = "Error: " + data.error;
             } else {
-                disp.innerText = "Invalid Response";
+                if (badge) badge.innerText = "Failed";
             }
         }
 
@@ -722,7 +791,7 @@
         async function loadAllGlobalOrders() {
             const { data, error } = await supabaseClient
                 .from("orders")
-                .select("*, services(name, provider_service_id), profiles(full_name, email)")
+                .select("*, services(name, provider_service_id, provider_settings(provider_name)), profiles(full_name, email)")
                 .order("created_at", { ascending: false });
 
             if (error) return notify(error.message, "error");
@@ -742,7 +811,7 @@
                     <td><strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong></td>
                     <td>${new Date(o.created_at).toLocaleDateString()}</td>
                     <td>${o.profiles ? o.profiles.full_name : 'User'}</td>
-                    <td>${o.services ? o.services.name : 'Service'} <small style="color:var(--accent-orange);">(ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : 'Manual'})</small></td>
+                    <td>${o.services ? o.services.name : 'Service'} <br><small style="color:var(--accent-orange);">(${o.services && o.services.provider_settings ? o.services.provider_settings.provider_name : 'Manual'} | ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : '-'})</small></td>
                     <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan);">${o.target_link}</a></td>
                     <td>${o.quantity}</td>
                     <td><strong style="color: #fff;">${formatAdminPrice(o.charge)}</strong></td>
@@ -857,19 +926,20 @@
         // ================= 4. SERVICES & CATEGORIES =================
         async function loadAdminCategoriesAndServices() {
             const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
-            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").order("created_at", { ascending: false });
+            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name), provider_settings(provider_name)").order("created_at", { ascending: false });
             
             const sel = document.getElementById("srvAdminCategorySelect");
             sel.innerHTML = '<option value="">Select Category</option>';
             if (cats) cats.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.name}</option>`);
 
             const body = document.getElementById("adminServicesTableBody");
-            if (!srvs || srvs.length === 0) { body.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No services added yet.</td></tr>`; return; }
+            if (!srvs || srvs.length === 0) { body.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No services added yet.</td></tr>`; return; }
             body.innerHTML = srvs.map(s => `
                 <tr>
                     <td><strong>${s.name}</strong></td>
                     <td>${s.categories ? s.categories.name : '-'}</td>
-                    <td><span style="color:var(--accent-orange); font-weight:700;">${s.provider_service_id || 'Manual'}</span></td>
+                    <td><span style="color:var(--accent-cyan); font-weight:600;">${s.provider_settings ? s.provider_settings.provider_name : 'Manual'}</span></td>
+                    <td><span style="color:var(--accent-orange); font-weight:700;">${s.provider_service_id || '-'}</span></td>
                     <td>${formatAdminPrice(s.rate_per_1k)}</td>
                     <td>${s.min_quantity} - ${s.max_quantity}</td>
                     <td><button class="btn-vip btn-sec" style="color:#ef4444; padding:3px 8px; font-size:0.75rem;" onclick="deleteService('${s.id}')"><i class="fa-solid fa-trash"></i></button></td>
@@ -901,10 +971,12 @@
         async function handleSaveService(e) {
             e.preventDefault();
             const catId = document.getElementById("srvAdminCategorySelect").value;
+            const provIdVal = document.getElementById("srvAdminProviderSelect").value;
             if (!catId) return notify("Please select a category first", "error");
 
             const payload = {
                 category_id: catId,
+                provider_id: provIdVal ? parseInt(provIdVal) : null,
                 name: document.getElementById("srvAdminName").value.trim(),
                 provider_service_id: document.getElementById("srvAdminProviderId").value.trim(),
                 rate_per_1k: parseFloat(document.getElementById("srvAdminRate").value),
@@ -1085,7 +1157,7 @@
                 <div class="${m.sender_type==='admin'?'bubble-admin':'bubble-user'}">
                     ${m.message}
                     <div style="font-size: 0.62rem; color: rgba(255,255,255,0.6); margin-top: 2px; text-align: right;">
-                        ${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        ${new Date(m.created_at).toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}
                     </div>
                 </div>
             `).join("");
