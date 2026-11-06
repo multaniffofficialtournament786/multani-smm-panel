@@ -738,13 +738,12 @@
                     </div>
                     <div style="font-size: 0.72rem; color: var(--text-muted); word-break: break-all;">${p.api_url}</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
-                        <span>Balance: <strong id="prov_bal_${p.id}" style="color: ${p.balance ? '#10B981' : '#9BA8BC'};">${p.balance ? (p.currency + ' ' + parseFloat(p.balance).toFixed(2)) : 'Checking...'}</strong></span>
-                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${p.id})"><i class="fa-solid fa-rotate" id="prov_rot_${p.id}"></i></button>
+                        <span>Balance: <strong id="prov_bal_${p.id}" style="color: #10B981;">${p.balance ? (Number(p.balance).toFixed(2) + ' ' + (p.currency || 'USD')) : 'Checking...'}</strong></span>
+                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${p.id})"><i class="fa-solid fa-rotate"></i></button>
                     </div>
                 </div>
             `).join("");
 
-            // Har provider ka balance check karein
             data.forEach(p => {
                 checkSpecificProviderBalance(p.id);
             });
@@ -802,57 +801,50 @@
             loadProvidersList();
         }
 
-        // ================= SERVER-SIDE RPC BALANCE ENGINE =================
+        // ================= UPDATED PROVIDER BALANCE FUNCTION =================
         async function checkSpecificProviderBalance(provId) {
             const badge = document.getElementById(`prov_bal_${provId}`);
-            const rotIcon = document.getElementById(`prov_rot_${provId}`);
 
-            if (badge) {
-                badge.innerText = "Checking...";
-                badge.style.color = "#FF4624";
-            }
-            if (rotIcon) {
-                rotIcon.classList.add("fa-spin");
-            }
+            if (badge) badge.innerText = "Checking...";
 
             try {
-                // 1. Supabase ke server-side function ko call karein jo background mein provider ko POST bhejega
-                const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc("check_provider_balance_direct", {
-                    p_provider_id: provId
-                });
+                const { data, error } = await supabaseClient.functions.invoke(
+                    "provider-balance",
+                    {
+                        body: { provider_id: provId }
+                    }
+                );
 
-                if (rpcErr) {
-                    throw new Error(rpcErr.message);
+                if (error) throw error;
+                if (!data || !data.success) {
+                    throw new Error(data?.error || "Balance check failed");
                 }
 
-                // 2. Response aane ke liye 2 second ka waqfa (wait) karein
-                await new Promise(r => setTimeout(r, 2000));
+                const balance = Number(data.balance).toFixed(2);
+                const currency = data.currency || "USD";
 
-                // 3. Database se updated balance read karein
-                const { data: updatedProv, error: fetchErr } = await supabaseClient
-                    .from("provider_settings")
-                    .select("balance, currency")
-                    .eq("id", provId)
-                    .single();
-
-                if (fetchErr) {
-                    throw new Error(fetchErr.message);
-                }
-
-                if (badge && updatedProv) {
-                    const curr = updatedProv.currency || "USD";
-                    badge.innerText = `${curr} ${parseFloat(updatedProv.balance || 0).toFixed(2)}`;
+                if (badge) {
+                    badge.innerText = `${balance} ${currency}`;
                     badge.style.color = "#10B981";
                 }
-            } catch (err) {
-                console.error("Balance check error:", err);
-                if (badge) {
-                    badge.innerText = "Check Failed";
-                    badge.style.color = "#EF4444";
+
+                if (Array.isArray(allProviders)) {
+                    const provider = allProviders.find(
+                        p => String(p.id) === String(provId)
+                    );
+
+                    if (provider) {
+                        provider.balance = data.balance;
+                        provider.currency = currency;
+                    }
                 }
-            } finally {
-                if (rotIcon) {
-                    rotIcon.classList.remove("fa-spin");
+
+            } catch (error) {
+                console.error("Provider balance error:", error);
+
+                if (badge) {
+                    badge.innerText = "Balance Error";
+                    badge.style.color = "#EF4444";
                 }
             }
         }
