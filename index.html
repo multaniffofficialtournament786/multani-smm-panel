@@ -273,8 +273,8 @@
         .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
         .chat-box { background: var(--bg-card-sec); border-radius: 10px; height: 350px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .bubble-admin { align-self: flex-start; background: #1f293d; color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
-        .bubble-user { align-self: flex-end; background: var(--accent-orange); color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; }
+        .bubble-admin { align-self: flex-start; background: #1f293d; color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; word-break: break-word; }
+        .bubble-user { align-self: flex-end; background: var(--accent-orange); color: #fff; padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; max-width: 80%; word-break: break-word; }
 
         .profile-avatar-wrap { text-align: center; margin-bottom: 16px; }
         .profile-avatar-img { width: 85px; height: 85px; border-radius: 50%; border: 2.5px solid var(--accent-cyan); object-fit: cover; }
@@ -385,7 +385,7 @@
             
             <div class="nav-right" onclick="switchTab('viewProfile')">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-mini">
-                <span class="user-name-mini" id="navUserName">M Nadeem</span>
+                <span class="user-name-mini" id="navUserName">Member</span>
             </div>
         </header>
 
@@ -573,7 +573,7 @@
                 <div class="vip-card">
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-clock-rotate-left"></i> Wallet Transactions</h2>
                     <div id="transactionsListContainer" class="table-responsive">
-                        <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Loading wallet history...</p>
+                        <p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 15px 0;">Loading wallet history...</p>
                     </div>
                 </div>
             </div>
@@ -587,7 +587,7 @@
                     </div>
                     <form style="display: flex; gap: 6px;" onsubmit="handleSendCustomerChat(event)">
                         <input type="text" id="customerChatInput" placeholder="Type message..." required>
-                        <button type="submit" class="btn-vip" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-paper-plane"></i></button>
+                        <button type="submit" class="btn-vip" id="btnSendChat" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-paper-plane"></i></button>
                     </form>
                 </div>
             </div>
@@ -604,10 +604,14 @@
                         <input type="text" id="profFullName" placeholder="Your Name">
                     </div>
                     <div class="form-group">
-                        <label>Account Email (Fixed)</label>
-                        <input type="email" id="profEmail" readonly style="opacity: 0.7;">
+                        <label>WhatsApp Number</label>
+                        <input type="tel" id="profWhatsApp" placeholder="e.g. 03186815926">
                     </div>
-                    <button type="button" class="btn-vip" onclick="handleSaveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+                    <div class="form-group">
+                        <label>Account Email (Fixed)</label>
+                        <input type="email" id="profEmail" readonly style="opacity: 0.85; background: rgba(0,0,0,0.5);">
+                    </div>
+                    <button type="button" class="btn-vip" id="btnSaveProfile" onclick="handleSaveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
                 </div>
             </div>
         </div>
@@ -698,6 +702,7 @@
 
         function notify(msg, type = "info") {
             const container = document.getElementById("toastContainer");
+            if (!container) return;
             const toast = document.createElement("div");
             toast.className = `toast ${type}`;
             toast.innerText = msg;
@@ -860,10 +865,10 @@
         async function postLoginSuccess(user) {
             await ensureUserProfile(user);
             await loadUserProfile();
+            loadServicesAndCategories();
             loadCustomerOrders();
             loadCustomerChat();
             loadTransactions();
-            loadServicesAndCategories();
         }
 
         function switchAuthTab(mode) {
@@ -950,7 +955,7 @@
 
         async function ensureUserProfile(user, fallbackName = null) {
             try {
-                if (!user || !user.id) return;
+                if (!user || !user.id || !supabaseClient) return;
                 const meta = user.user_metadata || {};
                 const resolvedName = fallbackName || meta.full_name || meta.name || (user.email ? user.email.split('@')[0] : 'Member');
                 const resolvedAvatar = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
@@ -984,6 +989,7 @@
             });
         }
 
+        // ================= FIX 2: SAFE TAB SWITCH & AUTO REFRESH =================
         function switchTab(viewId, element) {
             document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
             document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
@@ -991,18 +997,33 @@
 
             const target = document.getElementById(viewId);
             if (target) target.classList.add("active");
+            if (element) element.classList.add("active");
 
-            if (viewId === 'viewDashboard') document.getElementById("btnNavHome").classList.add("active");
-            else if (viewId === 'viewOrder') document.getElementById("btnNavOrder").classList.add("active");
-            else if (viewId === 'viewServices') {
-                document.getElementById("btnNavServices").classList.add("active");
-                renderServicesPageTable();
-            }
-            else if (viewId === 'viewOrdersList') {
-                document.getElementById("btnNavOrders").classList.add("active");
+            if (viewId === 'viewDashboard') {
+                const btn = document.getElementById("btnNavHome");
+                if (btn) btn.classList.add("active");
                 loadCustomerOrders();
+            } else if (viewId === 'viewOrder') {
+                const btn = document.getElementById("btnNavOrder");
+                if (btn) btn.classList.add("active");
+                loadServicesAndCategories();
+            } else if (viewId === 'viewServices') {
+                const btn = document.getElementById("btnNavServices");
+                if (btn) btn.classList.add("active");
+                loadServicesAndCategories();
+            } else if (viewId === 'viewOrdersList') {
+                const btn = document.getElementById("btnNavOrders");
+                if (btn) btn.classList.add("active");
+                loadCustomerOrders();
+            } else if (viewId === 'viewTransactions') {
+                loadTransactions();
+            } else if (viewId === 'viewSupport') {
+                const btn = document.getElementById("btnNavSupport");
+                if (btn) btn.classList.add("active");
+                loadCustomerChat();
+            } else if (viewId === 'viewProfile') {
+                loadUserProfile();
             }
-            else if (viewId === 'viewSupport') document.getElementById("btnNavSupport").classList.add("active");
 
             document.getElementById("sidebarDrawer").classList.remove("open");
             document.getElementById("sidebarOverlay").classList.remove("active");
@@ -1011,25 +1032,40 @@
 
         async function loadSiteAnnouncement() {
             try {
+                if (!supabaseClient) return;
                 const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
                 if (data && data.value) document.getElementById("scrollingAnnouncementText").innerText = data.value;
             } catch (e) {}
         }
 
+        // ================= FIX 5: USER PROFILE WITH FIXED GMAIL & WHATSAPP =================
         async function loadUserProfile() {
             if (!currentUser) return;
             try {
-                const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).maybeSingle();
+                let dbProfile = null;
+                if (supabaseClient) {
+                    const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).maybeSingle();
+                    dbProfile = data;
+                }
                 const meta = currentUser.user_metadata || {};
-                const name = (data && data.full_name) || meta.full_name || meta.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Member');
+                const name = (dbProfile && dbProfile.full_name) || meta.full_name || meta.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Member');
+                const userEmail = (dbProfile && dbProfile.email) || currentUser.email || '';
                 
-                currentUserProfile = data || { balance: 0 };
+                currentUserProfile = dbProfile || { balance: 0 };
                 document.getElementById("dashWelcomeName").innerText = `WELCOME, ${name.toUpperCase()}`;
                 document.getElementById("navUserName").innerText = name;
                 document.getElementById("profFullName").value = name;
-                document.getElementById("profEmail").value = (data && data.email) || currentUser.email || '';
                 
-                const avatar = (data && data.avatar_url) || meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+                // Show Gmail guaranteed
+                const emailInput = document.getElementById("profEmail");
+                if (emailInput) emailInput.value = userEmail;
+
+                // Load WhatsApp number
+                const savedWhatsapp = (dbProfile && dbProfile.whatsapp) || localStorage.getItem(`whatsapp_${currentUser.id}`) || '';
+                const waInput = document.getElementById("profWhatsApp");
+                if (waInput) waInput.value = savedWhatsapp;
+                
+                const avatar = (dbProfile && dbProfile.avatar_url) || meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
                 document.getElementById("navAvatarImg").src = avatar;
                 document.getElementById("profilePageAvatar").src = avatar;
                 updateWalletDisplay();
@@ -1045,43 +1081,67 @@
 
         async function handleSaveProfile() {
             const name = document.getElementById("profFullName").value.trim();
+            const whatsapp = document.getElementById("profWhatsApp").value.trim();
+            const btn = document.getElementById("btnSaveProfile");
+
             if (!name) return notify("Please enter your name", "error");
-            await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentUser.id);
-            notify("Profile updated!", "success");
-            loadUserProfile();
+            
+            if (currentUser && currentUser.id) {
+                localStorage.setItem(`whatsapp_${currentUser.id}`, whatsapp);
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+            try {
+                if (supabaseClient && currentUser) {
+                    await supabaseClient.from("profiles").update({ 
+                        full_name: name,
+                        whatsapp: whatsapp 
+                    }).eq("id", currentUser.id);
+                }
+                notify("Profile updated successfully!", "success");
+                loadUserProfile();
+            } catch (e) {
+                notify("Profile saved locally!", "success");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Profile`;
+            }
         }
 
-        // ================= FAST SERVICES & CATEGORIES FETCH =================
+        // ================= FIX 1: SERVICES & CATEGORIES FETCH & DISPLAY =================
         async function loadServicesAndCategories() {
             if (!supabaseClient) return;
             try {
-                const { data: cats } = await supabaseClient
+                const { data: cats, error: catErr } = await supabaseClient
                     .from("categories")
-                    .select("id, name")
+                    .select("*")
                     .order("name", { ascending: true });
 
-                const { data: srvs } = await supabaseClient
+                const { data: srvs, error: srvErr } = await supabaseClient
                     .from("services")
-                    .select("id, category_id, name, rate_per_1k, min_quantity, max_quantity, is_active")
+                    .select("*")
                     .order("created_at", { ascending: false });
 
-                allCategories = cats || [];
-                allServices = (srvs || []).filter(s => s.is_active !== false);
+                allCategories = (cats && cats.length > 0) ? cats : [];
+                // Do not hide services if is_active is null or undefined
+                allServices = (srvs || []).filter(s => s.is_active !== false && s.is_active !== 'false');
 
                 const catSelect = document.getElementById("orderCatSelect");
                 if (catSelect) {
                     if (allCategories.length === 0) {
                         catSelect.innerHTML = '<option value="">No Categories Available</option>';
                     } else {
+                        const currentCatVal = catSelect.value;
                         catSelect.innerHTML = '<option value="">Select Category</option>' + 
                             allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+                        
+                        if (currentCatVal) {
+                            catSelect.value = currentCatVal;
+                        }
                     }
-                }
-
-                if (catSelect && catSelect.value) {
                     renderServiceDropdown(catSelect.value);
-                } else {
-                    renderServiceDropdown("");
                 }
 
                 renderServicesPageTable();
@@ -1106,7 +1166,8 @@
                 return;
             }
 
-            const filtered = allServices.filter(s => String(s.category_id) === String(catId));
+            // Safe match: supports string, number and UUID
+            const filtered = allServices.filter(s => String(s.category_id).trim() === String(catId).trim());
             
             if (filtered.length === 0) {
                 srvSelect.innerHTML = '<option value="">No services in this category</option>';
@@ -1139,7 +1200,7 @@
         }
 
         function handleServiceSelect(srvId) {
-            selectedService = allServices.find(s => String(s.id) === String(srvId)) || null;
+            selectedService = allServices.find(s => String(s.id).trim() === String(srvId).trim()) || null;
             const hint = document.getElementById("qtyLimitHint");
             if (selectedService && hint) {
                 hint.innerText = `Min: ${selectedService.min_quantity} | Max: ${selectedService.max_quantity}`;
@@ -1187,7 +1248,7 @@
                 quantity: qty,
                 charge: chargeUSD,
                 status: 'pending'
-            }).select().single();
+            }).select().maybeSingle();
 
             if (orderErr) {
                 btn.disabled = false;
@@ -1200,9 +1261,11 @@
             }).eq("id", currentUser.id);
 
             try {
-                await supabaseClient.rpc("place_auto_provider_order", {
-                    p_order_id: newOrderData.id
-                });
+                if (newOrderData && newOrderData.id) {
+                    await supabaseClient.rpc("place_auto_provider_order", {
+                        p_order_id: newOrderData.id
+                    });
+                }
             } catch (e) {}
 
             btn.disabled = false;
@@ -1215,13 +1278,16 @@
             loadCustomerOrders();
         }
 
-        // ================= FAST ORDERS FETCH =================
+        // ================= FIX 2: ORDERS FETCH WITH SAFE FALLBACK =================
         async function loadCustomerOrders() {
             if (!currentUser || !supabaseClient) return;
+            const recentBody = document.getElementById("dashRecentOrdersBody");
+            const list = document.getElementById("customerOrdersList");
+
             try {
                 const { data, error } = await supabaseClient
                     .from("orders")
-                    .select("id, order_number, created_at, quantity, charge, status, service_id")
+                    .select("*")
                     .eq("user_id", currentUser.id)
                     .order("created_at", { ascending: false });
 
@@ -1233,36 +1299,36 @@
                 const totalSpentUSD = orders.reduce((acc, curr) => acc + (curr.status !== 'cancelled' ? parseFloat(curr.charge || 0) : 0), 0);
                 document.getElementById("dashTotalSpent").innerText = formatPrice(totalSpentUSD);
 
-                const recentBody = document.getElementById("dashRecentOrdersBody");
                 if (orders.length === 0) {
-                    recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 14px 0;">No orders yet.</td></tr>`;
-                } else {
+                    if (recentBody) recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 14px 0;">No orders yet.</td></tr>`;
+                    if (list) list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">No orders placed yet.</p>`;
+                    return;
+                }
+
+                if (recentBody) {
                     recentBody.innerHTML = orders.slice(0, 5).map(o => {
                         const srv = allServices.find(s => String(s.id) === String(o.service_id));
                         return `
                             <tr>
-                                <td><strong>#${o.order_number || o.id.substring(0,4)}</strong></td>
+                                <td><strong>#${o.order_number || (o.id ? String(o.id).substring(0,5) : '')}</strong></td>
                                 <td>${new Date(o.created_at).toLocaleDateString()}</td>
                                 <td>${srv ? srv.name : 'Service'}</td>
                                 <td>${o.quantity}</td>
                                 <td style="color: var(--accent-orange); font-weight:700;">${formatPrice(parseFloat(o.charge))}</td>
-                                <td><span class="badge badge-${o.status}">${o.status.toUpperCase()}</span></td>
+                                <td><span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span></td>
                             </tr>
                         `;
                     }).join("");
                 }
 
-                const list = document.getElementById("customerOrdersList");
-                if (orders.length === 0) {
-                    list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">No orders placed yet.</p>`;
-                } else {
+                if (list) {
                     list.innerHTML = orders.map(o => {
                         const srv = allServices.find(s => String(s.id) === String(o.service_id));
                         return `
                             <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px;">
                                 <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px;">
-                                    <strong style="color: var(--accent-cyan);">#${o.order_number || o.id.substring(0,5)}</strong>
-                                    <span class="badge badge-${o.status}">${o.status.toUpperCase()}</span>
+                                    <strong style="color: var(--accent-cyan);">#${o.order_number || (o.id ? String(o.id).substring(0,5) : '')}</strong>
+                                    <span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span>
                                 </div>
                                 <div style="font-size: 0.78rem;">${srv ? srv.name : 'Service'}</div>
                                 <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
@@ -1275,7 +1341,8 @@
                 }
             } catch (err) {
                 console.error("Orders load error:", err);
-                document.getElementById("customerOrdersList").innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">No orders placed yet.</p>`;
+                if (recentBody) recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 14px 0;">No orders yet.</td></tr>`;
+                if (list) list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">No orders placed yet.</p>`;
             }
         }
 
@@ -1285,7 +1352,7 @@
             document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
         }
 
-        // ================= SECURE DEPOSIT SUBMIT WITH INSTANT RESET =================
+        // ================= FIX 4: DEPOSIT SUBMIT WITH INSTANT POPUP & WALLET TRANSACTION =================
         async function handleDepositSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById("btnDepositSubmit");
@@ -1301,88 +1368,168 @@
             const trx = document.getElementById("depTrxId").value.trim();
 
             btn.disabled = true;
-            btn.innerText = "Submitting...";
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
 
             try {
-                const { data, error } = await supabaseClient.from("deposits").insert([{
+                // 1. Insert deposit request
+                const { error: depError } = await supabaseClient.from("deposits").insert([{
                     user_id: currentUser.id,
                     amount: usd,
                     payment_method: method,
                     sender_account: sender,
                     transaction_id: trx,
                     status: 'pending'
-                }]).select();
+                }]);
 
-                if (error) {
-                    console.error("Deposit insert error:", error);
-                    notify("Failed: " + error.message, "error");
-                } else {
-                    notify("Deposit submitted successfully! Admin will verify.", "success");
-                    document.getElementById("depAmountPKR").value = "";
-                    document.getElementById("depSenderNum").value = "";
-                    document.getElementById("depTrxId").value = "";
-                    document.getElementById("depUSDHint").innerText = "";
-                }
+                if (depError) throw depError;
+
+                // 2. Also log in transactions so customer sees it in wallet history
+                try {
+                    await supabaseClient.from("transactions").insert([{
+                        user_id: currentUser.id,
+                        type: 'Deposit (Pending)',
+                        description: `${method} TRX: ${trx}`,
+                        amount: usd
+                    }]);
+                } catch (tErr) {}
+
+                // Save locally for fallback
+                const localTrxs = JSON.parse(localStorage.getItem(`local_trx_${currentUser.id}`) || '[]');
+                localTrxs.unshift({
+                    created_at: new Date().toISOString(),
+                    type: 'Deposit (Pending)',
+                    description: `${method} TRX: ${trx}`,
+                    amount: usd
+                });
+                localStorage.setItem(`local_trx_${currentUser.id}`, JSON.stringify(localTrxs));
+
+                // 3. Instant feedback
+                notify("Deposit request submitted successfully! Admin will verify soon.", "success");
+                
+                // Reset form
+                document.getElementById("depAmountPKR").value = "";
+                document.getElementById("depSenderNum").value = "";
+                document.getElementById("depTrxId").value = "";
+                document.getElementById("depUSDHint").innerText = "";
+
+                loadTransactions();
             } catch (err) {
-                console.error("Catch submit error:", err);
-                notify("Error: " + err.message, "error");
+                console.error("Deposit submit error:", err);
+                notify("Failed to submit: " + (err.message || "Network error"), "error");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Submit Deposit Request";
             }
         }
 
+        // ================= FIX 2: TRANSACTIONS WITH NEVER-HANG FALLBACK =================
         async function loadTransactions() {
-            if (!currentUser || !supabaseClient) return;
+            const container = document.getElementById("transactionsListContainer");
+            if (!container) return;
+
+            if (!currentUser || !supabaseClient) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 15px 0;">No transactions yet.</p>`;
+                return;
+            }
+
             try {
-                const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-                const container = document.getElementById("transactionsListContainer");
-                if (!data || data.length === 0) {
+                const { data, error } = await supabaseClient
+                    .from("transactions")
+                    .select("*")
+                    .eq("user_id", currentUser.id)
+                    .order("created_at", { ascending: false });
+
+                let trxs = data || [];
+
+                // Merge with local submitted transactions if table was empty
+                if (trxs.length === 0) {
+                    const localTrxs = JSON.parse(localStorage.getItem(`local_trx_${currentUser.id}`) || '[]');
+                    trxs = localTrxs;
+                }
+
+                if (trxs.length === 0) {
                     container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 15px 0;">No transactions yet.</p>`;
                     return;
                 }
+
                 container.innerHTML = `
                     <table>
                         <thead><tr><th>Date</th><th>Type</th><th>Desc</th><th>Amount</th></tr></thead>
-                        <tbody>${data.map(t => `
+                        <tbody>${trxs.map(t => `
                             <tr>
                                 <td>${new Date(t.created_at).toLocaleDateString()}</td>
-                                <td><span class="badge badge-completed">${t.type}</span></td>
-                                <td>${t.description}</td>
-                                <td style="color:${t.amount<0?'var(--accent-orange)':'#10B981'}; font-weight:700;">${formatPrice(parseFloat(t.amount))}</td>
+                                <td><span class="badge ${t.type.includes('Pending') ? 'badge-pending' : 'badge-completed'}">${t.type}</span></td>
+                                <td>${t.description || '-'}</td>
+                                <td style="color:${parseFloat(t.amount) < 0 ? 'var(--accent-orange)' : '#10B981'}; font-weight:700;">${formatPrice(parseFloat(t.amount))}</td>
                             </tr>
                         `).join("")}</tbody>
                     </table>
                 `;
             } catch (e) {
-                document.getElementById("transactionsListContainer").innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 15px 0;">No transactions yet.</p>`;
+                console.error("Transactions load error:", e);
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 15px 0;">No transactions yet.</p>`;
             }
         }
 
+        // ================= FIX 3: LIVE SUPPORT CHAT WITH INSTANT UI & SECURE SEND =================
         async function loadCustomerChat() {
             if (!currentUser || !supabaseClient) return;
+            const body = document.getElementById("customerChatWindow");
             try {
-                const { data } = await supabaseClient.from("chat_messages").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true });
-                const body = document.getElementById("customerChatWindow");
+                const { data, error } = await supabaseClient
+                    .from("chat_messages")
+                    .select("*")
+                    .eq("user_id", currentUser.id)
+                    .order("created_at", { ascending: true });
+
                 if (data && data.length > 0) {
-                    body.innerHTML = data.map(m => `
-                        <div class="${m.sender_type==='admin'?'bubble-admin':'bubble-user'}">${m.message}</div>
+                    body.innerHTML = `
+                        <div class="bubble-admin">Assalam-o-Alaikum! Leave your question or TRX ID here. Admin will reply live.</div>
+                    ` + data.map(m => `
+                        <div class="${m.sender_type === 'admin' ? 'bubble-admin' : 'bubble-user'}">${m.message}</div>
                     `).join("");
                     body.scrollTop = body.scrollHeight;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn("Chat load error:", e);
+            }
         }
 
         async function handleSendCustomerChat(e) {
             e.preventDefault();
             if (!currentUser) return notify("Please login first!", "error");
+            
             const input = document.getElementById("customerChatInput");
+            const btn = document.getElementById("btnSendChat");
             const msg = input.value.trim();
             if (!msg) return;
 
-            input.value = "";
-            await supabaseClient.from("chat_messages").insert({ user_id: currentUser.id, sender_type: 'user', message: msg });
-            loadCustomerChat();
+            btn.disabled = true;
+
+            // Instant bubble on screen
+            const body = document.getElementById("customerChatWindow");
+            const tempBubble = document.createElement("div");
+            tempBubble.className = "bubble-user";
+            tempBubble.innerText = msg;
+            body.appendChild(tempBubble);
+            body.scrollTop = body.scrollHeight;
+
+            try {
+                const { error } = await supabaseClient.from("chat_messages").insert([{
+                    user_id: currentUser.id,
+                    sender_type: 'user',
+                    message: msg,
+                    is_read: false
+                }]);
+
+                if (error) throw error;
+                input.value = "";
+            } catch (err) {
+                console.error("Chat send error:", err);
+                notify("Could not send message: " + (err.message || "Network issue"), "error");
+            } finally {
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
