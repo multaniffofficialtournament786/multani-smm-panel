@@ -550,9 +550,15 @@
 
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmiedwzabkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
-        let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true
+            }
+        }) : null;
+
         let currentAdminUser = null;
         let allGlobalOrders = [];
         let allMembers = [];
@@ -604,7 +610,8 @@
         });
 
         async function verifyAdminRole(user) {
-            if (user.email === 'nadeemsandila57866@gmail.com') {
+            const allowedAdminEmails = ['pardesinadeem7866@gmail.com', 'nadeemsandila57866@gmail.com'];
+            if (allowedAdminEmails.includes(user.email)) {
                 currentAdminUser = user;
                 initAdminPanel();
                 return;
@@ -690,7 +697,7 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // 1. MULTI-PROVIDER SYSTEM WITH DIRECT CORS PROXY BALANCE ENGINE
+        // 1. MULTI-PROVIDER SYSTEM (FIXED WITH CORS PROXY)
         function toggleAddProviderForm() {
             const form = document.getElementById("addProviderFormContainer");
             form.style.display = (form.style.display === "none" || !form.style.display) ? "block" : "none";
@@ -793,7 +800,7 @@
             loadProvidersList();
         }
 
-        // ================= CORS PROXY ENGINE FOR PROVIDER BALANCE =================
+        // ================= DIRECT CORS PROXY FOR PROVIDER BALANCE =================
         async function checkSpecificProviderBalance(provId) {
             const badge = document.getElementById(`prov_bal_${provId}`);
             if (badge) badge.innerText = "Checking...";
@@ -807,7 +814,6 @@
             const cleanUrl = prov.api_url.trim();
             const cleanKey = prov.api_key.trim();
 
-            // Proxies list to bypass browser CORS blockage
             const proxy1 = `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`;
             const proxy2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`;
 
