@@ -315,7 +315,7 @@
     </div>
 
     <!-- 0. LOGIN & SIGNUP SCREEN -->
-    <div id="authGateContainer">
+    <div id="authGateContainer" class="hidden">
         <div class="auth-card">
             <div style="text-align: center; margin-bottom: 16px;">
                 <i class="fa-solid fa-crown" style="font-size: 2.2rem; color: var(--accent-orange); margin-bottom: 4px;"></i>
@@ -716,91 +716,103 @@
         }
 
         function showAuthScreen() {
-            document.getElementById("authGateContainer").classList.remove("hidden");
-            document.getElementById("mainAppWrapper").classList.add("hidden");
+            const auth = document.getElementById("authGateContainer");
+            const app = document.getElementById("mainAppWrapper");
+            if (auth) auth.classList.remove("hidden");
+            if (app) app.classList.add("hidden");
         }
 
         function showPanelScreen() {
-            document.getElementById("authGateContainer").classList.add("hidden");
-            document.getElementById("mainAppWrapper").classList.remove("hidden");
+            const auth = document.getElementById("authGateContainer");
+            const app = document.getElementById("mainAppWrapper");
+            if (auth) auth.classList.add("hidden");
+            if (app) app.classList.remove("hidden");
         }
 
-        // DIRECT URL HASH PARSER (CATCHES ACCESS TOKEN INSTANTLY)
-        async function checkAndApplyUrlHashSession() {
+        // 1. FAST EXTRACT TOKEN FROM URL HASH
+        function getHashParams() {
             const hash = window.location.hash;
-            if (hash && hash.includes("access_token=")) {
-                const params = new URLSearchParams(hash.substring(1));
-                const accessToken = params.get("access_token");
-                const refreshToken = params.get("refresh_token");
-                if (accessToken) {
-                    const { data, error } = await supabaseClient.auth.setSession({
-                        access_token: accessToken,
-                        refresh_token: refreshToken || ""
-                    });
-                    if (!error && data && data.user) {
-                        // Clean clean URL in address bar
-                        window.history.replaceState(null, null, window.location.pathname);
-                        return data.user;
-                    }
-                }
-            }
-            return null;
+            if (!hash || !hash.includes("access_token=")) return null;
+            const cleanHash = hash.startsWith("#") ? hash.substring(1) : hash;
+            const params = new URLSearchParams(cleanHash);
+            return {
+                access_token: params.get("access_token"),
+                refresh_token: params.get("refresh_token") || ""
+            };
         }
 
-        // INITIAL LOAD & AUTO AUTH RECOGNITION
-        window.addEventListener("DOMContentLoaded", async () => {
+        // 2. MASTER APP INITIALIZATION
+        async function initMultaniApp() {
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
             loadSiteAnnouncement();
 
-            if (!supabaseClient) return;
-
-            // 1. First check if hash contains token from Google
-            const hashUser = await checkAndApplyUrlHashSession();
-            if (hashUser) {
-                currentUser = hashUser;
-                showPanelScreen();
-                await ensureUserProfile(hashUser);
-                loadUserProfile();
-                loadCustomerOrders();
-                loadCustomerChat();
-                loadTransactions();
-                loadServicesAndCategories();
+            if (!supabaseClient) {
+                showAuthScreen();
                 return;
             }
 
-            // 2. Real-time auth listener
-            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            // A: CHECK IF REDIRECTED WITH GOOGLE TOKEN IN HASH
+            const hashData = getHashParams();
+            if (hashData && hashData.access_token) {
+                showPanelScreen(); // Instantly show dashboard!
+                try {
+                    const { data, error } = await supabaseClient.auth.setSession(hashData);
+                    if (!error && data && data.session) {
+                        currentUser = data.session.user;
+                        window.history.replaceState(null, null, window.location.pathname);
+                        await postLoginSuccess(currentUser);
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("Hash session setup:", e);
+                }
+            }
+
+            // B: CHECK SAVED SESSION IN STORAGE
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
                     currentUser = session.user;
                     showPanelScreen();
-                    ensureUserProfile(session.user).then(() => {
-                        loadUserProfile();
-                        loadCustomerOrders();
-                        loadCustomerChat();
-                        loadTransactions();
-                        loadServicesAndCategories();
-                    });
-                } else {
+                    await postLoginSuccess(currentUser);
+                    return;
+                }
+            } catch (e) {
+                console.warn("Session check:", e);
+            }
+
+            // C: IF NOT LOGGED IN, SHOW LOGIN SCREEN
+            showAuthScreen();
+        }
+
+        // Real-time Auth State Change Listener
+        if (supabaseClient) {
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                if (session && session.user) {
+                    if (!currentUser) {
+                        currentUser = session.user;
+                        showPanelScreen();
+                        await postLoginSuccess(currentUser);
+                    }
+                } else if (event === 'SIGNED_OUT') {
                     currentUser = null;
                     showAuthScreen();
                 }
             });
+        }
 
-            // 3. Fallback direct session check
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session && session.user) {
-                currentUser = session.user;
-                showPanelScreen();
-                loadUserProfile();
-                loadCustomerOrders();
-                loadCustomerChat();
-                loadTransactions();
-                loadServicesAndCategories();
-            } else {
-                showAuthScreen();
-            }
-        });
+        // RUN ON LOAD
+        window.addEventListener("DOMContentLoaded", initMultaniApp);
+
+        async function postLoginSuccess(user) {
+            await ensureUserProfile(user);
+            await loadUserProfile();
+            loadCustomerOrders();
+            loadCustomerChat();
+            loadTransactions();
+            loadServicesAndCategories();
+        }
 
         function switchAuthTab(mode) {
             const tabLog = document.getElementById("tabBtnLogin");
@@ -848,7 +860,9 @@
 
             if (error) return notify(error.message, "error");
             notify("Login successful!", "success");
+            currentUser = data.user;
             showPanelScreen();
+            postLoginSuccess(currentUser);
         }
 
         async function handleCustomerRegister(e) {
@@ -874,23 +888,27 @@
 
             if (error) return notify(error.message, "error");
 
-            if (data.user) await ensureUserProfile(data.user, fullName);
+            if (data.user) {
+                currentUser = data.user;
+                await ensureUserProfile(data.user, fullName);
+                showPanelScreen();
+                postLoginSuccess(currentUser);
+            }
             notify("Account created successfully!", "success");
-            showPanelScreen();
         }
 
         async function ensureUserProfile(user, fallbackName = null) {
             try {
                 const meta = user.user_metadata || {};
-                const resolvedName = fallbackName || meta.full_name || meta.name || user.email.split('@')[0];
-                const resolvedAvatar = meta.avatar_url || meta.picture || null;
+                const resolvedName = fallbackName || meta.full_name || meta.name || (user.email ? user.email.split('@')[0] : 'Member');
+                const resolvedAvatar = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
 
                 const { data: existing } = await supabaseClient.from("profiles").select("id").eq("id", user.id).maybeSingle();
                 if (!existing) {
                     await supabaseClient.from("profiles").insert({
                         id: user.id,
                         full_name: resolvedName,
-                        email: user.email,
+                        email: user.email || '',
                         avatar_url: resolvedAvatar,
                         balance: 0.0000
                     });
@@ -900,7 +918,7 @@
                     }).eq("id", user.id);
                 }
             } catch (err) {
-                console.warn(err);
+                console.warn("Profile sync error:", err);
             }
         }
 
@@ -909,6 +927,7 @@
             showVipModal("CONFIRM LOGOUT", "Are you sure you want to sign out?", "fa-solid fa-arrow-right-from-bracket", async () => {
                 await supabaseClient.auth.signOut();
                 currentUser = null;
+                currentUserProfile = null;
                 notify("Logged out!", "info");
                 showAuthScreen();
             });
@@ -942,19 +961,23 @@
 
         async function loadUserProfile() {
             if (!currentUser) return;
-            const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).maybeSingle();
-            if (data) {
-                currentUserProfile = data;
-                const name = data.full_name || 'M Nadeem';
+            try {
+                const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).maybeSingle();
+                const meta = currentUser.user_metadata || {};
+                const name = (data && data.full_name) || meta.full_name || meta.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Member');
+                
+                currentUserProfile = data || { balance: 0 };
                 document.getElementById("dashWelcomeName").innerText = `WELCOME, ${name.toUpperCase()}`;
                 document.getElementById("navUserName").innerText = name;
                 document.getElementById("profFullName").value = name;
-                document.getElementById("profEmail").value = data.email || currentUser.email || '';
+                document.getElementById("profEmail").value = (data && data.email) || currentUser.email || '';
                 
-                const avatar = data.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+                const avatar = (data && data.avatar_url) || meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
                 document.getElementById("navAvatarImg").src = avatar;
                 document.getElementById("profilePageAvatar").src = avatar;
                 updateWalletDisplay();
+            } catch (e) {
+                console.warn(e);
             }
         }
 
@@ -972,16 +995,18 @@
         }
 
         async function loadServicesAndCategories() {
-            const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
-            const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").eq("is_active", true);
+            try {
+                const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
+                const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").eq("is_active", true);
 
-            allServices = srvs || [];
-            const catSelect = document.getElementById("orderCatSelect");
-            if (catSelect) {
-                catSelect.innerHTML = '<option value="">Select Category</option>';
-                if (cats) cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
-            }
-            renderServicesPageTable();
+                allServices = srvs || [];
+                const catSelect = document.getElementById("orderCatSelect");
+                if (catSelect) {
+                    catSelect.innerHTML = '<option value="">Select Category</option>';
+                    if (cats) cats.forEach(c => catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+                }
+                renderServicesPageTable();
+            } catch (e) {}
         }
 
         function handleCategoryFilter(catId) { renderServiceDropdown(catId); }
@@ -1071,7 +1096,7 @@
                 balance: parseFloat(currentUserProfile.balance) - chargeUSD
             }).eq("id", currentUser.id);
 
-            const { data: rpcRes } = await supabaseClient.rpc("place_auto_provider_order", {
+            await supabaseClient.rpc("place_auto_provider_order", {
                 p_order_id: newOrderData.id
             });
 
