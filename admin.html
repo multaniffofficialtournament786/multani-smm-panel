@@ -350,7 +350,7 @@
                             <form id="providerAdminForm" onsubmit="handleSaveProvider(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>Provider Name</label>
-                                    <input type="text" id="newProvName" placeholder="e.g. Smm decent, Peakerr" required>
+                                    <input type="text" id="newProvName" placeholder="e.g. Sasta smm pak, smmdecent" required>
                                 </div>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <label>API URL</label>
@@ -550,7 +550,7 @@
 
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmiedwzabkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
         let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: {
@@ -697,7 +697,7 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // 1. MULTI-PROVIDER SYSTEM (FIXED WITH CORS PROXY)
+        // 1. MULTI-PROVIDER SYSTEM (EXACT MATCH FOR provider_settings TABLE)
         function toggleAddProviderForm() {
             const form = document.getElementById("addProviderFormContainer");
             form.style.display = (form.style.display === "none" || !form.style.display) ? "block" : "none";
@@ -707,7 +707,10 @@
             const container = document.getElementById("providersListContainer");
             const srvProvSelect = document.getElementById("srvAdminProviderSelect");
 
-            const { data, error } = await supabaseClient.from("provider_settings").select("*");
+            const { data, error } = await supabaseClient
+                .from("provider_settings")
+                .select("*")
+                .order("id", { ascending: true });
 
             if (error) {
                 console.error("Provider load error:", error);
@@ -726,29 +729,28 @@
 
             srvProvSelect.innerHTML = `<option value="">Manual (No API)</option>` + 
                 data.map(p => {
-                    const pId = p.provider_id || p.id;
-                    return `<option value="${pId}">${p.provider_name}</option>`;
+                    const pKeyId = p.id;
+                    return `<option value="${pKeyId}">${p.provider_name}</option>`;
                 }).join("");
 
             container.innerHTML = data.map(p => {
-                const pId = p.provider_id || p.id;
+                const pKeyId = p.id;
                 return `
                 <div class="provider-card">
                     <div class="provider-top">
                         <strong style="color: var(--accent-cyan); font-size: 0.95rem;">${p.provider_name}</strong>
-                        <button type="button" onclick="deleteProvider('${pId}')" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" title="Delete Provider"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" onclick="deleteProvider(${pKeyId})" style="background:transparent; border:none; color:#ef4444; cursor:pointer;" title="Delete Provider"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div style="font-size: 0.72rem; color: var(--text-muted); word-break: break-all;">${p.api_url}</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem;">
-                        <span>Balance: <strong id="prov_bal_${pId}" style="color: #10B981;">Checking...</strong></span>
-                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance('${pId}')"><i class="fa-solid fa-rotate"></i></button>
+                        <span>Balance: <strong id="prov_bal_${pKeyId}" style="color: #10B981;">Checking...</strong></span>
+                        <button type="button" class="btn-vip btn-sec" style="padding: 2px 8px; font-size: 0.7rem;" onclick="checkSpecificProviderBalance(${pKeyId})"><i class="fa-solid fa-rotate"></i></button>
                     </div>
                 </div>
             `;}).join("");
 
             data.forEach(p => {
-                const pId = p.provider_id || p.id;
-                checkSpecificProviderBalance(pId);
+                checkSpecificProviderBalance(p.id);
             });
         }
 
@@ -766,46 +768,50 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
 
-            const { error } = await supabaseClient.from("provider_settings").insert([{
-                provider_name: name,
-                api_url: url,
-                api_key: key
-            }]);
+            try {
+                const { data, error } = await supabaseClient
+                    .from("provider_settings")
+                    .insert([{
+                        provider_name: name,
+                        api_url: url,
+                        api_key: key
+                    }])
+                    .select();
 
-            btn.disabled = false;
-            btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Provider`;
-
-            if (error) {
-                console.error("Provider save error:", error);
-                return notify("Save Failed: " + error.message, "error");
+                if (error) {
+                    console.error("Save error:", error);
+                    notify("Save Failed: " + error.message, "error");
+                } else {
+                    notify("Provider added successfully!", "success");
+                    document.getElementById("newProvName").value = "";
+                    document.getElementById("newProvUrl").value = "";
+                    document.getElementById("newProvKey").value = "";
+                    toggleAddProviderForm();
+                    await loadProvidersList();
+                }
+            } catch (err) {
+                console.error("Network error:", err);
+                notify("Network error: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Provider`;
             }
-
-            notify("Provider added successfully!", "success");
-            document.getElementById("newProvName").value = "";
-            document.getElementById("newProvUrl").value = "";
-            document.getElementById("newProvKey").value = "";
-            toggleAddProviderForm();
-            loadProvidersList();
         }
 
         async function deleteProvider(id) {
             if (!confirm("Are you sure you want to remove this provider?")) return;
-            
-            let res = await supabaseClient.from("provider_settings").delete().eq("provider_id", id);
-            if (res.error) {
-                res = await supabaseClient.from("provider_settings").delete().eq("id", id);
-            }
-            if (res.error) return notify(res.error.message, "error");
+            const { error } = await supabaseClient.from("provider_settings").delete().eq("id", id);
+            if (error) return notify(error.message, "error");
             notify("Provider removed", "success");
             loadProvidersList();
         }
 
-        // ================= DIRECT CORS PROXY FOR PROVIDER BALANCE =================
+        // ================= DIRECT CORS PROXY ENGINE FOR BALANCE =================
         async function checkSpecificProviderBalance(provId) {
             const badge = document.getElementById(`prov_bal_${provId}`);
             if (badge) badge.innerText = "Checking...";
 
-            const prov = allProviders.find(p => (p.provider_id || p.id) == provId);
+            const prov = allProviders.find(p => p.id == provId);
             if (!prov || !prov.api_url || !prov.api_key) {
                 if (badge) badge.innerText = "N/A";
                 return;
