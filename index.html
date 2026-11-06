@@ -633,7 +633,6 @@
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmiedwzabkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
-        // Supabase Client with full auth persistance
         const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: {
                 persistSession: true,
@@ -726,6 +725,28 @@
             document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
+        // DIRECT URL HASH PARSER (CATCHES ACCESS TOKEN INSTANTLY)
+        async function checkAndApplyUrlHashSession() {
+            const hash = window.location.hash;
+            if (hash && hash.includes("access_token=")) {
+                const params = new URLSearchParams(hash.substring(1));
+                const accessToken = params.get("access_token");
+                const refreshToken = params.get("refresh_token");
+                if (accessToken) {
+                    const { data, error } = await supabaseClient.auth.setSession({
+                        access_token: accessToken,
+                        refresh_token: refreshToken || ""
+                    });
+                    if (!error && data && data.user) {
+                        // Clean clean URL in address bar
+                        window.history.replaceState(null, null, window.location.pathname);
+                        return data.user;
+                    }
+                }
+            }
+            return null;
+        }
+
         // INITIAL LOAD & AUTO AUTH RECOGNITION
         window.addEventListener("DOMContentLoaded", async () => {
             const currSel = document.getElementById("currencySelect");
@@ -734,7 +755,21 @@
 
             if (!supabaseClient) return;
 
-            // 1. Listen for real-time auth changes
+            // 1. First check if hash contains token from Google
+            const hashUser = await checkAndApplyUrlHashSession();
+            if (hashUser) {
+                currentUser = hashUser;
+                showPanelScreen();
+                await ensureUserProfile(hashUser);
+                loadUserProfile();
+                loadCustomerOrders();
+                loadCustomerChat();
+                loadTransactions();
+                loadServicesAndCategories();
+                return;
+            }
+
+            // 2. Real-time auth listener
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 if (session && session.user) {
                     currentUser = session.user;
@@ -752,7 +787,7 @@
                 }
             });
 
-            // 2. Direct session fetch
+            // 3. Fallback direct session check
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session && session.user) {
                 currentUser = session.user;
@@ -859,6 +894,10 @@
                         avatar_url: resolvedAvatar,
                         balance: 0.0000
                     });
+                } else if (resolvedAvatar) {
+                    await supabaseClient.from("profiles").update({
+                        avatar_url: resolvedAvatar
+                    }).eq("id", user.id);
                 }
             } catch (err) {
                 console.warn(err);
