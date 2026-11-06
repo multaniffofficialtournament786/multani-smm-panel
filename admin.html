@@ -64,7 +64,20 @@
         .sidebar-menu li a.active { background: rgba(255, 70, 36, 0.15); border-left: 3px solid var(--accent-orange); color: #fff; }
 
         .main-content { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 75px; width: 100%; overflow-x: hidden; }
+        
+        /* TOP NAVBAR WITH CURRENCY SELECTOR */
         .top-navbar { height: 56px; background: var(--bg-card); border-bottom: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 90; }
+        .nav-controls { display: flex; align-items: center; gap: 8px; }
+        .currency-select-admin {
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            color: #fff;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            outline: none;
+        }
 
         .content-body { padding: 15px; max-width: 1100px; width: 100%; margin: 0 auto; }
         .page-view { display: none; }
@@ -96,7 +109,7 @@
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
         .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
-        /* INBOX / CHAT DESK STYLES */
+        /* INBOX / CHAT DESK */
         .inbox-item {
             background: var(--bg-card-sec);
             border: 1px solid var(--border-card);
@@ -128,30 +141,10 @@
             object-fit: cover;
             flex-shrink: 0;
         }
-        .inbox-texts {
-            flex: 1;
-            overflow: hidden;
-        }
-        .inbox-texts h4 {
-            font-size: 0.95rem;
-            color: #fff;
-            margin-bottom: 2px;
-        }
-        .inbox-last-msg {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
-        }
-        .inbox-badge-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
-            flex-shrink: 0;
-        }
+        .inbox-texts { flex: 1; overflow: hidden; }
+        .inbox-texts h4 { font-size: 0.95rem; color: #fff; margin-bottom: 2px; }
+        .inbox-last-msg { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+        .inbox-badge-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
         .unread-pill {
             background: #EF4444;
             color: #fff;
@@ -167,7 +160,7 @@
             100% { transform: scale(1); }
         }
 
-        /* ACTIVE CHAT WINDOW IN ADMIN */
+        /* ACTIVE CHAT WINDOW */
         .chat-active-container {
             display: flex;
             flex-direction: column;
@@ -185,43 +178,10 @@
             align-items: center;
             gap: 12px;
         }
-        .chat-back-btn {
-            background: transparent;
-            border: none;
-            color: var(--accent-cyan);
-            font-size: 1.15rem;
-            cursor: pointer;
-            padding: 4px 6px;
-        }
-        .chat-messages-area {
-            flex: 1;
-            padding: 14px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .bubble-admin {
-            align-self: flex-end;
-            background: linear-gradient(135deg, var(--accent-orange), #d93314);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 12px 12px 2px 12px;
-            font-size: 0.82rem;
-            max-width: 80%;
-            word-break: break-word;
-        }
-        .bubble-user {
-            align-self: flex-start;
-            background: #1f293d;
-            border: 1px solid #2d3b55;
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 12px 12px 12px 2px;
-            font-size: 0.82rem;
-            max-width: 80%;
-            word-break: break-word;
-        }
+        .chat-back-btn { background: transparent; border: none; color: var(--accent-cyan); font-size: 1.15rem; cursor: pointer; padding: 4px 6px; }
+        .chat-messages-area { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble-admin { align-self: flex-end; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; padding: 8px 12px; border-radius: 12px 12px 2px 12px; font-size: 0.82rem; max-width: 80%; word-break: break-word; }
+        .bubble-user { align-self: flex-start; background: #1f293d; border: 1px solid #2d3b55; color: #fff; padding: 8px 12px; border-radius: 12px 12px 12px 2px; font-size: 0.82rem; max-width: 80%; word-break: break-word; }
 
         /* Mobile Bottom Nav */
         .mobile-bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(14, 17, 24, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; justify-content: space-around; align-items: center; }
@@ -284,7 +244,7 @@
             <ul class="sidebar-menu">
                 <li><a class="active" onclick="navigateAdmin('allOrdersView', this)"><i class="fa-solid fa-list-check"></i> Orders</a></li>
                 <li><a onclick="navigateAdmin('membersView', this)"><i class="fa-solid fa-users-gear"></i> Members</a></li>
-                <li><a onclick="navigateAdmin('servicesManageView', this)"><i class="fa-solid fa-cubes"></i> Services</a></li>
+                <li><a onclick="navigateAdmin('servicesManageView', this)"><i class="fa-solid fa-cubes"></i> Services & Provider</a></li>
                 <li><a onclick="navigateAdmin('depositsManageView', this)"><i class="fa-solid fa-money-bill-transfer"></i> Deposits</a></li>
                 <li><a onclick="navigateAdmin('chatSupportDeskView', this)"><i class="fa-solid fa-headset"></i> Live Chat <span id="sidebarUnreadDot" class="unread-pill hidden" style="margin-left: auto;">0</span></a></li>
                 <li style="margin-top: auto;"><a onclick="triggerAdminLogout()" style="color: var(--accent-orange);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
@@ -292,13 +252,26 @@
         </aside>
 
         <main class="main-content">
+            <!-- TOP NAVBAR -->
             <header class="top-navbar">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <button onclick="toggleAdminSidebar()" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;"><i class="fa-solid fa-bars"></i></button>
-                    <h3 style="font-size: 1.1rem; color: var(--accent-cyan);">Multani Admin Desk</h3>
+                    <h3 style="font-size: 1.05rem; color: var(--accent-cyan);">Multani Admin</h3>
                 </div>
-                <div style="font-size: 0.8rem; color: #10B981; font-weight: 700;">
-                    <i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> Active
+                
+                <div class="nav-controls">
+                    <!-- Multi-Currency Selector in Admin -->
+                    <select class="currency-select-admin" id="adminCurrencySelect" onchange="handleAdminCurrencyChange(this.value)">
+                        <option value="PKR">🇵🇰 PKR (Rs)</option>
+                        <option value="USD">🇺🇸 USD ($)</option>
+                        <option value="INR">🇮🇳 INR (₹)</option>
+                        <option value="AED">🇦🇪 AED</option>
+                        <option value="SAR">🇸🇦 SAR</option>
+                    </select>
+                    
+                    <div style="font-size: 0.75rem; color: #10B981; font-weight: 700;">
+                        <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> Active
+                    </div>
                 </div>
             </header>
 
@@ -315,7 +288,7 @@
                     </form>
                 </div>
 
-                <!-- VIEW 1: ORDERS -->
+                <!-- VIEW 1: ORDERS (GLOBAL ORDERS STREAM) -->
                 <section id="allOrdersView" class="page-view active">
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
@@ -353,7 +326,7 @@
                     </div>
                 </section>
 
-                <!-- VIEW 2: MEMBERS -->
+                <!-- VIEW 2: MEMBERS (CARDS GRID) -->
                 <section id="membersView" class="page-view">
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px;">
@@ -366,8 +339,38 @@
                     </div>
                 </section>
 
-                <!-- VIEW 3: SERVICES -->
+                <!-- VIEW 3: SERVICES & SMM DECENT PROVIDER SETTINGS -->
                 <section id="servicesManageView" class="page-view">
+                    
+                    <!-- SMM DECENT API SETTINGS BOX -->
+                    <div class="vip-card" style="margin-bottom: 15px; border-left: 4px solid var(--accent-cyan);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                            <h3 style="font-size: 1rem; color: var(--accent-cyan);">
+                                <i class="fa-solid fa-server"></i> SMM Decent Provider API
+                            </h3>
+                            <div style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 6px; font-size: 0.8rem;">
+                                <span>Balance: </span>
+                                <strong id="providerBalanceDisplay" style="color: #10B981;">Checking...</strong>
+                            </div>
+                        </div>
+                        
+                        <form onsubmit="handleSaveProviderApi(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>API URL</label>
+                                <input type="text" id="provApiUrlInput" value="https://smmdecent.co/api/v2" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>API Key (SMM Decent)</label>
+                                <input type="password" id="provApiKeyInput" placeholder="Paste your API key here" required>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: flex-end;">
+                                <button type="submit" class="btn-vip" style="flex: 1;"><i class="fa-solid fa-floppy-disk"></i> Save Key</button>
+                                <button type="button" class="btn-vip btn-sec" onclick="checkProviderBalance()"><i class="fa-solid fa-rotate"></i> Check Balance</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Add Category -->
                     <div class="vip-card" style="margin-bottom: 15px;">
                         <h3 style="font-size: 1rem; margin-bottom: 10px; color: var(--accent-cyan);"><i class="fa-solid fa-folder-plus"></i> Add Category</h3>
                         <form onsubmit="handleCreateCategory(event)" style="display: flex; gap: 8px;">
@@ -376,8 +379,9 @@
                         </form>
                     </div>
 
+                    <!-- Add Service -->
                     <div class="vip-card">
-                        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service</h3>
+                        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service (Provider Mapping)</h3>
                         <form onsubmit="handleSaveService(event)" id="serviceAdminForm">
                             <input type="hidden" id="srvFormId">
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
@@ -521,7 +525,7 @@
             </div>
             
             <div style="background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; padding: 10px; margin-bottom: 15px;">
-                <label>Adjust Balance ($ USD)</label>
+                <label>Adjust Balance ($ USD Base)</label>
                 <div style="display: flex; gap: 8px; margin-top: 4px;">
                     <input type="number" step="0.0001" id="modalAdjustBalanceInput">
                     <button class="btn-vip btn-green" onclick="submitBalanceAdjustment()">Update</button>
@@ -549,6 +553,30 @@
         let activeChatUserId = null;
         let activeModalUserId = null;
 
+        // MULTI-CURRENCY CONVERSION SYSTEM IN ADMIN (Binance Rate: 1$ = 290 PKR)
+        const ADMIN_CURRENCIES = {
+            PKR: { symbol: "Rs ", rate: 290.00 },
+            USD: { symbol: "$", rate: 1.00 },
+            INR: { symbol: "₹", rate: 94.35 },
+            AED: { symbol: "AED ", rate: 3.67 },
+            SAR: { symbol: "SAR ", rate: 3.75 }
+        };
+        let activeAdminCurrency = localStorage.getItem("admin_currency") || "PKR";
+
+        function formatAdminPrice(amountInUSD) {
+            const c = ADMIN_CURRENCIES[activeAdminCurrency] || ADMIN_CURRENCIES.PKR;
+            const converted = (parseFloat(amountInUSD) || 0) * c.rate;
+            return `${c.symbol}${converted.toFixed(2)}`;
+        }
+
+        function handleAdminCurrencyChange(curr) {
+            activeAdminCurrency = curr;
+            localStorage.setItem("admin_currency", curr);
+            renderGlobalOrders(allGlobalOrders);
+            renderMembers(allMembers);
+            loadAdminCategoriesAndServices();
+        }
+
         function notify(msg, type = "info") {
             const container = document.getElementById("toastContainer");
             const toast = document.createElement("div");
@@ -559,6 +587,7 @@
         }
 
         window.addEventListener("DOMContentLoaded", async () => {
+            document.getElementById("adminCurrencySelect").value = activeAdminCurrency;
             if (!supabaseClient) return;
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
@@ -617,6 +646,7 @@
             document.getElementById("adminAuthContainer").classList.add("hidden");
             document.getElementById("adminAppContainer").classList.remove("hidden");
             loadAdminAnnouncement();
+            loadProviderApiSettings();
             loadAllGlobalOrders();
             loadAllMembers();
             loadAdminCategoriesAndServices();
@@ -654,7 +684,64 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // ================= 1. GLOBAL ORDERS STREAM =================
+        // ================= 1. SMM DECENT PROVIDER SETTINGS & BALANCE =================
+        async function loadProviderApiSettings() {
+            const { data } = await supabaseClient.from("provider_settings").select("*").eq("id", 1).maybeSingle();
+            if (data) {
+                if (data.api_url) document.getElementById("provApiUrlInput").value = data.api_url;
+                if (data.api_key) {
+                    document.getElementById("provApiKeyInput").value = data.api_key;
+                    checkProviderBalance();
+                }
+            }
+        }
+
+        async function handleSaveProviderApi(e) {
+            e.preventDefault();
+            const url = document.getElementById("provApiUrlInput").value.trim();
+            const key = document.getElementById("provApiKeyInput").value.trim();
+
+            const { error } = await supabaseClient
+                .from("provider_settings")
+                .upsert({ id: 1, api_url: url, api_key: key, updated_at: new Date() });
+
+            if (error) return notify("Failed saving API: " + error.message, "error");
+            notify("API Key saved securely!", "success");
+            checkProviderBalance();
+        }
+
+        async function checkProviderBalance() {
+            const disp = document.getElementById("providerBalanceDisplay");
+            disp.innerText = "Checking...";
+
+            const { data: prov } = await supabaseClient.from("provider_settings").select("*").eq("id", 1).maybeSingle();
+            if (!prov || !prov.api_key) {
+                disp.innerText = "No Key Set";
+                return;
+            }
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append("key", prov.api_key);
+                formData.append("action", "balance");
+
+                const res = await fetch(prov.api_url, {
+                    method: "POST",
+                    body: formData
+                });
+                const result = await res.json();
+
+                if (result.balance !== undefined) {
+                    disp.innerText = `${result.currency || 'PKR'} ${parseFloat(result.balance).toFixed(2)}`;
+                } else if (result.error) {
+                    disp.innerText = "Error: " + result.error;
+                }
+            } catch (err) {
+                disp.innerText = "Fetch Error (Check Key)";
+            }
+        }
+
+        // ================= 2. GLOBAL ORDERS STREAM =================
         async function loadAllGlobalOrders() {
             const { data, error } = await supabaseClient
                 .from("orders")
@@ -681,7 +768,7 @@
                     <td>${o.services ? o.services.name : 'Service'} <small style="color:var(--accent-orange);">(ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : 'Manual'})</small></td>
                     <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan);">${o.target_link}</a></td>
                     <td>${o.quantity}</td>
-                    <td>$${parseFloat(o.charge).toFixed(4)}</td>
+                    <td><strong style="color: #fff;">${formatAdminPrice(o.charge)}</strong></td>
                     <td><span class="badge badge-${o.status}">${o.status}</span></td>
                     <td>
                         <select onchange="changeOrderStatus('${o.id}', this.value)" style="padding: 2px 4px; font-size: 0.75rem; width: auto;">
@@ -708,7 +795,7 @@
             loadAllGlobalOrders();
         }
 
-        // ================= 2. MEMBERS MANAGEMENT =================
+        // ================= 3. MEMBERS MANAGEMENT =================
         async function loadAllMembers() {
             const { data } = await supabaseClient.from("profiles").select("*").order("created_at", { ascending: false });
             allMembers = data || [];
@@ -733,7 +820,7 @@
                     </div>
                     <div class="member-balance-box">
                         <span style="font-size: 0.75rem;">Balance:</span>
-                        <span style="font-weight: 700; color: #10B981;">$${parseFloat(m.balance || 0).toFixed(4)}</span>
+                        <span style="font-weight: 700; color: #10B981; font-family:'Rajdhani'; font-size:1.1rem;">${formatAdminPrice(m.balance || 0)}</span>
                     </div>
                     <div class="member-actions">
                         <button class="btn-vip btn-sec" onclick="openMemberModal('${m.id}', 'orders')">Orders</button>
@@ -770,15 +857,15 @@
                 document.getElementById("btnModalWalletTab").classList.remove("active");
                 const { data } = await supabaseClient.from("orders").select("*, services(name)").eq("user_id", activeModalUserId);
                 content.innerHTML = (!data || data.length === 0) ? `<p style="padding:10px; color:var(--text-muted);">No orders found</p>` : `
-                    <table><thead><tr><th>#</th><th>Service</th><th>Qty</th><th>Status</th></tr></thead>
-                    <tbody>${data.map(o => `<tr><td>#${o.order_number||o.id.substring(0,4)}</td><td>${o.services?o.services.name:''}</td><td>${o.quantity}</td><td>${o.status}</td></tr>`).join("")}</tbody></table>`;
+                    <table><thead><tr><th>#</th><th>Service</th><th>Qty</th><th>Charge</th><th>Status</th></tr></thead>
+                    <tbody>${data.map(o => `<tr><td>#${o.order_number||o.id.substring(0,4)}</td><td>${o.services?o.services.name:''}</td><td>${o.quantity}</td><td>${formatAdminPrice(o.charge)}</td><td>${o.status}</td></tr>`).join("")}</tbody></table>`;
             } else {
                 document.getElementById("btnModalWalletTab").classList.add("active");
                 document.getElementById("btnModalOrderTab").classList.remove("active");
                 const { data } = await supabaseClient.from("transactions").select("*").eq("user_id", activeModalUserId);
                 content.innerHTML = (!data || data.length === 0) ? `<p style="padding:10px; color:var(--text-muted);">No transactions found</p>` : `
                     <table><thead><tr><th>Date</th><th>Desc</th><th>Amount</th></tr></thead>
-                    <tbody>${data.map(t => `<tr><td>${new Date(t.created_at).toLocaleDateString()}</td><td>${t.description}</td><td>$${parseFloat(t.amount).toFixed(4)}</td></tr>`).join("")}</tbody></table>`;
+                    <tbody>${data.map(t => `<tr><td>${new Date(t.created_at).toLocaleDateString()}</td><td>${t.description}</td><td>${formatAdminPrice(t.amount)}</td></tr>`).join("")}</tbody></table>`;
             }
         }
 
@@ -790,9 +877,9 @@
             loadAllMembers();
         }
 
-        // ================= 3. SERVICES & CATEGORIES =================
+        // ================= 4. SERVICES & CATEGORIES =================
         async function loadAdminCategoriesAndServices() {
-            const { data: cats, error: catErr } = await supabaseClient.from("categories").select("*").order("name");
+            const { data: cats } = await supabaseClient.from("categories").select("*").order("name");
             const { data: srvs } = await supabaseClient.from("services").select("*, categories(name)").order("created_at", { ascending: false });
             
             const sel = document.getElementById("srvAdminCategorySelect");
@@ -806,7 +893,7 @@
                     <td><strong>${s.name}</strong></td>
                     <td>${s.categories ? s.categories.name : '-'}</td>
                     <td><span style="color:var(--accent-orange); font-weight:700;">${s.provider_service_id || 'Manual'}</span></td>
-                    <td>$${parseFloat(s.rate_per_1k).toFixed(4)}</td>
+                    <td>${formatAdminPrice(s.rate_per_1k)}</td>
                     <td>${s.min_quantity} - ${s.max_quantity}</td>
                     <td><button class="btn-vip btn-sec" style="color:#ef4444; padding:3px 8px; font-size:0.75rem;" onclick="deleteService('${s.id}')"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>
@@ -876,7 +963,7 @@
             loadAdminCategoriesAndServices();
         }
 
-        // ================= 4. DEPOSITS VERIFICATION =================
+        // ================= 5. DEPOSITS VERIFICATION =================
         async function loadAdminDeposits() {
             const { data } = await supabaseClient.from("deposits").select("*, profiles(full_name)").order("created_at", { ascending: false });
             const body = document.getElementById("adminDepositsTableBody");
@@ -886,7 +973,7 @@
                     <td>${new Date(d.created_at).toLocaleDateString()}</td>
                     <td>${d.profiles ? d.profiles.full_name : ''}</td>
                     <td>${d.payment_method}</td>
-                    <td>$${parseFloat(d.amount).toFixed(4)}</td>
+                    <td style="color:#10B981; font-weight:700;">${formatAdminPrice(d.amount)}</td>
                     <td>${d.transaction_id}</td>
                     <td>${d.sender_account}</td>
                     <td><span class="badge badge-${d.status}">${d.status}</span></td>
@@ -905,9 +992,8 @@
             loadAllMembers();
         }
 
-        // ================= 5. CUSTOMER INBOX & CHAT SYSTEM (WHATSAPP STYLE) =================
+        // ================= 6. CUSTOMER INBOX & CHAT SYSTEM (WHATSAPP STYLE) =================
         async function loadChatInboxList() {
-            // Fetch all messages sorted by time
             const { data: messages, error } = await supabaseClient
                 .from("chat_messages")
                 .select("*, profiles(full_name, email, avatar_url)")
@@ -920,7 +1006,6 @@
                 return;
             }
 
-            // Group by User ID and calculate unread count + latest message
             const inboxMap = new Map();
             let totalUnreadOverall = 0;
 
@@ -937,7 +1022,6 @@
                     });
                 }
 
-                // If user sent it and it is not read yet
                 if (m.sender_type === 'user' && m.is_read === false) {
                     const item = inboxMap.get(m.user_id);
                     item.unreadCount += 1;
@@ -983,7 +1067,6 @@
         async function openChatWindow(userId, userName, userEmail, userAvatar) {
             activeChatUserId = userId;
             
-            // Switch UI views
             document.getElementById("chatInboxContainer").classList.add("hidden");
             document.getElementById("chatConversationContainer").classList.remove("hidden");
 
@@ -991,7 +1074,6 @@
             document.getElementById("activeChatUserEmail").innerText = userEmail;
             document.getElementById("activeChatUserAvatar").src = userAvatar;
 
-            // Mark unread messages as read in Supabase
             await supabaseClient
                 .from("chat_messages")
                 .update({ is_read: true })
@@ -1060,7 +1142,6 @@
             if (target) target.classList.add("active");
             if (element) element.classList.add("active");
 
-            // Agar chat section par click karein to pehle inbox view dikhayein
             if (viewId === 'chatSupportDeskView') {
                 backToInbox();
             }
