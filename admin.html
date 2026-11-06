@@ -671,7 +671,7 @@
             notify("Announcement updated on customer panel!", "success");
         }
 
-        // ================= 1. SMM DECENT PROVIDER SETTINGS & BALANCE (FAILSAFE PROXY) =================
+        // ================= 1. SMM DECENT PROVIDER SETTINGS & BALANCE (DIRECT SUPABASE RPC) =================
         async function loadProviderApiSettings() {
             const { data } = await supabaseClient.from("provider_settings").select("*").eq("id", 1).maybeSingle();
             if (data) {
@@ -701,50 +701,20 @@
             const disp = document.getElementById("providerBalanceDisplay");
             disp.innerText = "Checking...";
 
-            const { data: prov } = await supabaseClient.from("provider_settings").select("*").eq("id", 1).maybeSingle();
-            if (!prov || !prov.api_key) {
-                disp.innerText = "No Key Set";
+            // Direct Supabase RPC Call - No Browser Proxy, No CORS blocking
+            const { data, error } = await supabaseClient.rpc("get_smmdecent_balance");
+
+            if (error) {
+                disp.innerText = "RPC Error";
                 return;
             }
 
-            try {
-                const formData = new URLSearchParams();
-                formData.append("key", prov.api_key);
-                formData.append("action", "balance");
-
-                // Multi-Proxy Fetch (Bypasses legacy keyless block)
-                let res = null;
-                try {
-                    res = await fetch(`https://api.cors.lol/?url=${encodeURIComponent(prov.api_url)}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                        body: formData.toString()
-                    });
-                } catch(e) { res = null; }
-
-                if (!res || !res.ok) {
-                    try {
-                        res = await fetch(`https://thingproxy.freeboard.io/fetch/${prov.api_url}`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                            body: formData.toString()
-                        });
-                    } catch(e) { res = null; }
-                }
-
-                if (!res) throw new Error("Connection failed");
-
-                const result = await res.json();
-
-                if (result.balance !== undefined) {
-                    disp.innerText = `${result.currency || 'PKR'} ${parseFloat(result.balance).toFixed(2)}`;
-                } else if (result.error) {
-                    disp.innerText = "Error: " + result.error;
-                } else {
-                    disp.innerText = "Invalid Response";
-                }
-            } catch (err) {
-                disp.innerText = "Fetch Error (Check Key)";
+            if (data && data.balance !== undefined) {
+                disp.innerText = `${data.currency || 'PKR'} ${parseFloat(data.balance).toFixed(2)}`;
+            } else if (data && data.error) {
+                disp.innerText = "Error: " + data.error;
+            } else {
+                disp.innerText = "Invalid Response";
             }
         }
 
