@@ -52,6 +52,52 @@
             width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.7);
         }
+
+        /* GOOGLE SIGN-IN BUTTON */
+        .btn-google-auth {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 11px;
+            background: #ffffff;
+            color: #1f2937;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-bottom: 16px;
+        }
+        .btn-google-auth:active {
+            opacity: 0.85;
+        }
+        .btn-google-auth img {
+            width: 18px;
+            height: 18px;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-card);
+        }
+        .auth-divider:not(:empty)::before { margin-right: .6em; }
+        .auth-divider:not(:empty)::after { margin-left: .6em; }
+
         .auth-switch-tabs {
             display: flex;
             background: var(--bg-card-sec);
@@ -368,6 +414,14 @@
                 <h2 style="font-size: 1.4rem; color: #fff;">MULTANI VIP PANEL</h2>
                 <p style="font-size: 0.78rem; color: var(--text-muted);">Login or Register to access services</p>
             </div>
+
+            <!-- ONE-CLICK GOOGLE LOGIN BUTTON -->
+            <button type="button" class="btn-google-auth" onclick="handleGoogleOAuthLogin()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Sign in with Google
+            </button>
+
+            <div class="auth-divider">OR USE EMAIL</div>
 
             <div class="auth-switch-tabs">
                 <button type="button" class="auth-tab-btn active" id="tabBtnLogin" onclick="switchAuthTab('login')">Login</button>
@@ -784,6 +838,7 @@
             if (session && session.user) {
                 currentUser = session.user;
                 showPanelScreen();
+                await ensureUserProfile(session.user);
                 await loadUserProfile();
                 loadCustomerOrders();
                 loadCustomerChat();
@@ -792,6 +847,18 @@
             } else {
                 showAuthScreen();
             }
+
+            // Real-time Auth State Change Listener (Useful for Google OAuth Redirect)
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                if (session && session.user) {
+                    currentUser = session.user;
+                    showPanelScreen();
+                    await ensureUserProfile(session.user);
+                    await loadUserProfile();
+                } else if (event === 'SIGNED_OUT') {
+                    showAuthScreen();
+                }
+            });
         });
 
         function showAuthScreen() {
@@ -820,6 +887,19 @@
                 tabLog.classList.remove("active");
                 formReg.classList.remove("hidden");
                 formLog.classList.add("hidden");
+            }
+        }
+
+        // GOOGLE OAUTH ONE-TAP SIGN-IN
+        async function handleGoogleOAuthLogin() {
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.href.split('#')[0]
+                }
+            });
+            if (error) {
+                notify("Google Login Error: " + error.message, "error");
             }
         }
 
@@ -867,18 +947,34 @@
 
             if (error) return notify(error.message, "error");
 
-            // Profile row ensure karein
             if (data.user) {
-                await supabaseClient.from("profiles").upsert({
-                    id: data.user.id,
-                    full_name: fullName,
-                    email: email,
-                    balance: 0.0000
-                });
+                await ensureUserProfile(data.user, fullName);
             }
 
             notify("Account created successfully! Logging you in...", "success");
             location.reload();
+        }
+
+        // ENSURE PROFILE EXISTS (Both for Email & Google OAuth)
+        async function ensureUserProfile(user, fallbackName = null) {
+            const meta = user.user_metadata || {};
+            const resolvedName = fallbackName || meta.full_name || meta.name || user.email.split('@')[0];
+            const resolvedAvatar = meta.avatar_url || meta.picture || null;
+
+            const { data: existing } = await supabaseClient.from("profiles").select("id").eq("id", user.id).maybeSingle();
+            if (!existing) {
+                await supabaseClient.from("profiles").insert({
+                    id: user.id,
+                    full_name: resolvedName,
+                    email: user.email,
+                    avatar_url: resolvedAvatar,
+                    balance: 0.0000
+                });
+            } else if (resolvedAvatar) {
+                await supabaseClient.from("profiles").update({
+                    avatar_url: resolvedAvatar
+                }).eq("id", user.id);
+            }
         }
 
         // LOGOUT WITH VIP POPUP
@@ -936,10 +1032,10 @@
                 document.getElementById("profFullName").value = name;
                 document.getElementById("profEmail").value = data.email || currentUser.email || '';
                 
-                if (data.avatar_url) {
-                    document.getElementById("navAvatarImg").src = data.avatar_url;
-                    document.getElementById("profilePageAvatar").src = data.avatar_url;
-                }
+                const avatar = data.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+                document.getElementById("navAvatarImg").src = avatar;
+                document.getElementById("profilePageAvatar").src = avatar;
+
                 updateWalletDisplay();
             }
         }
