@@ -32,48 +32,7 @@
         body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; width: 100%; padding-bottom: 75px; }
         h1, h2, h3, h4, .brand-font { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* 1. SCROLLING ANNOUNCEMENT TICKER */
-        .announcement-bar {
-            background: linear-gradient(90deg, #101622, #182233);
-            border-bottom: 1px solid var(--accent-orange);
-            color: #fff;
-            padding: 6px 12px;
-            font-size: 0.78rem;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 1002;
-        }
-        .announcement-badge {
-            background: var(--accent-orange);
-            color: #fff;
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 0.65rem;
-            margin-right: 10px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .announcement-ticker {
-            display: inline-block;
-            white-space: nowrap;
-            padding-left: 100%;
-            animation: marquee 24s linear infinite;
-            font-weight: 600;
-            color: var(--accent-cyan);
-        }
-        @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
-
-        /* 2. TOP NAVBAR */
+        /* 1. TOP NAVBAR (SB SE PEHLE - MENU, BALANCE, CURRENCY, PROFILE) */
         .top-navbar {
             height: 60px;
             background: var(--bg-card);
@@ -83,21 +42,21 @@
             align-items: center;
             justify-content: space-between;
             position: sticky;
-            top: 31px;
-            z-index: 1000;
+            top: 0;
+            z-index: 1002;
         }
-        .nav-left { display: flex; align-items: center; gap: 10px; }
+        .nav-left { display: flex; align-items: center; gap: 8px; }
         .menu-toggle { background: transparent; border: none; color: #fff; font-size: 1.35rem; cursor: pointer; padding: 4px; }
         
         .wallet-badge {
             background: var(--bg-card-sec);
             border: 1px solid var(--border-card);
             border-radius: 20px;
-            padding: 5px 10px;
+            padding: 5px 9px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.82rem;
+            gap: 5px;
+            font-size: 0.8rem;
             font-weight: 700;
             color: var(--accent-cyan);
         }
@@ -114,7 +73,7 @@
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             cursor: pointer;
         }
         .user-avatar-mini {
@@ -128,13 +87,62 @@
             font-size: 0.82rem;
             font-weight: 600;
             color: #fff;
-            max-width: 90px;
+            max-width: 85px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        /* 3. SIDEBAR DRAWER (FULL ORIGINAL OPTIONS) */
+        /* 2. SCROLLING ANNOUNCEMENT BAR (HEADER K NECHE AUR OVERLAP-FREE) */
+        .announcement-bar {
+            background: #0B0E14;
+            border-bottom: 1px solid var(--border-card);
+            height: 34px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 60px;
+            z-index: 1001;
+            overflow: hidden;
+        }
+        .announcement-badge {
+            background: linear-gradient(135deg, var(--accent-orange), #d93314);
+            color: #fff;
+            height: 100%;
+            padding: 0 10px;
+            font-weight: 800;
+            font-size: 0.68rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            z-index: 10;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.5);
+        }
+        .ticker-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            white-space: nowrap;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        .announcement-ticker {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: marquee 24s linear infinite;
+            font-weight: 600;
+            font-size: 0.78rem;
+            color: var(--accent-cyan);
+        }
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        /* 3. SIDEBAR DRAWER (SHARE BUTTON RESTORED) */
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1999; display: none; }
         .sidebar-overlay.active { display: block; }
         .sidebar {
@@ -220,7 +228,7 @@
         .mobile-nav-item i { font-size: 1.15rem; }
         .mobile-nav-item.active { color: var(--accent-orange); }
 
-        #toastContainer { position: fixed; top: 40px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        #toastContainer { position: fixed; top: 70px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
         .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.96); border-left: 4px solid var(--accent-cyan); border-radius: 8px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; }
         .toast.error { border-left-color: var(--accent-orange); }
         .toast.success { border-left-color: var(--accent-green); }
@@ -230,15 +238,7 @@
 
     <div id="toastContainer"></div>
 
-    <!-- 1. LIVE SCROLLING ANNOUNCEMENT BAR -->
-    <div class="announcement-bar">
-        <div class="announcement-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
-        <div class="announcement-ticker" id="scrollingAnnouncementText">
-            Welcome to MULTANI SMM PANEL! All services active with instant speed. Binance USDT Rate: 1$ = 290 PKR.
-        </div>
-    </div>
-
-    <!-- 2. TOP NAVBAR (WITH 3-LINE BUTTON & PROFILE AVATAR) -->
+    <!-- 1. TOP NAVBAR (PEHLE SHOW HOGA: 3-LINE MENU, RS/PKR BALANCE, CURRENCY, PROFILE) -->
     <header class="top-navbar">
         <div class="nav-left">
             <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
@@ -262,7 +262,17 @@
         </div>
     </header>
 
-    <!-- 3. SIDEBAR DRAWER (ALL 9 ORIGINAL OPTIONS) -->
+    <!-- 2. LIVE SCROLLING ANNOUNCEMENT BAR (TOP NAVBAR KE NECHE + OVERLAP FIXED) -->
+    <div class="announcement-bar">
+        <div class="announcement-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
+        <div class="ticker-wrapper">
+            <div class="announcement-ticker" id="scrollingAnnouncementText">
+                Welcome to MULTANI SMM PANEL! All services active with instant speed. Binance USDT Rate: 1$ = 290 PKR.
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SIDEBAR DRAWER (REFERRALS KI JAGAH DIRECT SHARE BUTTON) -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <aside class="sidebar" id="sidebarDrawer">
         <div class="sidebar-header">
@@ -276,7 +286,8 @@
             <li><a onclick="switchTab('viewOrdersList', this)"><i class="fa-solid fa-box-archive"></i> My Orders</a></li>
             <li><a onclick="switchTab('viewAddFunds', this)"><i class="fa-solid fa-wallet"></i> Add Funds</a></li>
             <li><a onclick="switchTab('viewTransactions', this)"><i class="fa-solid fa-clock-rotate-left"></i> Transactions</a></li>
-            <li><a onclick="switchTab('viewReferrals', this)"><i class="fa-solid fa-users"></i> Referrals</a></li>
+            <!-- REPLACED REFERRALS WITH SHARE -->
+            <li><a onclick="handleShareApp()"><i class="fa-solid fa-share-nodes" style="color: var(--accent-cyan);"></i> Share App</a></li>
             <li><a onclick="switchTab('viewSupport', this)"><i class="fa-solid fa-comments"></i> Live Support</a></li>
             <li><a onclick="switchTab('viewProfile', this)"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
         </ul>
@@ -446,19 +457,7 @@
             </div>
         </div>
 
-        <!-- VIEW 7: REFERRALS -->
-        <div id="viewReferrals" class="app-view">
-            <div class="vip-card">
-                <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-users"></i> Affiliate & Referrals</h2>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Share your link and earn 5% bonus on friend deposits!</p>
-                <div class="form-group">
-                    <label>Your Referral Link</label>
-                    <input type="text" readonly id="referralLinkInput" value="https://multaniffofficialtournament786.github.io/multani-smm-panel/?ref=vip">
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 8: LIVE SUPPORT CHAT -->
+        <!-- VIEW 7: LIVE SUPPORT CHAT -->
         <div id="viewSupport" class="app-view">
             <div class="vip-card">
                 <h2 style="margin-bottom: 10px; font-size: 1.15rem; color: var(--accent-orange);"><i class="fa-solid fa-headset"></i> Live Support Chat</h2>
@@ -472,7 +471,7 @@
             </div>
         </div>
 
-        <!-- VIEW 9: PROFILE -->
+        <!-- VIEW 8: PROFILE -->
         <div id="viewProfile" class="app-view">
             <div class="vip-card">
                 <h2 style="margin-bottom: 14px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-id-card"></i> Account Profile</h2>
@@ -493,7 +492,7 @@
 
     </div>
 
-    <!-- 4. BOTTOM NAVIGATION BAR (ORIGINAL 5 BUTTONS RESTORED) -->
+    <!-- 4. BOTTOM NAVIGATION BAR (ORIGINAL 5 BUTTONS) -->
     <nav class="mobile-bottom-nav">
         <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
             <i class="fa-solid fa-chart-pie"></i>
@@ -564,6 +563,23 @@
         function toggleSidebar() {
             document.getElementById("sidebarDrawer").classList.toggle("open");
             document.getElementById("sidebarOverlay").classList.toggle("active");
+        }
+
+        // SHARE APP FUNCTION (NATIVE MOBILE SHARE & CLIPBOARD FALLBACK)
+        function handleShareApp() {
+            const shareData = {
+                title: 'MULTANI SMM PANEL',
+                text: 'Join MULTANI SMM Panel for the best and fastest social media services!',
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData).catch((err) => console.log('Share canceled'));
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                notify("Website link copied to clipboard!", "success");
+            }
+            toggleSidebar();
         }
 
         function switchTab(viewId, element) {
