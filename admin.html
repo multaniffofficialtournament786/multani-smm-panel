@@ -96,9 +96,136 @@
         .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
         .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
+        /* INBOX / CHAT DESK STYLES */
+        .inbox-item {
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .inbox-item:hover, .inbox-item:active {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 213, 255, 0.05);
+        }
+        .inbox-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            overflow: hidden;
+        }
+        .inbox-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1.5px solid var(--accent-orange);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .inbox-texts {
+            flex: 1;
+            overflow: hidden;
+        }
+        .inbox-texts h4 {
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .inbox-last-msg {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        .inbox-badge-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .unread-pill {
+            background: #EF4444;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 12px;
+            animation: pulseBadge 1.5s infinite;
+        }
+        @keyframes pulseBadge {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* ACTIVE CHAT WINDOW IN ADMIN */
+        .chat-active-container {
+            display: flex;
+            flex-direction: column;
+            height: 520px;
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .chat-header-bar {
+            background: rgba(0,0,0,0.4);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-card);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chat-back-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent-cyan);
+            font-size: 1.15rem;
+            cursor: pointer;
+            padding: 4px 6px;
+        }
+        .chat-messages-area {
+            flex: 1;
+            padding: 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .bubble-admin {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--accent-orange), #d93314);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 12px 12px 2px 12px;
+            font-size: 0.82rem;
+            max-width: 80%;
+            word-break: break-word;
+        }
+        .bubble-user {
+            align-self: flex-start;
+            background: #1f293d;
+            border: 1px solid #2d3b55;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 12px 12px 12px 2px;
+            font-size: 0.82rem;
+            max-width: 80%;
+            word-break: break-word;
+        }
+
         /* Mobile Bottom Nav */
         .mobile-bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(14, 17, 24, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; justify-content: space-around; align-items: center; }
-        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; flex: 1; height: 100%; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; flex: 1; height: 100%; position: relative; }
         .mobile-nav-item i { font-size: 1.15rem; }
         .mobile-nav-item.active { color: var(--accent-orange); }
 
@@ -143,7 +270,7 @@
         </div>
     </div>
 
-    <!-- 2. ADMIN APP CONTAINER -->
+    <!-- 2. ADMIN DASHBOARD APP -->
     <div id="adminAppContainer" class="hidden">
         
         <aside class="sidebar" id="adminSidebar">
@@ -159,7 +286,7 @@
                 <li><a onclick="navigateAdmin('membersView', this)"><i class="fa-solid fa-users-gear"></i> Members</a></li>
                 <li><a onclick="navigateAdmin('servicesManageView', this)"><i class="fa-solid fa-cubes"></i> Services</a></li>
                 <li><a onclick="navigateAdmin('depositsManageView', this)"><i class="fa-solid fa-money-bill-transfer"></i> Deposits</a></li>
-                <li><a onclick="navigateAdmin('chatSupportDeskView', this)"><i class="fa-solid fa-headset"></i> Live Chat</a></li>
+                <li><a onclick="navigateAdmin('chatSupportDeskView', this)"><i class="fa-solid fa-headset"></i> Live Chat <span id="sidebarUnreadDot" class="unread-pill hidden" style="margin-left: auto;">0</span></a></li>
                 <li style="margin-top: auto;"><a onclick="triggerAdminLogout()" style="color: var(--accent-orange);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
             </ul>
         </aside>
@@ -177,7 +304,7 @@
 
             <div class="content-body">
                 
-                <!-- GLOBAL ANNOUNCEMENT CONTROLLER (TOP OF DASHBOARD) -->
+                <!-- GLOBAL ANNOUNCEMENT CONTROLLER -->
                 <div class="vip-card" style="margin-bottom: 15px;">
                     <h3 style="font-size: 0.95rem; color: var(--accent-orange); margin-bottom: 8px;">
                         <i class="fa-solid fa-bullhorn"></i> Live Customer Scrolling Announcement
@@ -188,7 +315,7 @@
                     </form>
                 </div>
 
-                <!-- VIEW 1: ORDERS (GLOBAL ORDERS STREAM) -->
+                <!-- VIEW 1: ORDERS -->
                 <section id="allOrdersView" class="page-view active">
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
@@ -226,7 +353,7 @@
                     </div>
                 </section>
 
-                <!-- VIEW 2: MEMBERS (CARDS GRID) -->
+                <!-- VIEW 2: MEMBERS -->
                 <section id="membersView" class="page-view">
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 8px;">
@@ -239,7 +366,7 @@
                     </div>
                 </section>
 
-                <!-- VIEW 3: SERVICES & PROVIDER MAPPING -->
+                <!-- VIEW 3: SERVICES -->
                 <section id="servicesManageView" class="page-view">
                     <div class="vip-card" style="margin-bottom: 15px;">
                         <h3 style="font-size: 1rem; margin-bottom: 10px; color: var(--accent-cyan);"><i class="fa-solid fa-folder-plus"></i> Add Category</h3>
@@ -250,7 +377,7 @@
                     </div>
 
                     <div class="vip-card">
-                        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service (Provider Mapping)</h3>
+                        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service</h3>
                         <form onsubmit="handleSaveService(event)" id="serviceAdminForm">
                             <input type="hidden" id="srvFormId">
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
@@ -301,7 +428,7 @@
                     </div>
                 </section>
 
-                <!-- VIEW 4: DEPOSITS VERIFICATION -->
+                <!-- VIEW 4: DEPOSITS -->
                 <section id="depositsManageView" class="page-view">
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -319,19 +446,39 @@
                     </div>
                 </section>
 
-                <!-- VIEW 5: LIVE SUPPORT CHAT DESK -->
+                <!-- VIEW 5: CUSTOMER INBOX & CHAT SYSTEM -->
                 <section id="chatSupportDeskView" class="page-view">
                     <div class="vip-card">
-                        <h2><i class="fa-solid fa-comments"></i> Admin Live Support Desk</h2>
-                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                            <div id="chatUsersList" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;"></div>
-                            <div style="background: var(--bg-card-sec); border-radius: 10px; height: 320px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px;" id="adminChatWindowBody">
-                                <p style="text-align: center; color: var(--text-muted); margin-top: 50px;">Select a user to chat</p>
+                        <!-- SUB-VIEW 1: INBOX CUSTOMER LIST -->
+                        <div id="chatInboxContainer">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <h2><i class="fa-solid fa-inbox"></i> Customer Support Inbox</h2>
+                                <button class="btn-vip btn-sec" onclick="loadChatInboxList()"><i class="fa-solid fa-rotate"></i> Refresh</button>
                             </div>
-                            <form style="display: flex; gap: 8px;" onsubmit="handleAdminSendMessage(event)">
-                                <input type="text" id="adminChatInput" placeholder="Reply to customer..." required disabled>
-                                <button type="submit" class="btn-vip" id="btnAdminSendChat" disabled><i class="fa-solid fa-paper-plane"></i></button>
-                            </form>
+                            <div id="chatCustomerInboxList">
+                                <p style="text-align: center; color: var(--text-muted); padding: 25px 0;">Loading customer conversations...</p>
+                            </div>
+                        </div>
+
+                        <!-- SUB-VIEW 2: ACTIVE CONVERSATION WINDOW -->
+                        <div id="chatConversationContainer" class="hidden">
+                            <div class="chat-active-container">
+                                <div class="chat-header-bar">
+                                    <button class="chat-back-btn" onclick="backToInbox()"><i class="fa-solid fa-arrow-left"></i></button>
+                                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="activeChatUserAvatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+                                    <div>
+                                        <h4 id="activeChatUserName" style="font-size: 0.95rem; color: #fff;">Customer Name</h4>
+                                        <p id="activeChatUserEmail" style="font-size: 0.68rem; color: var(--text-muted);"></p>
+                                    </div>
+                                </div>
+                                <div class="chat-messages-area" id="adminChatMessagesBody">
+                                    <p style="text-align: center; color: var(--text-muted); margin-top: 50px;">Loading chat messages...</p>
+                                </div>
+                                <form style="display: flex; gap: 8px; padding: 12px; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border-card);" onsubmit="handleAdminSendMessage(event)">
+                                    <input type="text" id="adminChatInput" placeholder="Reply to customer..." required>
+                                    <button type="submit" class="btn-vip" id="btnAdminSendChat" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-paper-plane"></i></button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -339,7 +486,7 @@
             </div>
         </main>
 
-        <!-- MOBILE BOTTOM BAR BUTTONS (ADMIN) -->
+        <!-- MOBILE BOTTOM BAR BUTTONS -->
         <nav class="mobile-bottom-nav">
             <div class="mobile-nav-item active" onclick="navigateAdmin('allOrdersView', this)">
                 <i class="fa-solid fa-list-check"></i>
@@ -360,11 +507,12 @@
             <div class="mobile-nav-item" onclick="navigateAdmin('chatSupportDeskView', this)">
                 <i class="fa-solid fa-headset"></i>
                 <span>Chat</span>
+                <span id="bottomNavUnreadBadge" class="unread-pill hidden" style="position: absolute; top: 4px; right: 18px; font-size: 0.6rem; padding: 1px 5px;">0</span>
             </div>
         </nav>
     </div>
 
-    <!-- MODAL: MEMBER WALLET & ORDER HISTORY -->
+    <!-- MODAL: MEMBER DETAILS -->
     <div id="memberHistoryModal" class="modal-overlay">
         <div class="modal-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -473,7 +621,7 @@
             loadAllMembers();
             loadAdminCategoriesAndServices();
             loadAdminDeposits();
-            loadChatDeskUsers();
+            loadChatInboxList();
         }
 
         // ================= 0. LIVE ANNOUNCEMENT CONTROLLER =================
@@ -757,28 +905,131 @@
             loadAllMembers();
         }
 
-        // ================= 5. LIVE CHAT DESK =================
-        async function loadChatDeskUsers() {
-            const { data } = await supabaseClient.from("chat_messages").select("user_id, profiles(full_name)").order("created_at", { ascending: false });
-            const container = document.getElementById("chatUsersList");
-            if (!data) return;
-            const seen = new Set();
-            container.innerHTML = "";
-            data.forEach(item => {
-                if (!seen.has(item.user_id) && item.profiles) {
-                    seen.add(item.user_id);
-                    container.innerHTML += `<button class="tab-btn" onclick="selectChatUser('${item.user_id}')">${item.profiles.full_name}</button>`;
+        // ================= 5. CUSTOMER INBOX & CHAT SYSTEM (WHATSAPP STYLE) =================
+        async function loadChatInboxList() {
+            // Fetch all messages sorted by time
+            const { data: messages, error } = await supabaseClient
+                .from("chat_messages")
+                .select("*, profiles(full_name, email, avatar_url)")
+                .order("created_at", { ascending: false });
+
+            const container = document.getElementById("chatCustomerInboxList");
+            if (error || !messages || messages.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 25px 0;">No customer inquiries found.</p>`;
+                updateGlobalUnreadCounter(0);
+                return;
+            }
+
+            // Group by User ID and calculate unread count + latest message
+            const inboxMap = new Map();
+            let totalUnreadOverall = 0;
+
+            messages.forEach(m => {
+                if (!inboxMap.has(m.user_id)) {
+                    inboxMap.set(m.user_id, {
+                        userId: m.user_id,
+                        name: m.profiles ? (m.profiles.full_name || 'Customer') : 'Customer',
+                        email: m.profiles ? m.profiles.email : '',
+                        avatar: m.profiles && m.profiles.avatar_url ? m.profiles.avatar_url : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+                        lastMessage: m.message,
+                        time: new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                        unreadCount: 0
+                    });
+                }
+
+                // If user sent it and it is not read yet
+                if (m.sender_type === 'user' && m.is_read === false) {
+                    const item = inboxMap.get(m.user_id);
+                    item.unreadCount += 1;
+                    totalUnreadOverall += 1;
                 }
             });
+
+            updateGlobalUnreadCounter(totalUnreadOverall);
+
+            const userList = Array.from(inboxMap.values());
+            container.innerHTML = userList.map(u => `
+                <div class="inbox-item" onclick="openChatWindow('${u.userId}', '${escape(u.name)}', '${u.email}', '${u.avatar}')">
+                    <div class="inbox-user-info">
+                        <img src="${u.avatar}" class="inbox-avatar">
+                        <div class="inbox-texts">
+                            <h4>${u.name}</h4>
+                            <div class="inbox-last-msg">${u.lastMessage}</div>
+                        </div>
+                    </div>
+                    <div class="inbox-badge-wrap">
+                        <small style="font-size: 0.68rem; color: var(--text-muted);">${u.time}</small>
+                        ${u.unreadCount > 0 ? `<span class="unread-pill">${u.unreadCount}</span>` : ''}
+                    </div>
+                </div>
+            `).join("");
         }
 
-        async function selectChatUser(uid) {
-            activeChatUserId = uid;
-            document.getElementById("adminChatInput").disabled = false;
-            document.getElementById("btnAdminSendChat").disabled = false;
-            const { data } = await supabaseClient.from("chat_messages").select("*").eq("user_id", uid).order("created_at", { ascending: true });
-            const body = document.getElementById("adminChatWindowBody");
-            body.innerHTML = data.map(m => `<div style="align-self: ${m.sender_type==='admin'?'flex-end':'flex-start'}; background:${m.sender_type==='admin'?'var(--accent-orange)':'#1f293d'}; color:#fff; padding:6px 10px; border-radius:8px; font-size:0.8rem;">${m.message}</div>`).join("");
+        function updateGlobalUnreadCounter(count) {
+            const sideDot = document.getElementById("sidebarUnreadDot");
+            const bottomBadge = document.getElementById("bottomNavUnreadBadge");
+
+            if (count > 0) {
+                sideDot.innerText = count;
+                sideDot.classList.remove("hidden");
+                bottomBadge.innerText = count;
+                bottomBadge.classList.remove("hidden");
+            } else {
+                sideDot.classList.add("hidden");
+                bottomBadge.classList.add("hidden");
+            }
+        }
+
+        async function openChatWindow(userId, userName, userEmail, userAvatar) {
+            activeChatUserId = userId;
+            
+            // Switch UI views
+            document.getElementById("chatInboxContainer").classList.add("hidden");
+            document.getElementById("chatConversationContainer").classList.remove("hidden");
+
+            document.getElementById("activeChatUserName").innerText = unescape(userName);
+            document.getElementById("activeChatUserEmail").innerText = userEmail;
+            document.getElementById("activeChatUserAvatar").src = userAvatar;
+
+            // Mark unread messages as read in Supabase
+            await supabaseClient
+                .from("chat_messages")
+                .update({ is_read: true })
+                .eq("user_id", userId)
+                .eq("sender_type", "user");
+
+            loadAdminChatMessages();
+        }
+
+        function backToInbox() {
+            activeChatUserId = null;
+            document.getElementById("chatConversationContainer").classList.add("hidden");
+            document.getElementById("chatInboxContainer").classList.remove("hidden");
+            loadChatInboxList();
+        }
+
+        async function loadAdminChatMessages() {
+            if (!activeChatUserId) return;
+            const { data } = await supabaseClient
+                .from("chat_messages")
+                .select("*")
+                .eq("user_id", activeChatUserId)
+                .order("created_at", { ascending: true });
+
+            const body = document.getElementById("adminChatMessagesBody");
+            if (!data || data.length === 0) {
+                body.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 50px;">No messages in this chat.</p>`;
+                return;
+            }
+
+            body.innerHTML = data.map(m => `
+                <div class="${m.sender_type==='admin'?'bubble-admin':'bubble-user'}">
+                    ${m.message}
+                    <div style="font-size: 0.62rem; color: rgba(255,255,255,0.6); margin-top: 2px; text-align: right;">
+                        ${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                </div>
+            `).join("");
             body.scrollTop = body.scrollHeight;
         }
 
@@ -786,10 +1037,17 @@
             e.preventDefault();
             const input = document.getElementById("adminChatInput");
             const msg = input.value.trim();
-            if (!msg) return;
+            if (!msg || !activeChatUserId) return;
+
             input.value = "";
-            await supabaseClient.from("chat_messages").insert({ user_id: activeChatUserId, sender_type: 'admin', message: msg });
-            selectChatUser(activeChatUserId);
+            await supabaseClient.from("chat_messages").insert({
+                user_id: activeChatUserId,
+                sender_type: 'admin',
+                message: msg,
+                is_read: true
+            });
+
+            loadAdminChatMessages();
         }
 
         // NAVIGATION SWITCHER
@@ -801,6 +1059,11 @@
             const target = document.getElementById(viewId);
             if (target) target.classList.add("active");
             if (element) element.classList.add("active");
+
+            // Agar chat section par click karein to pehle inbox view dikhayein
+            if (viewId === 'chatSupportDeskView') {
+                backToInbox();
+            }
 
             document.getElementById("adminSidebar").classList.remove("mobile-open");
             window.scrollTo({ top: 0, behavior: 'smooth' });
