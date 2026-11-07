@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>MULTANI SMM VIP CLUB</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Rajdhani:wght@600;700;800&family=Fredoka:wght@600;700&family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase CDN Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.min.js"></script>
+
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="toastContainer"></div>
+
+    <!-- VIP FORGOT PASSWORD POPUP MODAL -->
+    <div id="forgotPwModal" class="vip-popup-overlay hidden">
+        <div class="vip-popup-card">
+            <div style="font-size: 2.8rem; color: #25D366; margin-bottom: 6px; filter: drop-shadow(0 4px 10px rgba(37,211,102,0.5));">
+                <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <h3 style="color: #FFE873; font-size: 1.4rem; margin-bottom: 8px;">RESET PASSWORD</h3>
+            <p style="color: #A7F3D0; font-size: 0.88rem; line-height: 1.45; margin-bottom: 16px;">
+                Please contact the official administrator to change or recover your account password.
+            </p>
+            
+            <div style="background: rgba(2, 20, 15, 0.9); border: 1.5px dashed #FBBF24; border-radius: 14px; padding: 12px; margin-bottom: 18px;">
+                <div style="color: #FFE873; font-family: var(--font-game); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.5px;">
+                    MUHAMMAD NADEEM
+                </div>
+                <div style="color: #25D366; font-size: 1.15rem; font-weight: 800; margin-top: 4px; font-family: var(--font-game);">
+                    <i class="fa-brands fa-whatsapp"></i> 03292488285
+                </div>
+            </div>
+
+            <a href="https://wa.me/923292488285?text=Assalam-o-Alaikum%20Admin,%20Please%20help%20me%20change%20my%20MULTANI%20SMM%20account%20password." target="_blank" class="btn-3d-play btn-whatsapp" style="margin-bottom: 10px;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Open WhatsApp Chat
+            </a>
+            
+            <button type="button" class="btn-3d-play" onclick="closeForgotPwModal()" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); font-size: 0.9rem; padding: 10px;">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- 0. LOGIN & SIGNUP SCREEN -->
+    <div id="authGateContainer">
+        <div class="game-auth-card">
+            <div class="crown-banner"><i class="fa-solid fa-crown"></i></div>
+            <h2 style="font-size: 1.6rem; color: #FFE873; margin-bottom: 2px;">MULTANI VIP CLUB</h2>
+            <p style="font-size: 0.8rem; color: #A7F3D0; margin-bottom: 20px;">Ludo Pro Style SMM Platform</p>
+
+            <button type="button" class="btn-google-auth" onclick="handleGoogleOAuthLogin()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Sign in with Google
+            </button>
+
+            <div class="auth-divider">OR EMAIL LOGIN</div>
+
+            <div class="auth-switch-tabs">
+                <button type="button" class="auth-tab-btn active" id="tabBtnLogin" onclick="switchAuthTab('login')">Login</button>
+                <button type="button" class="auth-tab-btn" id="tabBtnRegister" onclick="switchAuthTab('register')">Register</button>
+            </div>
+
+            <form id="customerLoginForm" onsubmit="handleCustomerLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="name@domain.com">
+                </div>
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label style="margin: 0;">Password</label>
+                        <span onclick="openForgotPwModal()" style="color: #FBBF24; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                            Forgot Password?
+                        </span>
+                    </div>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-3d-play" id="btnLoginSubmit"><i class="fa-solid fa-right-to-bracket"></i> Login Account</button>
+            </form>
+
+            <form id="customerRegisterForm" class="hidden" onsubmit="handleCustomerRegister(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regFullName" required placeholder="Muhammad Nadeem">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" required placeholder="name@domain.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
+                </div>
+                <button type="submit" class="btn-3d-play" id="btnRegisterSubmit"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebarDrawer">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-crown" style="color: #FBBF24; font-size: 1.4rem;"></i>
+            <h3 style="color: #FFE873;">MULTANI VIP</h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a class="active" onclick="switchTab('viewDashboard')"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+            <li><a onclick="scrollToOrderForm()"><i class="fa-solid fa-cart-shopping"></i> New Order</a></li>
+            <li><a onclick="switchTab('viewServices')"><i class="fa-solid fa-list-check"></i> VIP Services</a></li>
+            <li><a onclick="switchTab('viewOrdersList')"><i class="fa-solid fa-box-archive"></i> Order History</a></li>
+            <li><a onclick="switchTab('viewAddFunds')"><i class="fa-solid fa-wallet"></i> Deposit Funds</a></li>
+            <li><a onclick="openPaymentHistoryView()"><i class="fa-solid fa-clock-rotate-left"></i> Payment History</a></li>
+            <li><a onclick="handleShareApp()"><i class="fa-solid fa-share-nodes" style="color: #38BDF8;"></i> Share App</a></li>
+            <li><a onclick="switchTab('viewSupport')"><i class="fa-solid fa-headset"></i> Live Support</a></li>
+            <li><a onclick="switchTab('viewProfile')"><i class="fa-solid fa-user-gear"></i> Account Profile</a></li>
+            <li><a class="logout-btn" onclick="directCleanLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- MAIN PANEL APPLICATION -->
+    <div id="mainAppWrapper" class="hidden">
+        
+        <!-- TOP BAR -->
+        <header class="game-top-bar">
+            <div class="top-left-controls">
+                <button onclick="toggleSidebar()" style="background: none; border: none; color: #FFE873; font-size: 1.4rem; cursor: pointer; padding: 4px;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <!-- GOLDEN BALANCE BOX -->
+                <div class="gold-rect-box" onclick="switchTab('viewAddFunds')">
+                    <i class="fa-solid fa-coins"></i>
+                    <span id="headerBalanceDisplay">Rs 0.00</span>
+                </div>
+
+                <!-- PKR CURRENCY BOX -->
+                <select class="currency-select-box" id="currencySelect" onchange="handleCurrencyChange(this.value)">
+                    <option value="PKR">🇵🇰 PKR</option>
+                    <option value="USD">🇺🇸 USD</option>
+                    <option value="INR">🇮🇳 INR</option>
+                    <option value="AED">🇦🇪 AED</option>
+                    <option value="SAR">🇸🇦 SAR</option>
+                </select>
+            </div>
+            
+            <!-- USER DP -->
+            <div style="display: flex; align-items: center;" onclick="switchTab('viewProfile')">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-game">
+            </div>
+        </header>
+
+        <!-- NOTICE -->
+        <div class="announcement-bar">
+            <div class="announcement-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
+            <div class="ticker-wrapper">
+                <div class="announcement-ticker" id="scrollingAnnouncementText">
+                    Welcome to MULTANI SMM VIP CLUB! All services instant speed. Binance USDT Rate: 1$ = 290 PKR.
+                </div>
+            </div>
+        </div>
+
+        <div class="content-body">
+            
+            <!-- VIEW 1: DASHBOARD (HOME) -->
+            <div id="viewDashboard" class="app-view active">
+                
+                <div class="game-center-board">
+                    <div class="bismillah-calligraphy">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+                    <div class="welcome-to-text">WELCOME TO</div>
+                    <div class="ludo-logo-text">MULTANI SMM</div>
+                </div>
+
+                <!-- 4 METRIC STATS CARDS -->
+                <div class="cards-layout-grid">
+                    <div class="game-tile tile-blue" onclick="switchTab('viewOrdersList')">
+                        <div class="tile-icon-bubble"><i class="fa-solid fa-cart-shopping"></i></div>
+                        <div>
+                            <div class="tile-title" id="statTotalOrders">0</div>
+                            <div class="tile-subtitle">Total Orders</div>
+                        </div>
+                    </div>
+
+                    <div class="game-tile tile-green" onclick="switchTab('viewOrdersList')">
+                        <div class="tile-icon-bubble"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <div class="tile-title" id="statCompletedOrders">0</div>
+                            <div class="tile-subtitle">Completed</div>
+                        </div>
+                    </div>
+
+                    <div class="game-tile tile-yellow" onclick="switchTab('viewOrdersList')">
+                        <div class="tile-icon-bubble"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div>
+                            <div class="tile-title" id="statPendingOrders">0</div>
+                            <div class="tile-subtitle">Pending</div>
+                        </div>
+                    </div>
+
+                    <div class="game-tile tile-red" onclick="openPaymentHistoryView()">
+                        <div class="tile-icon-bubble"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                        <div>
+                            <div class="tile-title" id="statTotalSpent">Rs 0.00</div>
+                            <div class="tile-subtitle">Total Spent</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PLACE ORDER BOX -->
+                <div class="vip-game-card" id="homeOrderCard">
+                    <h3 style="color: #FFE873; margin-bottom: 12px; font-size: 1.2rem;">
+                        <i class="fa-solid fa-bolt" style="color: #FBBF24;"></i> PLACE ORDER
+                    </h3>
+                    <form onsubmit="handlePlaceOrder(event)">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="orderCatSelect" onchange="handleCategoryFilter(this.value)" required>
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Service</label>
+                            <select id="orderServiceSelect" onchange="handleServiceSelect(this.value)" required>
+                                <option value="">Select Category First</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Link / Profile URL</label>
+                            <input type="text" id="orderTargetLink" required placeholder="https://tiktok.com/@...">
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" id="orderQuantity" required oninput="calculateTotalCharge()" placeholder="1000">
+                            <small id="qtyLimitHint" style="color: #A7F3D0; font-size: 0.72rem; display:block; margin-top:3px;"></small>
+                        </div>
+                        <div style="background: rgba(2, 20, 15, 0.9); border: 1.5px solid rgba(245, 158, 11, 0.5); padding: 12px; border-radius: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.85rem; color: #A7F3D0; font-weight: 700;">Total Price:</span>
+                            <span style="font-size: 1.25rem; font-weight: 800; color: #FFE873; font-family: var(--font-game);" id="orderTotalDisplay">Rs 0.00</span>
+                        </div>
+                        <button type="submit" class="btn-3d-play" id="btnPlaceOrder"><i class="fa-solid fa-bolt"></i> Confirm Order</button>
+                    </form>
+                </div>
+
+                <!-- RECENT ORDERS -->
+                <div class="vip-game-card">
+                    <h3 style="color: #34D399; margin-bottom: 10px; font-size: 1rem;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+                    <div style="display: flex; flex-direction: column; gap: 8px;" id="dashRecentOrdersBody">
+                        <p style="text-align: center; color: #A7F3D0; padding: 14px 0; font-size: 0.85rem;">No orders yet.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- VIEW 2: SERVICES LIST -->
+            <div id="viewServices" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-list-check"></i> Available Services</h3>
+                    <div class="services-card-list" id="servicesListBody">
+                        <p style="text-align: center; color: #A7F3D0; padding: 16px 0;">Loading services...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: MY ORDERS -->
+            <div id="viewOrdersList" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-boxes-stacked"></i> My Order History</h3>
+                    <div id="customerOrdersList" style="display: flex; flex-direction: column; gap: 8px;">
+                        <p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No orders placed yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: ADD FUNDS (DEPOSIT) -->
+            <div id="viewAddFunds" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-wallet"></i> Deposit Funds</h3>
+                    
+                    <div style="background: rgba(2, 20, 15, 0.9); border: 2px dashed #FBBF24; padding: 14px; border-radius: 14px; margin-bottom: 15px;">
+                        <div id="accountTitleDisplay" style="color: #A7F3D0; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Easypaisa Account:</div>
+                        <div id="accountNumberDisplay" style="color: #FFE873; font-weight: 800; font-size: 1.25rem; margin-top: 3px; font-family: var(--font-game);">03186815926</div>
+                        <div id="accountHolderDisplay" style="color: #34D399; font-weight: 700; font-size: 0.85rem; margin-top: 2px;">Title: Muhammad Nadeem</div>
+                        <small style="color: #A7F3D0; display: block; margin-top: 6px; font-size: 0.72rem;">Binance Rate: 1$ = 290 PKR</small>
+                    </div>
+
+                    <form onsubmit="handleDepositSubmit(event)">
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <select id="depMethod" required onchange="handlePaymentMethodChange(this.value)">
+                                <option value="Easypaisa">Easypaisa</option>
+                                <option value="Sadapay">Sadapay</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount Paid (PKR)</label>
+                            <input type="number" id="depAmountPKR" required placeholder="e.g. 500" oninput="calculateDepositUSD()">
+                            <small id="depUSDHint" style="color: #FFE873; font-weight: 700; display: block; margin-top: 3px;"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Sender Account / Number</label>
+                            <input type="text" id="depSenderNum" required placeholder="03XXXXXXXXX">
+                        </div>
+                        <div class="form-group">
+                            <label>Transaction ID (TRX ID)</label>
+                            <input type="text" id="depTrxId" required placeholder="e.g. 9845789123">
+                        </div>
+                        <button type="submit" class="btn-3d-play" id="btnDepositSubmit" style="margin-bottom: 10px;">
+                            SUBMIT DEPOSIT REQUEST
+                        </button>
+                    </form>
+
+                    <button type="button" class="btn-3d-play btn-cyan" onclick="openPaymentHistoryView()">
+                        <i class="fa-solid fa-clock-rotate-left"></i> PAYMENT HISTORY
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 5: FULL SCREEN PAYMENT HISTORY VIEW -->
+            <div id="viewPaymentHistory" class="app-view">
+                <div class="vip-game-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                        <h3 style="color: #FFE873; margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Payment History</h3>
+                        <button type="button" onclick="switchTab('viewAddFunds')" style="background: rgba(3,27,20,0.8); border: 1.5px solid #22c55e; color: #FFE873; padding: 5px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem;">
+                            <i class="fa-solid fa-arrow-left"></i> Back
+                        </button>
+                    </div>
+
+                    <!-- 4 FILTER TABS INCLUDING REJECTED -->
+                    <div class="filter-tabs-wrapper">
+                        <button type="button" class="filter-tab-pill active" onclick="filterPaymentHistory('all', this)">All</button>
+                        <button type="button" class="filter-tab-pill" onclick="filterPaymentHistory('pending', this)">Pending</button>
+                        <button type="button" class="filter-tab-pill" onclick="filterPaymentHistory('approved', this)">Approved</button>
+                        <button type="button" class="filter-tab-pill" onclick="filterPaymentHistory('rejected', this)">Rejected</button>
+                    </div>
+
+                    <div id="paymentHistoryListContainer" style="display: flex; flex-direction: column; min-height: 200px;">
+                        <p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">Loading payment history...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 6: LIVE SUPPORT CHAT -->
+            <div id="viewSupport" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 10px;"><i class="fa-solid fa-headset"></i> Live Support Chat</h3>
+                    <div class="chat-box" id="customerChatWindow">
+                        <div class="bubble-admin">Assalam-o-Alaikum! Leave your question or TRX ID here. Admin will reply live.</div>
+                    </div>
+                    <form style="display: flex; gap: 8px;" onsubmit="handleSendCustomerChat(event)">
+                        <input type="text" id="customerChatInput" placeholder="Type message..." required style="flex:1;">
+                        <button type="submit" class="btn-3d-play" id="btnSendChat" style="width: auto; padding: 0 18px;"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VIEW 7: MY PROFILE -->
+            <div id="viewProfile" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 16px; text-align: center; font-size: 1.35rem;">
+                        <i class="fa-solid fa-id-card"></i> My Profile
+                    </h3>
+                    
+                    <div style="text-align: center; margin-bottom: 18px;">
+                        <div style="position: relative; display: inline-block; width: 92px; height: 92px;">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="profilePageAvatar" style="width: 92px; height: 92px; min-width: 92px; min-height: 92px; border-radius: 50%; border: 3px solid #FBBF24; object-fit: cover; aspect-ratio: 1/1; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                            <label for="custProfileDpInput" style="position: absolute; bottom: 2px; right: 2px; background: var(--gold-grad); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #05261d; box-shadow: 0 2px 6px rgba(0,0,0,0.6); z-index: 5;" title="Change Photo from Gallery">
+                                <i class="fa-solid fa-camera" style="font-size: 0.75rem;"></i>
+                            </label>
+                            <input type="file" id="custProfileDpInput" accept="image/*" style="display: none;" onchange="handleGalleryDpUpload(event)">
+                        </div>
+                        <p style="font-size: 0.72rem; color: #A7F3D0; margin-top: 8px;">Tap camera icon to update DP from gallery</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="profFullName" placeholder="Your Name">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp Number</label>
+                        <input type="tel" id="profWhatsApp" placeholder="e.g. 03186815926">
+                    </div>
+                    <div class="form-group">
+                        <label>Account Email (Fixed)</label>
+                        <input type="email" id="profEmail" readonly style="opacity: 0.85; background: rgba(0,0,0,0.5);">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Account Password (Fixed)</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input type="password" id="profPasswordDisplay" readonly value="••••••••" style="opacity: 0.85; background: rgba(0,0,0,0.5); padding-right: 42px;">
+                            <i class="fa-solid fa-eye" id="toggleProfPwBtn" onclick="toggleProfilePasswordView()" style="position: absolute; right: 14px; color: #FFE873; cursor: pointer; font-size: 1rem;"></i>
+                        </div>
+                        <div style="background: rgba(2, 20, 15, 0.85); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 8px 10px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <small style="color: #FFE873; font-weight: 700; font-size: 0.75rem;">
+                                <i class="fa-solid fa-circle-info"></i> پاس ورڈ چینج کرنے کے لیے ایڈمن سے رابطہ کریں
+                            </small>
+                            <span onclick="openForgotPwModal()" style="color: #38BDF8; font-size: 0.75rem; font-weight: 800; text-decoration: underline; cursor: pointer;">
+                                Admin
+                            </span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-3d-play" id="btnSaveProfile" onclick="handleSaveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- LUDO BOTTOM NAVIGATION -->
+        <nav class="mobile-bottom-nav">
+            <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
+                <i class="fa-solid fa-dice"></i><span>Home</span>
+            </div>
+            <div class="mobile-nav-item" id="btnNavOrder" onclick="scrollToOrderForm()">
+                <i class="fa-solid fa-cart-shopping"></i><span>Order</span>
+            </div>
+            <div class="mobile-nav-item" id="btnNavServices" onclick="switchTab('viewServices', this)">
+                <i class="fa-solid fa-crown"></i><span>Services</span>
+            </div>
+            <div class="mobile-nav-item" id="btnNavOrders" onclick="switchTab('viewOrdersList', this)">
+                <i class="fa-solid fa-trophy"></i><span>Orders</span>
+            </div>
+            <div class="mobile-nav-item" id="btnNavSupport" onclick="switchTab('viewSupport', this)">
+                <i class="fa-solid fa-comments"></i><span>Support</span>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Script Links -->
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="orders.js"></script>
+    <script src="wallet.js"></script>
+    <script src="support.js"></script>
+</body>
+</html>
