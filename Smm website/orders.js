@@ -1,3 +1,4 @@
+// Updated orders.js for Multani SMM Panel
 function loadCachedCategoriesAndServices() {
     try {
         const cachedCats = localStorage.getItem("multani_cached_cats");
