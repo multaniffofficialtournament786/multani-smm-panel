@@ -359,7 +359,7 @@
             box-shadow: 0 6px 14px rgba(3, 105, 161, 0.4);
         }
 
-        /* AUTO WRAPPING SERVICES LIST */
+        /* AUTO WRAPPING SERVICES */
         .services-card-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .service-item-box {
             background: rgba(3, 27, 20, 0.95);
@@ -924,6 +924,29 @@
         let loadedOrdersCache = [];
         let selectedService = null;
 
+        // FAST LOCAL PERSISTENCE BACKUP (Never logs out on refresh)
+        function saveLocalActiveUser(user) {
+            if (!user) return;
+            try {
+                localStorage.setItem("multani_active_session", JSON.stringify({
+                    id: user.id,
+                    email: user.email || '',
+                    user_metadata: user.user_metadata || {}
+                }));
+            } catch(e) {}
+        }
+
+        function getLocalActiveUser() {
+            try {
+                const s = localStorage.getItem("multani_active_session");
+                return s ? JSON.parse(s) : null;
+            } catch(e) { return null; }
+        }
+
+        function clearLocalActiveUser() {
+            localStorage.removeItem("multani_active_session");
+        }
+
         const PAYMENT_METHODS_DATA = {
             Easypaisa: { title: "Easypaisa Account:", number: "03186815926", name: "Title: Muhammad Nadeem" },
             Sadapay: { title: "Sadapay Account:", number: "03281926729", name: "Title: Muhammad Nadeem" }
@@ -998,52 +1021,56 @@
             document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
-        // ================= AUTH STATE SYNCHRONIZER =================
-        function setupAuthListener() {
-            if (!supabaseClient) return;
-            supabaseClient.auth.onAuthStateChange((event, session) => {
-                if (session && session.user) {
-                    currentUser = session.user;
-                    localStorage.setItem("multani_user_active", "true");
-                    showPanelScreen();
-                    postLoginSuccess(currentUser);
-                } else if (event === 'SIGNED_OUT') {
-                    currentUser = null;
-                    currentUserProfile = null;
-                    localStorage.removeItem("multani_user_active");
-                    showAuthScreen();
-                }
-            });
+        // ================= INSTANT INITIALIZATION =================
+        function checkImmediateSession() {
+            const cachedUser = getLocalActiveUser();
+            if (cachedUser) {
+                currentUser = cachedUser;
+                showPanelScreen();
+                fillIdentityImmediately(cachedUser);
+            }
         }
 
         async function initMultaniApp() {
+            checkImmediateSession();
+
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
             
             loadCachedCategoriesAndServices();
-            setupAuthListener();
 
-            if (!supabaseClient) {
-                showAuthScreen();
-                return;
-            }
+            if (supabaseClient) {
+                // Listen to Auth State
+                supabaseClient.auth.onAuthStateChange((event, session) => {
+                    if (session && session.user) {
+                        currentUser = session.user;
+                        saveLocalActiveUser(session.user);
+                        showPanelScreen();
+                        postLoginSuccess(currentUser);
+                    } else if (event === 'SIGNED_OUT') {
+                        currentUser = null;
+                        currentUserProfile = null;
+                        clearLocalActiveUser();
+                        showAuthScreen();
+                    }
+                });
 
-            try {
-                // Read session cleanly without race conditions
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session && session.user) {
-                    currentUser = session.user;
-                    localStorage.setItem("multani_user_active", "true");
-                    showPanelScreen();
-                    postLoginSuccess(currentUser);
-                } else if (!window.location.hash.includes("access_token")) {
-                    showAuthScreen();
+                // Check Supabase Session
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session && session.user) {
+                        currentUser = session.user;
+                        saveLocalActiveUser(session.user);
+                        showPanelScreen();
+                        postLoginSuccess(currentUser);
+                    } else if (!getLocalActiveUser() && !window.location.hash.includes("access_token")) {
+                        showAuthScreen();
+                    }
+                } catch(e) {
+                    if (!getLocalActiveUser()) showAuthScreen();
                 }
-            } catch (err) {
-                console.warn("Session error:", err);
-                if (localStorage.getItem("multani_user_active") !== "true") {
-                    showAuthScreen();
-                }
+            } else {
+                if (!getLocalActiveUser()) showAuthScreen();
             }
 
             fetchFreshServicesAndCategories();
@@ -1134,7 +1161,7 @@
             if (error) return notify(error.message, "error");
             notify("Welcome back!", "success");
             currentUser = data.user;
-            localStorage.setItem("multani_user_active", "true");
+            saveLocalActiveUser(data.user);
             showPanelScreen();
             postLoginSuccess(currentUser);
         }
@@ -1164,7 +1191,7 @@
 
             if (data.user) {
                 currentUser = data.user;
-                localStorage.setItem("multani_user_active", "true");
+                saveLocalActiveUser(data.user);
                 await ensureUserProfile(data.user, fullName);
                 showPanelScreen();
                 postLoginSuccess(currentUser);
@@ -1203,25 +1230,27 @@
             }
         }
 
-        // ================= MANUAL LOGOUT =================
+        // ================= 100% MANUAL LOGOUT ONLY =================
         async function directCleanLogout() {
             document.getElementById("sidebarDrawer").classList.remove("open");
             document.getElementById("sidebarOverlay").classList.remove("active");
 
+            // Instant switch to login screen
             showAuthScreen();
 
             currentUser = null;
             currentUserProfile = null;
             allCustomerDeposits = [];
             loadedOrdersCache = [];
+            clearLocalActiveUser();
 
             try {
                 if (supabaseClient) {
-                    await supabaseClient.auth.signOut();
+                    await supabaseClient.auth.signOut({ scope: 'local' });
                 }
             } catch (e) {}
 
-            localStorage.removeItem("multani_user_active");
+            localStorage.clear();
             sessionStorage.clear();
             window.location.hash = "";
 
@@ -1394,7 +1423,7 @@
             if (!catSelect) return;
 
             if (!allCategories || allCategories.length === 0) {
-                catSelect.innerHTML = '<option value="">Select Category</option>';
+                catSelect.innerHTML = '<option value="">No categories available</option>';
                 return;
             }
 
@@ -1670,7 +1699,7 @@
             }
         }
 
-        // ================= PAYMENT HISTORY SYSTEM =================
+        // ================= FULL SCREEN PAYMENT HISTORY SYSTEM =================
         function openPaymentHistoryView() {
             switchTab('viewPaymentHistory');
         }
