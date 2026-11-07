@@ -23,17 +23,24 @@ async function handleDepositSubmit(e) {
     if (!currentUser || !currentUser.id) {
         const local = getLocalActiveUser();
         if (local && local.id) currentUser = local;
-        else return notify("Please login first!", "error");
+        else {
+            notify("Please login first!", "error");
+            return;
+        }
     }
 
     const pkr = parseFloat(document.getElementById("depAmountPKR").value);
-    if (isNaN(pkr) || pkr <= 0) return notify("Please enter valid amount", "error");
+    if (isNaN(pkr) || pkr <= 0) {
+        notify("Please enter valid amount", "error");
+        return;
+    }
 
     const usd = parseFloat((pkr / 290.00).toFixed(4));
     const method = document.getElementById("depMethod").value;
     const sender = document.getElementById("depSenderNum").value.trim();
     const trx = document.getElementById("depTrxId").value.trim();
 
+    // Disable button and show loading
     btn.disabled = true;
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
 
@@ -62,6 +69,7 @@ async function handleDepositSubmit(e) {
         console.error("Deposit insert error:", err);
         notify("Deposit Error: " + (err.message || "Failed to submit"), "error");
     } finally {
+        // ALWAYS restore button state so it never gets stuck
         btn.disabled = false;
         btn.innerText = "SUBMIT DEPOSIT REQUEST";
     }
