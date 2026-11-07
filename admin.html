@@ -8,7 +8,7 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Supabase CDN Client -->
@@ -22,10 +22,11 @@
             --accent-orange: #FF4624;
             --accent-cyan: #00D5FF;
             --accent-green: #10B981;
+            --accent-gold: #F59E0B;
             --text-main: #FFFFFF;
             --text-muted: #9BA8BC;
             --border-card: #1f293d;
-            --sidebar-w: 240px;
+            --sidebar-w: 250px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -38,54 +39,67 @@
 
         /* Toast Container */
         #toastContainer { position: fixed; top: 15px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-        .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.96); border-left: 4px solid var(--accent-cyan); border-radius: 8px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; }
+        .toast { padding: 12px 16px; background: rgba(14, 17, 24, 0.98); border-left: 4px solid var(--accent-cyan); border-radius: 8px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .toast.error { border-left-color: var(--accent-orange); }
         .toast.success { border-left-color: var(--accent-green); }
 
         /* Admin Auth Screen */
-        #adminAuthContainer { width: 100%; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; }
-        .admin-auth-box { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 24px 20px; }
+        #adminAuthContainer { width: 100%; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; background: radial-gradient(circle at 50% 20%, #1a1528 0%, #06070a 100%); }
+        .admin-auth-box { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 16px; padding: 26px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
 
         .form-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 5px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 10px 12px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; color: var(--text-main); font-size: 0.88rem; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent-cyan); }
 
-        .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; }
+        .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; transition: transform 0.1s ease; }
+        .btn-vip:active { transform: scale(0.98); }
         .btn-vip.btn-sec { background: var(--bg-card-sec); border: 1px solid var(--border-card); color: var(--text-main); }
         .btn-vip.btn-green { background: linear-gradient(135deg, #10B981, #059669); }
+        .btn-vip.btn-red { background: linear-gradient(135deg, #EF4444, #B91C1C); }
 
         /* Admin Main Layout */
         #adminAppContainer { width: 100%; display: flex; min-height: 100vh; }
         .sidebar { width: var(--sidebar-w); background: var(--bg-card); border-right: 1px solid var(--border-card); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 100; transition: transform 0.3s ease; }
         .sidebar-header { padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-card); }
         .sidebar-menu { flex: 1; padding: 10px 8px; overflow-y: auto; list-style: none; display: flex; flex-direction: column; gap: 4px; }
-        .sidebar-menu li a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; cursor: pointer; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--text-muted); text-decoration: none; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600; }
         .sidebar-menu li a.active { background: rgba(255, 70, 36, 0.15); border-left: 3px solid var(--accent-orange); color: #fff; }
+        .sidebar-menu li a.logout-link { color: #f87171; border-top: 1px dashed rgba(239, 68, 68, 0.3); margin-top: auto; padding-top: 14px; }
 
         .main-content { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 75px; width: 100%; overflow-x: hidden; }
         
         /* TOP NAVBAR */
-        .top-navbar { height: 56px; background: var(--bg-card); border-bottom: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 90; }
-        .nav-controls { display: flex; align-items: center; gap: 8px; }
+        .top-navbar { height: 60px; background: var(--bg-card); border-bottom: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; position: sticky; top: 0; z-index: 90; }
+        .nav-controls { display: flex; align-items: center; gap: 10px; }
         .currency-select-admin {
             background: var(--bg-card-sec);
             border: 1px solid var(--border-card);
             color: #fff;
             border-radius: 6px;
-            padding: 4px 6px;
+            padding: 5px 8px;
             font-size: 0.75rem;
             font-weight: 700;
             outline: none;
         }
 
+        .admin-nav-dp {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-gold);
+            object-fit: cover;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+        }
+
         .content-body { padding: 15px; max-width: 1100px; width: 100%; margin: 0 auto; }
         .page-view { display: none; }
         .page-view.active { display: block; }
-        .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 12px; padding: 16px; margin-bottom: 15px; width: 100%; }
+        .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 16px; margin-bottom: 15px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
         .filter-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
-        .tab-btn { padding: 6px 12px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 20px; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; white-space: nowrap; }
+        .tab-btn { padding: 6px 14px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 20px; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; white-space: nowrap; font-weight: 600; }
         .tab-btn.active { background: var(--accent-orange); color: #fff; border-color: var(--accent-orange); }
 
         /* Members Card Grid */
@@ -103,16 +117,113 @@
         .provider-card { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
         .provider-top { display: flex; justify-content: space-between; align-items: center; }
 
+        /* FULL WIDTH SERVICES LIST (NO HORIZONTAL SCROLL) */
+        .admin-services-list { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 10px; }
+        .admin-service-card {
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+        .admin-service-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.4;
+            word-break: break-word;
+            white-space: normal;
+        }
+        .admin-service-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .srv-badge {
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .srv-badge-cat { background: rgba(0, 213, 255, 0.15); color: var(--accent-cyan); border: 1px solid rgba(0, 213, 255, 0.3); }
+        .srv-badge-prov { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .srv-badge-id { background: rgba(255, 70, 36, 0.15); color: var(--accent-orange); border: 1px solid rgba(255, 70, 36, 0.3); }
+        .admin-service-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed var(--border-card);
+            padding-top: 8px;
+            font-size: 0.8rem;
+        }
+
+        /* FULL WIDTH DEPOSIT SLIP CARDS */
+        .admin-deposits-list { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 10px; }
+        .admin-deposit-slip-card {
+            background: var(--bg-card-sec);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .deposit-slip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .deposit-user-badge {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .deposit-amount-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px dashed var(--border-card);
+        }
+        .deposit-pkr-val { font-size: 1.25rem; font-weight: 800; color: var(--accent-gold); font-family: 'Rajdhani', sans-serif; }
+        .deposit-usd-val { font-size: 0.95rem; font-weight: 700; color: var(--accent-green); }
+        .deposit-slip-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            word-break: break-all;
+        }
+        .deposit-slip-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
         /* Tables */
         .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; white-space: nowrap; }
         th, td { padding: 9px 12px; border-bottom: 1px solid var(--border-card); }
         th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
 
-        .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
-        .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; }
-        .badge-completed { background: rgba(16, 185, 129, 0.15); color: #10B981; }
-        .badge-cancelled { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+        .badge { padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; border: 1px solid #EAB308; }
+        .badge-completed, .badge-approved { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981; }
+        .badge-cancelled, .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid #EF4444; }
 
         /* INBOX / CHAT DESK */
         .inbox-item {
@@ -127,49 +238,18 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .inbox-item:hover, .inbox-item:active {
-            border-color: var(--accent-cyan);
-            background: rgba(0, 213, 255, 0.05);
-        }
+        .inbox-item:hover, .inbox-item:active { border-color: var(--accent-cyan); background: rgba(0, 213, 255, 0.05); }
         .inbox-user-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
         .inbox-avatar { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--accent-orange); object-fit: cover; flex-shrink: 0; }
         .inbox-texts { flex: 1; overflow: hidden; }
         .inbox-texts h4 { font-size: 0.95rem; color: #fff; margin-bottom: 2px; }
         .inbox-last-msg { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
         .inbox-badge-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-        .unread-pill {
-            background: #EF4444;
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 12px;
-            animation: pulseBadge 1.5s infinite;
-        }
-        @keyframes pulseBadge {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
+        .unread-pill { background: #EF4444; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 12px; }
 
         /* ACTIVE CHAT WINDOW */
-        .chat-active-container {
-            display: flex;
-            flex-direction: column;
-            height: 520px;
-            background: var(--bg-card-sec);
-            border: 1px solid var(--border-card);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .chat-header-bar {
-            background: rgba(0,0,0,0.4);
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border-card);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .chat-active-container { display: flex; flex-direction: column; height: 520px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 12px; overflow: hidden; }
+        .chat-header-bar { background: rgba(0,0,0,0.4); padding: 10px 14px; border-bottom: 1px solid var(--border-card); display: flex; align-items: center; gap: 12px; }
         .chat-back-btn { background: transparent; border: none; color: var(--accent-cyan); font-size: 1.15rem; cursor: pointer; padding: 4px 6px; }
         .chat-messages-area { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .bubble-admin { align-self: flex-end; background: linear-gradient(135deg, var(--accent-orange), #d93314); color: #fff; padding: 8px 12px; border-radius: 12px 12px 2px 12px; font-size: 0.82rem; max-width: 80%; word-break: break-word; }
@@ -239,7 +319,8 @@
                 <li><a onclick="navigateAdmin('servicesManageView', this)"><i class="fa-solid fa-cubes"></i> Services & Providers</a></li>
                 <li><a onclick="navigateAdmin('depositsManageView', this)"><i class="fa-solid fa-money-bill-transfer"></i> Deposits</a></li>
                 <li><a onclick="navigateAdmin('chatSupportDeskView', this)"><i class="fa-solid fa-headset"></i> Live Chat <span id="sidebarUnreadDot" class="unread-pill hidden" style="margin-left: auto;">0</span></a></li>
-                <li style="margin-top: auto;"><a onclick="triggerAdminLogout()" style="color: var(--accent-orange);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+                <li><a onclick="navigateAdmin('adminProfileView', this)"><i class="fa-solid fa-user-shield"></i> Admin Profile</a></li>
+                <li style="margin-top: auto;"><a onclick="triggerAdminLogout()" class="logout-link"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
             </ul>
         </aside>
 
@@ -260,15 +341,13 @@
                         <option value="SAR">🇸🇦 SAR</option>
                     </select>
                     
-                    <div style="font-size: 0.75rem; color: #10B981; font-weight: 700;">
-                        <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> Active
-                    </div>
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="topNavAdminDp" class="admin-nav-dp" onclick="navigateAdmin('adminProfileView')" title="Admin Profile">
                 </div>
             </header>
 
             <div class="content-body">
                 
-                <!-- GLOBAL ANNOUNCEMENT CONTROLLER -->
+                <!-- LIVE ANNOUNCEMENT CONTROLLER -->
                 <div class="vip-card" style="margin-bottom: 15px;">
                     <h3 style="font-size: 0.95rem; color: var(--accent-orange); margin-bottom: 8px;">
                         <i class="fa-solid fa-bullhorn"></i> Live Customer Scrolling Announcement
@@ -284,7 +363,7 @@
                     <div class="vip-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h2><i class="fa-solid fa-boxes-stacked"></i> Global Orders Stream</h2>
-                            <button class="btn-vip btn-sec" onclick="loadAllGlobalOrders()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                            <button class="btn-vip btn-sec" id="btnRefreshOrders" onclick="refreshWrapper(this, loadAllGlobalOrders)"><i class="fa-solid fa-rotate"></i> Refresh</button>
                         </div>
 
                         <div class="filter-tabs">
@@ -301,7 +380,7 @@
                                         <th>Order #</th>
                                         <th>Date</th>
                                         <th>User</th>
-                                        <th>Service & Provider ID</th>
+                                        <th>Service & Provider</th>
                                         <th>Target</th>
                                         <th>Qty</th>
                                         <th>Charge</th>
@@ -339,9 +418,10 @@
                             <h3 style="font-size: 1rem; color: var(--accent-cyan);">
                                 <i class="fa-solid fa-server"></i> API Providers (SMM Resellers)
                             </h3>
-                            <button type="button" class="btn-vip btn-sec" style="font-size: 0.75rem; padding: 4px 8px;" onclick="toggleAddProviderForm()">
-                                <i class="fa-solid fa-plus"></i> Add New Provider
-                            </button>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" class="btn-vip btn-sec" style="font-size: 0.75rem; padding: 4px 8px;" onclick="refreshWrapper(this, loadProvidersList)"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                                <button type="button" class="btn-vip btn-sec" style="font-size: 0.75rem; padding: 4px 8px;" onclick="toggleAddProviderForm()"><i class="fa-solid fa-plus"></i> Add New Provider</button>
+                            </div>
                         </div>
 
                         <!-- Add Provider Form -->
@@ -383,7 +463,7 @@
                     </div>
 
                     <!-- Add Service -->
-                    <div class="vip-card">
+                    <div class="vip-card" style="margin-bottom: 15px;">
                         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-orange);"><i class="fa-solid fa-plus"></i> Add / Edit Service (Provider Mapping)</h3>
                         <form onsubmit="handleSaveService(event)" id="serviceAdminForm">
                             <input type="hidden" id="srvFormId">
@@ -428,33 +508,43 @@
                         </form>
                     </div>
 
+                    <!-- FULL WIDTH SERVICES LIST WITH LIVE SEARCH -->
                     <div class="vip-card">
-                        <h3 style="font-size: 1rem; margin-bottom: 12px;">Existing Services List</h3>
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr><th>Name</th><th>Category</th><th>Provider</th><th>Prov ID</th><th>Rate/1K</th><th>Min/Max</th><th>Actions</th></tr>
-                                </thead>
-                                <tbody id="adminServicesTableBody"></tbody>
-                            </table>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                            <h3 style="font-size: 1.05rem;"><i class="fa-solid fa-layer-group"></i> Existing Services List</h3>
+                            <button type="button" class="btn-vip btn-sec" style="font-size: 0.75rem; padding: 4px 8px;" onclick="refreshWrapper(this, loadAdminCategoriesAndServices)"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                        </div>
+                        
+                        <!-- LIVE SEARCH BOX -->
+                        <div style="position: relative; margin-bottom: 14px;">
+                            <input type="text" id="adminServiceSearchInput" oninput="filterAdminServicesList()" placeholder="🔍 Type to search by name, service ID, or provider..." style="padding-left: 36px;">
+                            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                        </div>
+
+                        <div class="admin-services-list" id="adminServicesCardsContainer">
+                            <p style="text-align: center; color: var(--text-muted); padding: 15px 0;">Loading services...</p>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 4: DEPOSITS -->
+                <!-- VIEW 4: DEPOSITS (FULL WIDTH SLIP CARDS WITH APPROVE & REJECT) -->
                 <section id="depositsManageView" class="page-view">
                     <div class="vip-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <h2><i class="fa-solid fa-money-check-dollar"></i> Deposits Verification</h2>
-                            <button class="btn-vip btn-sec" onclick="loadAdminDeposits()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                            <button class="btn-vip btn-sec" id="btnRefreshDeposits" onclick="refreshWrapper(this, loadAdminDeposits)"><i class="fa-solid fa-rotate"></i> Refresh</button>
                         </div>
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr><th>Date</th><th>User</th><th>Method</th><th>Amount</th><th>TRX ID</th><th>Sender</th><th>Status</th><th>Action</th></tr>
-                                </thead>
-                                <tbody id="adminDepositsTableBody"></tbody>
-                            </table>
+
+                        <!-- FILTER TABS -->
+                        <div class="filter-tabs">
+                            <button class="tab-btn active" onclick="filterAdminDeposits('all', this)">All</button>
+                            <button class="tab-btn" onclick="filterAdminDeposits('pending', this)">Pending</button>
+                            <button class="tab-btn" onclick="filterAdminDeposits('approved', this)">Approved</button>
+                            <button class="tab-btn" onclick="filterAdminDeposits('rejected', this)">Rejected</button>
+                        </div>
+
+                        <div class="admin-deposits-list" id="adminDepositsCardsContainer">
+                            <p style="text-align: center; color: var(--text-muted); padding: 15px 0;">Loading deposits...</p>
                         </div>
                     </div>
                 </section>
@@ -465,7 +555,7 @@
                         <div id="chatInboxContainer">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                                 <h2><i class="fa-solid fa-inbox"></i> Customer Support Inbox</h2>
-                                <button class="btn-vip btn-sec" onclick="loadChatInboxList()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                                <button class="btn-vip btn-sec" id="btnRefreshChat" onclick="refreshWrapper(this, loadChatInboxList)"><i class="fa-solid fa-rotate"></i> Refresh</button>
                             </div>
                             <div id="chatCustomerInboxList">
                                 <p style="text-align: center; color: var(--text-muted); padding: 25px 0;">Loading customer conversations...</p>
@@ -491,6 +581,44 @@
                                 </form>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 6: ADMIN PROFILE WITH GALLERY DP & FIXED PASSWORD -->
+                <section id="adminProfileView" class="page-view">
+                    <div class="vip-card" style="max-width: 500px; margin: 0 auto;">
+                        <h2 style="text-align: center; margin-bottom: 16px; color: var(--accent-gold);"><i class="fa-solid fa-user-shield"></i> Super Admin Profile</h2>
+                        
+                        <div style="text-align: center; margin-bottom: 18px;">
+                            <div style="position: relative; display: inline-block;">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="adminProfileAvatarImg" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--accent-gold); object-fit: cover;">
+                                <label for="adminDpFileInput" style="position: absolute; bottom: 0; right: 0; background: var(--accent-orange); color: #fff; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #000;">
+                                    <i class="fa-solid fa-camera" style="font-size: 0.8rem;"></i>
+                                </label>
+                                <input type="file" id="adminDpFileInput" accept="image/*" style="display: none;" onchange="handleAdminDpUpload(event)">
+                            </div>
+                            <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Click camera icon to change DP from gallery</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Admin Full Name</label>
+                            <input type="text" id="adminProfNameInput" placeholder="Muhammad Nadeem" value="Muhammad Nadeem">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Admin Email (Permanent Fixed)</label>
+                            <input type="email" id="adminProfEmailInput" readonly value="pardesinadeem7866@gmail.com" style="opacity: 0.8; background: rgba(0,0,0,0.5);">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Admin Password (Fixed)</label>
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <input type="password" id="adminProfPwInput" readonly value="••••••••" style="opacity: 0.8; background: rgba(0,0,0,0.5); padding-right: 42px;">
+                                <i class="fa-solid fa-eye" id="toggleAdminPwIcon" onclick="toggleAdminPasswordView()" style="position: absolute; right: 14px; color: var(--accent-gold); cursor: pointer;"></i>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-vip btn-green" style="width: 100%; margin-top: 10px;" onclick="saveAdminProfileSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Profile Details</button>
                     </div>
                 </section>
 
@@ -565,6 +693,8 @@
         let allGlobalOrders = [];
         let allMembers = [];
         let allProviders = [];
+        let allServicesMaster = [];
+        let allDepositsMaster = [];
         let activeChatUserId = null;
         let activeModalUserId = null;
 
@@ -588,7 +718,8 @@
             localStorage.setItem("admin_currency", curr);
             renderGlobalOrders(allGlobalOrders);
             renderMembers(allMembers);
-            loadAdminCategoriesAndServices();
+            renderAdminServicesCards(allServicesMaster);
+            filterAdminDeposits(currentDepositFilter);
         }
 
         function notify(msg, type = "info") {
@@ -601,38 +732,72 @@
             setTimeout(() => { toast.remove(); }, 3500);
         }
 
+        // UNIVERSAL REFRESH BUTTON WRAPPER (Visual Spinner + Action)
+        async function refreshWrapper(buttonEl, asyncCallback) {
+            if (!buttonEl) return;
+            const icon = buttonEl.querySelector("i");
+            if (icon) icon.classList.add("fa-spin");
+            buttonEl.disabled = true;
+
+            try {
+                await asyncCallback();
+                notify("Refreshed successfully!", "success");
+            } catch(e) {
+                notify("Refresh note: " + e.message, "info");
+            } finally {
+                if (icon) icon.classList.remove("fa-spin");
+                buttonEl.disabled = false;
+            }
+        }
+
+        // ================= PERMANENT SESSION PERSISTENCE =================
+        function isLocalAdminSessionActive() {
+            return localStorage.getItem("multani_super_admin_active") === "true";
+        }
+
         window.addEventListener("DOMContentLoaded", async () => {
             const curSelect = document.getElementById("adminCurrencySelect");
             if (curSelect) curSelect.value = activeAdminCurrency;
+            
+            // Check local lock first
+            if (isLocalAdminSessionActive()) {
+                currentAdminUser = { email: SINGLE_ADMIN_EMAIL };
+                initAdminPanel();
+            } else {
+                showAdminAuth();
+            }
+
             if (!supabaseClient) return;
             
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
                     verifyAdminRole(session.user);
-                } else {
+                } else if (!isLocalAdminSessionActive()) {
                     showAdminAuth();
                 }
             } catch (e) {
-                showAdminAuth();
+                if (!isLocalAdminSessionActive()) showAdminAuth();
             }
         });
 
         async function verifyAdminRole(user) {
             if (!user || !user.email) {
-                showAdminAuth();
+                if (!isLocalAdminSessionActive()) showAdminAuth();
                 return;
             }
 
             const cleanEmail = user.email.trim().toLowerCase();
             if (cleanEmail === SINGLE_ADMIN_EMAIL.toLowerCase()) {
                 currentAdminUser = user;
+                localStorage.setItem("multani_super_admin_active", "true");
                 initAdminPanel();
                 return;
             }
 
             notify("Access Denied: Only primary admin permitted.", "error");
             await supabaseClient.auth.signOut();
+            localStorage.removeItem("multani_super_admin_active");
             showAdminAuth();
         }
 
@@ -659,16 +824,21 @@
             btn.innerText = "Access Control Center";
 
             if (error) return notify(error.message, "error");
+            
+            localStorage.setItem("multani_admin_saved_pw", password);
+            localStorage.setItem("multani_super_admin_active", "true");
             verifyAdminRole(data.user);
         }
 
+        // ================= MANUAL LOGOUT ONLY =================
         async function triggerAdminLogout() {
             if (supabaseClient) {
                 await supabaseClient.auth.signOut();
             }
-            localStorage.clear();
-            sessionStorage.clear();
-            location.reload();
+            localStorage.removeItem("multani_super_admin_active");
+            localStorage.removeItem("multani_admin_saved_pw");
+            showAdminAuth();
+            notify("Logged out successfully!", "info");
         }
 
         function initAdminPanel() {
@@ -681,6 +851,7 @@
             loadAdminCategoriesAndServices();
             loadAdminDeposits();
             loadChatInboxList();
+            loadAdminProfileDetails();
         }
 
         // 0. LIVE ANNOUNCEMENT
@@ -767,9 +938,7 @@
             const url = document.getElementById("newProvUrl").value.trim();
             const key = document.getElementById("newProvKey").value.trim();
 
-            if (!name || !url || !key) {
-                return notify("Please fill all fields", "error");
-            }
+            if (!name || !url || !key) return notify("Please fill all fields", "error");
 
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
@@ -777,11 +946,7 @@
             try {
                 const { error } = await supabaseClient
                     .from("provider_settings")
-                    .insert([{
-                        provider_name: name,
-                        api_url: url,
-                        api_key: key
-                    }]);
+                    .insert([{ provider_name: name, api_url: url, api_key: key }]);
 
                 if (error) {
                     notify("Save Failed: " + error.message, "error");
@@ -792,6 +957,7 @@
                     document.getElementById("newProvKey").value = "";
                     toggleAddProviderForm();
                     await loadProvidersList();
+                    loadAdminCategoriesAndServices();
                 }
             } catch (err) {
                 notify("Network error: " + err.message, "error");
@@ -807,41 +973,24 @@
             if (error) return notify(error.message, "error");
             notify("Provider removed", "success");
             loadProvidersList();
+            loadAdminCategoriesAndServices();
         }
 
         async function checkSpecificProviderBalance(provId) {
             const badge = document.getElementById(`prov_bal_${provId}`);
-            if (badge) {
-                badge.innerText = "Checking...";
-                badge.style.color = "#FF4624";
-            }
+            if (badge) { badge.innerText = "Checking..."; badge.style.color = "#FF4624"; }
 
             try {
-                const { data, error } = await supabaseClient.functions.invoke(
-                    "provider-balance",
-                    { body: { provider_id: provId } }
-                );
-
+                const { data, error } = await supabaseClient.functions.invoke("provider-balance", { body: { provider_id: provId } });
                 if (error || !data || !data.success) {
-                    if (badge) {
-                        badge.innerText = "Active";
-                        badge.style.color = "#10B981";
-                    }
+                    if (badge) { badge.innerText = "Active"; badge.style.color = "#10B981"; }
                     return;
                 }
-
                 const balance = Number(data.balance).toFixed(2);
                 const currency = data.currency || "USD";
-
-                if (badge) {
-                    badge.innerText = `${currency} ${balance}`;
-                    badge.style.color = "#10B981";
-                }
+                if (badge) { badge.innerText = `${currency} ${balance}`; badge.style.color = "#10B981"; }
             } catch (err) {
-                if (badge) {
-                    badge.innerText = "Active";
-                    badge.style.color = "#10B981";
-                }
+                if (badge) { badge.innerText = "Active"; badge.style.color = "#10B981"; }
             }
         }
 
@@ -850,18 +999,24 @@
             try {
                 const [ordersRes, srvsRes, profsRes] = await Promise.all([
                     supabaseClient.from("orders").select("*").order("created_at", { ascending: false }),
-                    supabaseClient.from("services").select("id, name, provider_service_id"),
+                    supabaseClient.from("services").select("id, name, provider_service_id, provider_id"),
                     supabaseClient.from("profiles").select("id, full_name, email")
                 ]);
 
                 const srvMap = new Map((srvsRes.data || []).map(s => [String(s.id), s]));
                 const profMap = new Map((profsRes.data || []).map(p => [String(p.id), p]));
+                const provMap = new Map((allProviders || []).map(p => [String(p.id), p.provider_name]));
 
-                allGlobalOrders = (ordersRes.data || []).map(o => ({
-                    ...o,
-                    services: srvMap.get(String(o.service_id)),
-                    profiles: profMap.get(String(o.user_id))
-                }));
+                allGlobalOrders = (ordersRes.data || []).map(o => {
+                    const srv = srvMap.get(String(o.service_id));
+                    const provName = srv && srv.provider_id ? (provMap.get(String(srv.provider_id)) || 'API') : 'Manual';
+                    return {
+                        ...o,
+                        services: srv,
+                        profiles: profMap.get(String(o.user_id)),
+                        providerName: provName
+                    };
+                });
 
                 renderGlobalOrders(allGlobalOrders);
             } catch (e) {
@@ -882,13 +1037,13 @@
                     <td><strong style="color: var(--accent-cyan);">#${o.order_number || (o.id ? String(o.id).substring(0,5) : '')}</strong></td>
                     <td>${new Date(o.created_at).toLocaleDateString()}</td>
                     <td>${o.profiles ? o.profiles.full_name : 'User'}</td>
-                    <td>${o.services ? o.services.name : 'Service'} <br><small style="color:var(--accent-orange);">(ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : '-'})</small></td>
-                    <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan);">${o.target_link}</a></td>
+                    <td>${o.services ? o.services.name : 'Service'} <br><small style="color:var(--accent-gold); font-weight:700;">${o.providerName} (ID: ${o.services && o.services.provider_service_id ? o.services.provider_service_id : '-'})</small></td>
+                    <td><a href="${o.target_link}" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">Link</a></td>
                     <td>${o.quantity}</td>
                     <td><strong style="color: #fff;">${formatAdminPrice(o.charge)}</strong></td>
                     <td><span class="badge badge-${o.status}">${o.status}</span></td>
                     <td>
-                        <select onchange="changeOrderStatus('${o.id}', this.value)" style="padding: 2px 4px; font-size: 0.75rem; width: auto;">
+                        <select onchange="changeOrderStatus('${o.id}', this.value)" style="padding: 3px 6px; font-size: 0.75rem; width: auto; border-radius: 6px;">
                             <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
                             <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option>
                             <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
@@ -908,7 +1063,7 @@
         async function changeOrderStatus(orderId, newStatus) {
             const { error } = await supabaseClient.from("orders").update({ status: newStatus }).eq("id", orderId);
             if (error) return notify(error.message, "error");
-            notify("Updated", "success");
+            notify("Order status updated!", "success");
             loadAllGlobalOrders();
         }
 
@@ -998,7 +1153,7 @@
             loadAllMembers();
         }
 
-        // 4. SERVICES & CATEGORIES (SAFE INDEPENDENT QUERIES - NEVER CRASH)
+        // ================= 4. FULL-WIDTH SERVICES WITH REAL PROVIDER NAME & LIVE SEARCH =================
         async function loadAdminCategoriesAndServices() {
             try {
                 const [catsRes, srvsRes] = await Promise.all([
@@ -1011,32 +1166,65 @@
 
                 const sel = document.getElementById("srvAdminCategorySelect");
                 sel.innerHTML = '<option value="">Select Category</option>';
-                cats.forEach(c => {
-                    sel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-                });
+                cats.forEach(c => { sel.innerHTML += `<option value="${c.id}">${c.name}</option>`; });
 
                 const catMap = new Map(cats.map(c => [String(c.id), c.name]));
+                const provMap = new Map((allProviders || []).map(p => [String(p.id), p.provider_name]));
 
-                const body = document.getElementById("adminServicesTableBody");
-                if (srvs.length === 0) { 
-                    body.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No services added yet.</td></tr>`; 
-                    return; 
-                }
+                allServicesMaster = srvs.map(s => {
+                    const resolvedProv = s.provider_id ? (provMap.get(String(s.provider_id)) || 'API') : 'Manual';
+                    return {
+                        ...s,
+                        categoryName: catMap.get(String(s.category_id)) || 'General',
+                        realProviderName: resolvedProv
+                    };
+                });
 
-                body.innerHTML = srvs.map(s => `
-                    <tr>
-                        <td><strong>${s.name}</strong></td>
-                        <td>${catMap.get(String(s.category_id)) || '-'}</td>
-                        <td><span style="color:var(--accent-cyan); font-weight:600;">Manual / API</span></td>
-                        <td><span style="color:var(--accent-orange); font-weight:700;">${s.provider_service_id || '-'}</span></td>
-                        <td>${formatAdminPrice(s.rate_per_1k)}</td>
-                        <td>${s.min_quantity} - ${s.max_quantity}</td>
-                        <td><button class="btn-vip btn-sec" style="color:#ef4444; padding:3px 8px; font-size:0.75rem;" onclick="deleteService('${s.id}')"><i class="fa-solid fa-trash"></i></button></td>
-                    </tr>
-                `).join("");
+                renderAdminServicesCards(allServicesMaster);
             } catch (err) {
-                console.error("Admin services load error:", err);
+                console.error("Services load error:", err);
             }
+        }
+
+        function renderAdminServicesCards(list) {
+            const container = document.getElementById("adminServicesCardsContainer");
+            if (!list || list.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 15px 0;">No services found.</p>`;
+                return;
+            }
+
+            container.innerHTML = list.map(s => `
+                <div class="admin-service-card">
+                    <div class="admin-service-title">${s.name}</div>
+                    <div class="admin-service-tags">
+                        <span class="srv-badge srv-badge-cat"><i class="fa-solid fa-folder"></i> ${s.categoryName}</span>
+                        <span class="srv-badge srv-badge-prov"><i class="fa-solid fa-server"></i> ${s.realProviderName}</span>
+                        <span class="srv-badge srv-badge-id">ID: ${s.provider_service_id || 'Manual'}</span>
+                    </div>
+                    <div class="admin-service-meta">
+                        <span>Min/Max: <strong>${s.min_quantity} - ${s.max_quantity}</strong></span>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <strong style="color: var(--accent-gold); font-size: 0.95rem; font-family: 'Rajdhani', sans-serif;">${formatAdminPrice(s.rate_per_1k)} / 1K</strong>
+                            <button class="btn-vip btn-sec" style="color:#ef4444; padding:3px 8px; font-size:0.75rem;" onclick="deleteService('${s.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function filterAdminServicesList() {
+            const q = (document.getElementById("adminServiceSearchInput").value || '').toLowerCase().trim();
+            if (!q) {
+                renderAdminServicesCards(allServicesMaster);
+                return;
+            }
+            const filtered = allServicesMaster.filter(s => 
+                (s.name && s.name.toLowerCase().includes(q)) ||
+                (s.categoryName && s.categoryName.toLowerCase().includes(q)) ||
+                (s.realProviderName && s.realProviderName.toLowerCase().includes(q)) ||
+                (s.provider_service_id && String(s.provider_service_id).toLowerCase().includes(q))
+            );
+            renderAdminServicesCards(filtered);
         }
 
         async function handleCreateCategory(e) {
@@ -1104,57 +1292,152 @@
             loadAdminCategoriesAndServices();
         }
 
-        // 5. DEPOSITS VERIFICATION
+        // ================= 5. FULL-WIDTH DEPOSIT SLIP CARDS WITH APPROVE & REJECT =================
+        let currentDepositFilter = 'all';
+
         async function loadAdminDeposits() {
             try {
                 const [depRes, profRes] = await Promise.all([
                     supabaseClient.from("deposits").select("*").order("created_at", { ascending: false }),
-                    supabaseClient.from("profiles").select("id, full_name")
+                    supabaseClient.from("profiles").select("id, full_name, email")
                 ]);
 
-                const profMap = new Map((profRes.data || []).map(p => [String(p.id), p.full_name]));
+                const profMap = new Map((profRes.data || []).map(p => [String(p.id), p]));
                 const data = depRes.data || [];
 
-                const body = document.getElementById("adminDepositsTableBody");
-                if (data.length === 0) { 
-                    body.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No deposits yet.</td></tr>`; 
-                    return; 
+                allDepositsMaster = data.map(d => ({
+                    ...d,
+                    userProfile: profMap.get(String(d.user_id))
+                }));
+
+                filterAdminDeposits(currentDepositFilter);
+            } catch (err) {
+                const container = document.getElementById("adminDepositsCardsContainer");
+                if (container) container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 15px 0;">No deposits found.</p>`;
+            }
+        }
+
+        function filterAdminDeposits(filterType, element) {
+            currentDepositFilter = filterType;
+            if (element) {
+                document.querySelectorAll("#depositsManageView .tab-btn").forEach(b => b.classList.remove("active"));
+                element.classList.add("active");
+            }
+
+            const container = document.getElementById("adminDepositsCardsContainer");
+            if (!container) return;
+
+            let filtered = allDepositsMaster;
+            if (filterType === 'pending') {
+                filtered = allDepositsMaster.filter(d => (d.status || '').toLowerCase() === 'pending');
+            } else if (filterType === 'approved') {
+                filtered = allDepositsMaster.filter(d => (d.status || '').toLowerCase() === 'completed' || (d.status || '').toLowerCase() === 'approved');
+            } else if (filterType === 'rejected') {
+                filtered = allDepositsMaster.filter(d => (d.status || '').toLowerCase() === 'rejected' || (d.status || '').toLowerCase() === 'cancelled');
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px 0;">No ${filterType === 'all' ? '' : filterType} deposit slips found.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(d => {
+                const st = (d.status || 'pending').toLowerCase();
+                const isPending = (st === 'pending');
+                const isApproved = (st === 'completed' || st === 'approved');
+                const badgeClass = isApproved ? 'badge-approved' : (st === 'rejected' || st === 'cancelled' ? 'badge-rejected' : 'badge-pending');
+                const pkrAmount = (parseFloat(d.amount || 0) * 290.00).toFixed(0);
+                const userName = d.userProfile ? (d.userProfile.full_name || d.userProfile.email) : 'User';
+
+                return `
+                    <div class="admin-deposit-slip-card">
+                        <div class="deposit-slip-header">
+                            <div class="deposit-user-badge">
+                                <i class="fa-solid fa-user-circle" style="color: var(--accent-cyan);"></i>
+                                <span>${userName}</span>
+                            </div>
+                            <span class="badge ${badgeClass}">${(isApproved ? 'APPROVED' : st).toUpperCase()}</span>
+                        </div>
+
+                        <div class="deposit-amount-row">
+                            <div>
+                                <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Amount Paid</span>
+                                <span class="deposit-pkr-val">Rs ${pkrAmount} PKR</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Wallet Credit</span>
+                                <span class="deposit-usd-val">$${parseFloat(d.amount).toFixed(4)} USD</span>
+                            </div>
+                        </div>
+
+                        <div class="deposit-slip-details">
+                            <div><strong>Method:</strong> <span style="color:#fff;">${d.payment_method || 'Deposit'}</span></div>
+                            <div><strong>TRX ID:</strong> <span style="color:var(--accent-gold); font-family:monospace; font-size:0.9rem;">${d.transaction_id || '-'}</span></div>
+                            <div><strong>Sender:</strong> <span style="color:#fff;">${d.sender_account || '-'}</span></div>
+                            <div style="font-size: 0.72rem; color: rgba(255,255,255,0.4); margin-top: 2px;">
+                                <i class="fa-solid fa-clock"></i> ${new Date(d.created_at).toLocaleString()}
+                            </div>
+                        </div>
+
+                        ${isPending ? `
+                            <div class="deposit-slip-actions">
+                                <button type="button" class="btn-vip btn-green" onclick="handleDepositApproval('${d.id}')">
+                                    <i class="fa-solid fa-check"></i> Approve
+                                </button>
+                                <button type="button" class="btn-vip btn-red" onclick="handleDepositRejection('${d.id}')">
+                                    <i class="fa-solid fa-xmark"></i> Reject
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function handleDepositApproval(id) {
+            if (!confirm("Are you sure you want to approve this deposit and credit balance to user's wallet?")) return;
+
+            try {
+                // 1. Try RPC function
+                const { data, error } = await supabaseClient.rpc("admin_approve_deposit", { p_deposit_id: id });
+                
+                if (error || (data && !data.success)) {
+                    // Fallback Direct update
+                    const depositRecord = allDepositsMaster.find(x => String(x.id) === String(id));
+                    if (depositRecord) {
+                        const { data: prof } = await supabaseClient.from("profiles").select("balance").eq("id", depositRecord.user_id).maybeSingle();
+                        const currentBal = parseFloat((prof && prof.balance) || 0);
+                        const newBal = currentBal + parseFloat(depositRecord.amount || 0);
+
+                        await Promise.all([
+                            supabaseClient.from("profiles").update({ balance: newBal }).eq("id", depositRecord.user_id),
+                            supabaseClient.from("deposits").update({ status: 'completed' }).eq("id", id)
+                        ]);
+                    }
                 }
 
-                body.innerHTML = data.map(d => `
-                    <tr>
-                        <td>${new Date(d.created_at).toLocaleDateString()}</td>
-                        <td>${profMap.get(String(d.user_id)) || 'User'}</td>
-                        <td>${d.payment_method}</td>
-                        <td style="color:#10B981; font-weight:700;">${formatAdminPrice(d.amount)}</td>
-                        <td>${d.transaction_id}</td>
-                        <td>${d.sender_account}</td>
-                        <td><span class="badge badge-${d.status}">${d.status}</span></td>
-                        <td>
-                            ${d.status === 'pending' ? `<button class="btn-vip btn-green" style="padding:3px 8px; font-size:0.75rem;" onclick="approveDeposit('${d.id}')">Approve</button>` : ''}
-                        </td>
-                    </tr>
-                `).join("");
-            } catch (err) {
-                const body = document.getElementById("adminDepositsTableBody");
-                if (body) body.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No deposits yet.</td></tr>`;
+                notify("Deposit Approved & Balance Added!", "success");
+                await loadAdminDeposits();
+                loadAllMembers();
+            } catch(e) {
+                notify("Approval error: " + e.message, "error");
             }
         }
 
-        async function approveDeposit(id) {
-            const { data, error } = await supabaseClient.rpc("admin_approve_deposit", { p_deposit_id: id });
-            if (error || (data && !data.success)) {
-                // Direct fallback manual approval
-                await supabaseClient.from("deposits").update({ status: 'completed' }).eq("id", id);
-                notify("Deposit Approved!", "success");
-            } else {
-                notify("Deposit Approved & Balance Credited!", "success");
+        async function handleDepositRejection(id) {
+            if (!confirm("Are you sure you want to REJECT this deposit? (No balance will be added)")) return;
+
+            try {
+                const { error } = await supabaseClient.from("deposits").update({ status: 'rejected' }).eq("id", id);
+                if (error) throw error;
+                notify("Deposit Rejected and saved in history!", "info");
+                await loadAdminDeposits();
+            } catch(e) {
+                notify("Rejection error: " + e.message, "error");
             }
-            loadAdminDeposits();
-            loadAllMembers();
         }
 
-        // 6. CUSTOMER INBOX & CHAT SYSTEM
+        // ================= 6. CUSTOMER INBOX & CHAT SYSTEM =================
         async function loadChatInboxList() {
             try {
                 const [msgsRes, profsRes] = await Promise.all([
@@ -1276,7 +1559,7 @@
                 <div class="${m.sender_type==='admin'?'bubble-admin':'bubble-user'}">
                     ${m.message}
                     <div style="font-size: 0.62rem; color: rgba(255,255,255,0.6); margin-top: 2px; text-align: right;">
-                        ${new Date(m.created_at).toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}
+                        ${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                     </div>
                 </div>
             `).join("");
@@ -1300,6 +1583,61 @@
             loadAdminChatMessages();
         }
 
+        // ================= 7. ADMIN PROFILE & GALLERY DP & FIXED PASSWORD =================
+        function loadAdminProfileDetails() {
+            const savedDp = localStorage.getItem("multani_admin_custom_dp");
+            if (savedDp) {
+                document.getElementById("adminProfileAvatarImg").src = savedDp;
+                document.getElementById("topNavAdminDp").src = savedDp;
+            }
+
+            const savedName = localStorage.getItem("multani_admin_custom_name") || "Muhammad Nadeem";
+            document.getElementById("adminProfNameInput").value = savedName;
+
+            const savedPw = localStorage.getItem("multani_admin_saved_pw");
+            if (savedPw) {
+                document.getElementById("adminProfPwInput").value = savedPw;
+            }
+        }
+
+        function toggleAdminPasswordView() {
+            const input = document.getElementById("adminProfPwInput");
+            const icon = document.getElementById("toggleAdminPwIcon");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
+        function handleAdminDpUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Img = e.target.result;
+                document.getElementById("adminProfileAvatarImg").src = base64Img;
+                document.getElementById("topNavAdminDp").src = base64Img;
+                localStorage.setItem("multani_admin_custom_dp", base64Img);
+                notify("Admin profile DP updated from gallery!", "success");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveAdminProfileSettings() {
+            const name = document.getElementById("adminProfNameInput").value.trim();
+            if (name) {
+                localStorage.setItem("multani_admin_custom_name", name);
+                notify("Admin name saved!", "success");
+            }
+        }
+
+        // NAVIGATION
         function navigateAdmin(viewId, element) {
             document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
             document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
