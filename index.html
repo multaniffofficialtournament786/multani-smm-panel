@@ -169,7 +169,7 @@
             gap: 10px;
         }
 
-        /* LEFT SIDE CONTROLS WRAPPER (MENU + BALANCE + PKR DIRECTLY ATTACHED) */
+        /* LEFT SIDE CONTROLS WRAPPER (MENU + BALANCE + PKR ATTACHED TOGETHER) */
         .top-left-controls {
             display: flex;
             align-items: center;
@@ -196,7 +196,7 @@
         }
         .gold-rect-box i { color: #FBBF24; font-size: 1rem; }
 
-        /* PKR CURRENCY BOX (PLACED DIRECTLY NEXT TO BALANCE) */
+        /* PKR CURRENCY BOX (DIRECTLY NEXT TO BALANCE) */
         .currency-select-box {
             background: #0f3d30;
             border: 1.5px solid #22c55e;
@@ -209,7 +209,7 @@
             height: 38px;
         }
 
-        /* PERFECT CIRCULAR USER AVATAR (NO SQUEEZING / NO OVAL SHAPE) */
+        /* PERFECT CIRCULAR USER AVATAR */
         .user-avatar-game {
             width: 42px;
             height: 42px;
@@ -726,7 +726,7 @@
     <!-- MAIN PANEL APPLICATION -->
     <div id="mainAppWrapper" class="hidden">
         
-        <!-- TOP BAR (WALLET + PKR DIRECTLY ATTACHED & ROUND USER AVATAR) -->
+        <!-- TOP BAR (WALLET + PKR ATTACHED TOGETHER & ROUND USER AVATAR) -->
         <header class="game-top-bar">
             <div class="top-left-controls">
                 <button onclick="toggleSidebar()" style="background: none; border: none; color: #FFE873; font-size: 1.4rem; cursor: pointer; padding: 4px;">
@@ -920,7 +920,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 5: FULL SCREEN PAYMENT HISTORY VIEW (WITH REJECTED FIX & REJECTED TAB) -->
+            <!-- VIEW 5: FULL SCREEN PAYMENT HISTORY VIEW (WITH INSTANT SHOW & REJECTED FIX) -->
             <div id="viewPaymentHistory" class="app-view">
                 <div class="vip-game-card">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
@@ -1570,7 +1570,7 @@
             document.getElementById("headerBalanceDisplay").innerText = formatPrice(parseFloat(currentUserProfile.balance || 0));
         }
 
-        // ================= SAVE PROFILE (NON-BLOCKING FAST RESTORE) =================
+        // ================= SAVE PROFILE (FAST & NON-BLOCKING) =================
         async function handleSaveProfile() {
             const name = document.getElementById("profFullName").value.trim();
             const whatsapp = document.getElementById("profWhatsApp").value.trim();
@@ -1871,7 +1871,7 @@
             document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
         }
 
-        // ================= DEPOSIT SUBMIT (INSTANT UNLOCK BUTTON) =================
+        // ================= DEPOSIT SUBMIT (INSTANT UNLOCK + OPTIMISTIC UI) =================
         async function handleDepositSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById("btnDepositSubmit");
@@ -1889,6 +1889,33 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
 
+            // 1. OPTIMISTIC UPDATE: Add temporary slip to memory immediately so it appears instantly
+            const tempSlip = {
+                id: 'temp_' + Date.now(),
+                user_id: currentUser.id,
+                amount: usd,
+                payment_method: method,
+                sender_account: sender,
+                transaction_id: trx,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            };
+
+            // Prepend to top of list
+            allCustomerDeposits = [tempSlip, ...allCustomerDeposits];
+
+            // 2. Clear inputs immediately
+            document.getElementById("depAmountPKR").value = "";
+            document.getElementById("depSenderNum").value = "";
+            document.getElementById("depTrxId").value = "";
+            document.getElementById("depUSDHint").innerText = "";
+
+            // 3. Open Payment History View immediately and render the list
+            notify("Deposit request submitted! Admin will verify soon.", "success");
+            openPaymentHistoryView();
+            renderPaymentHistoryList('all');
+
+            // 4. Send to Supabase in background without freezing UI
             try {
                 const insertPromise = supabaseClient.from("deposits").insert([{
                     user_id: currentUser.id,
@@ -1899,31 +1926,19 @@
                     status: 'pending'
                 }]);
 
-                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 3500));
+                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 4000));
                 await Promise.race([insertPromise, timeoutPromise]);
-
-                notify("Deposit request submitted! Admin will verify soon.", "success");
-                
-                document.getElementById("depAmountPKR").value = "";
-                document.getElementById("depSenderNum").value = "";
-                document.getElementById("depTrxId").value = "";
-                document.getElementById("depUSDHint").innerText = "";
-
-                // Open payment history view immediately
-                openPaymentHistoryView();
-                // Load deposits in background without freezing UI
-                loadCustomerDepositsHistory();
             } catch (err) {
-                notify("Slip recorded! Opening history...", "success");
-                openPaymentHistoryView();
-                loadCustomerDepositsHistory();
+                console.warn("Background deposit sync:", err);
             } finally {
                 btn.disabled = false;
                 btn.innerText = "SUBMIT DEPOSIT REQUEST";
+                // Background refresh to sync exact database state
+                loadCustomerDepositsHistory();
             }
         }
 
-        // ================= FULL SCREEN PAYMENT HISTORY SYSTEM (WITH REJECTED FIX) =================
+        // ================= FULL SCREEN PAYMENT HISTORY SYSTEM (WITH REALTIME REFRESH) =================
         function openPaymentHistoryView() {
             switchTab('viewPaymentHistory');
         }
@@ -1933,7 +1948,9 @@
             if (!container) return;
 
             if (!currentUser || !supabaseClient) {
-                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No payments found.</p>`;
+                if (allCustomerDeposits.length === 0) {
+                    container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No payments found.</p>`;
+                }
                 return;
             }
 
@@ -1944,11 +1961,13 @@
                     .eq("user_id", currentUser.id)
                     .order("created_at", { ascending: false });
 
-                allCustomerDeposits = data || [];
+                if (data && data.length > 0) {
+                    allCustomerDeposits = data;
+                }
                 renderPaymentHistoryList(activePaymentFilter);
             } catch (e) {
                 console.error("Deposits load:", e);
-                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No payments found.</p>`;
+                renderPaymentHistoryList(activePaymentFilter);
             }
         }
 
