@@ -18,7 +18,8 @@ function calculateDepositUSD() {
 
 async function handleDepositSubmit(e) {
     e.preventDefault();
-    const btn = document.getElementById("btnDepositSubmit");
+    const btn = id => document.getElementById(id);
+    const submitBtn = btn("btnDepositSubmit");
 
     if (!currentUser || !currentUser.id) {
         const local = getLocalActiveUser();
@@ -29,38 +30,26 @@ async function handleDepositSubmit(e) {
         }
     }
 
-    const pkr = parseFloat(document.getElementById("depAmountPKR").value);
+    const pkr = parseFloat(btn("depAmountPKR").value);
     if (isNaN(pkr) || pkr <= 0) {
         alert("Please enter valid amount");
         return;
     }
 
     const usd = parseFloat((pkr / 290.00).toFixed(4));
-    const method = document.getElementById("depMethod").value;
-    const sender = document.getElementById("depSenderNum").value.trim();
-    const trx = document.getElementById("depTrxId").value.trim();
+    const method = btn("depMethod").value;
+    const sender = btn("depSenderNum").value.trim();
+    const trx = btn("depTrxId").value.trim();
 
-    // UI Loading state
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
-
-    // Safety timeout to ensure button never stays stuck forever
-    let isFinished = false;
-    const safetyTimer = setTimeout(() => {
-        if (!isFinished) {
-            isFinished = true;
-            btn.disabled = false;
-            btn.innerText = "SUBMIT DEPOSIT REQUEST";
-            alert("Connection timeout or network issue. Please check your internet.");
-        }
-    }, 6000);
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
 
     try {
-        if (!supabaseClient) {
-            throw new Error("Supabase client not initialized");
+        if (!window.supabaseClient) {
+            throw new Error("Supabase client is not initialized. Check config.js");
         }
 
-        const { data, error } = await supabaseClient.from("deposits").insert([{
+        const { data, error } = await window.supabaseClient.from("deposits").insert([{
             user_id: currentUser.id,
             amount: usd,
             payment_method: method,
@@ -69,28 +58,23 @@ async function handleDepositSubmit(e) {
             status: 'pending'
         }]).select();
 
-        isFinished = true;
-        clearTimeout(safetyTimer);
-
         if (error) throw error;
 
         alert("Deposit request submitted successfully! Admin will verify soon.");
         
-        document.getElementById("depAmountPKR").value = "";
-        document.getElementById("depSenderNum").value = "";
-        document.getElementById("depTrxId").value = "";
-        document.getElementById("depUSDHint").innerText = "";
+        btn("depAmountPKR").value = "";
+        btn("depSenderNum").value = "";
+        btn("depTrxId").value = "";
+        btn("depUSDHint").innerText = "";
 
         openPaymentHistoryView();
         await loadCustomerDepositsHistory();
     } catch (err) {
-        isFinished = true;
-        clearTimeout(safetyTimer);
         console.error("Deposit insert error:", err);
         alert("Deposit Error: " + (err.message || "Failed to submit"));
     } finally {
-        btn.disabled = false;
-        btn.innerText = "SUBMIT DEPOSIT REQUEST";
+        submitBtn.disabled = false;
+        submitBtn.innerText = "SUBMIT DEPOSIT REQUEST";
     }
 }
 
@@ -112,7 +96,7 @@ async function loadCustomerDepositsHistory() {
     }
 
     try {
-        const { data, error } = await supabaseClient
+        const { data, error } = await window.supabaseClient
             .from("deposits")
             .select("*")
             .eq("user_id", currentUser.id)
