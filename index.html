@@ -406,7 +406,7 @@
             </div>
             <ul class="sidebar-menu">
                 <li><a class="active" onclick="switchTab('viewDashboard', this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-                <li><a onclick="switchTab('viewOrder', this)"><i class="fa-solid fa-cart-shopping"></i> New Order</a></li>
+                <li><a onclick="scrollToOrderForm()"><i class="fa-solid fa-cart-shopping"></i> New Order</a></li>
                 <li><a onclick="switchTab('viewServices', this)"><i class="fa-solid fa-list"></i> Services</a></li>
                 <li><a onclick="switchTab('viewOrdersList', this)"><i class="fa-solid fa-box-archive"></i> My Orders</a></li>
                 <li><a onclick="switchTab('viewAddFunds', this)"><i class="fa-solid fa-wallet"></i> Add Funds</a></li>
@@ -419,13 +419,14 @@
         </aside>
 
         <div class="content-body">
-            <!-- VIEW 1: DASHBOARD -->
+            <!-- VIEW 1: DASHBOARD (HOME) -->
             <div id="viewDashboard" class="app-view active">
                 <div class="vip-card">
                     <h2 style="font-size: 1.15rem; color: var(--accent-cyan); margin-bottom: 4px;" id="dashWelcomeName">WELCOME, MEMBER</h2>
                     <p style="font-size: 0.75rem; color: #10B981; font-weight: 600;">Account: Active Level 1</p>
                 </div>
 
+                <!-- 4 STAT CARDS -->
                 <div class="stat-grid">
                     <div class="stat-box">
                         <i class="fa-solid fa-cart-shopping" style="background: rgba(0,213,255,0.1); color: var(--accent-cyan);"></i>
@@ -457,24 +458,8 @@
                     </div>
                 </div>
 
-                <div class="vip-card">
-                    <h3 style="font-size: 0.95rem; margin-bottom: 10px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr><th>Order #</th><th>Date</th><th>Service</th><th>Qty</th><th>Charge</th><th>Status</th></tr>
-                            </thead>
-                            <tbody id="dashRecentOrdersBody">
-                                <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VIEW 2: NEW ORDER -->
-            <div id="viewOrder" class="app-view">
-                <div class="vip-card">
+                <!-- PLACE ORDER CARD (EXACTLY UNDER 4 CARDS) -->
+                <div class="vip-card" id="homeOrderCard">
                     <h2 style="margin-bottom: 14px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-bolt"></i> Place Order</h2>
                     <form onsubmit="handlePlaceOrder(event)">
                         <div class="form-group">
@@ -505,9 +490,24 @@
                         <button type="submit" class="btn-vip" id="btnPlaceOrder"><i class="fa-solid fa-cart-shopping"></i> Confirm Order</button>
                     </form>
                 </div>
+
+                <!-- RECENT ACTIVITY CARD -->
+                <div class="vip-card">
+                    <h3 style="font-size: 0.95rem; margin-bottom: 10px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr><th>Order #</th><th>Date</th><th>Service</th><th>Qty</th><th>Charge</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="dashRecentOrdersBody">
+                                <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No orders yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <!-- VIEW 3: SERVICES LIST -->
+            <!-- VIEW 2: SERVICES LIST -->
             <div id="viewServices" class="app-view">
                 <div class="vip-card">
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-list-check"></i> Available Services</h2>
@@ -520,7 +520,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: MY ORDERS -->
+            <!-- VIEW 3: MY ORDERS -->
             <div id="viewOrdersList" class="app-view">
                 <div class="vip-card">
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-boxes-stacked"></i> My Order History</h2>
@@ -530,7 +530,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 5: ADD FUNDS -->
+            <!-- VIEW 4: ADD FUNDS -->
             <div id="viewAddFunds" class="app-view">
                 <div class="vip-card">
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem; color: #10B981;"><i class="fa-solid fa-money-bill-transfer"></i> Deposit Funds</h2>
@@ -568,7 +568,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 6: TRANSACTIONS -->
+            <!-- VIEW 5: TRANSACTIONS -->
             <div id="viewTransactions" class="app-view">
                 <div class="vip-card">
                     <h2 style="margin-bottom: 12px; font-size: 1.15rem;"><i class="fa-solid fa-clock-rotate-left"></i> Wallet Transactions</h2>
@@ -578,7 +578,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 7: LIVE SUPPORT CHAT -->
+            <!-- VIEW 6: LIVE SUPPORT CHAT -->
             <div id="viewSupport" class="app-view">
                 <div class="vip-card">
                     <h2 style="margin-bottom: 10px; font-size: 1.15rem; color: var(--accent-orange);"><i class="fa-solid fa-headset"></i> Live Support Chat</h2>
@@ -592,7 +592,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 8: PROFILE -->
+            <!-- VIEW 7: PROFILE -->
             <div id="viewProfile" class="app-view">
                 <div class="vip-card">
                     <h2 style="margin-bottom: 14px; font-size: 1.15rem; color: var(--accent-cyan);"><i class="fa-solid fa-id-card"></i> Account Profile</h2>
@@ -620,7 +620,7 @@
             <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
                 <i class="fa-solid fa-chart-pie"></i><span>Home</span>
             </div>
-            <div class="mobile-nav-item" id="btnNavOrder" onclick="switchTab('viewOrder', this)">
+            <div class="mobile-nav-item" id="btnNavOrder" onclick="scrollToOrderForm()">
                 <i class="fa-solid fa-cart-shopping"></i><span>Order</span>
             </div>
             <div class="mobile-nav-item" id="btnNavServices" onclick="switchTab('viewServices', this)">
@@ -965,6 +965,20 @@
             });
         }
 
+        function scrollToOrderForm() {
+            switchTab('viewDashboard');
+            const target = document.getElementById("homeOrderCard");
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            const btnOrder = document.getElementById("btnNavOrder");
+            const btnHome = document.getElementById("btnNavHome");
+            if (btnOrder) btnOrder.classList.add("active");
+            if (btnHome) btnHome.classList.remove("active");
+            document.getElementById("sidebarDrawer").classList.remove("open");
+            document.getElementById("sidebarOverlay").classList.remove("active");
+        }
+
         function switchTab(viewId, element) {
             document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
             document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
@@ -977,11 +991,8 @@
             if (viewId === 'viewDashboard') {
                 const btn = document.getElementById("btnNavHome");
                 if (btn) btn.classList.add("active");
-                loadCustomerOrders();
-            } else if (viewId === 'viewOrder') {
-                const btn = document.getElementById("btnNavOrder");
-                if (btn) btn.classList.add("active");
                 populateCategoryDropdown();
+                loadCustomerOrders();
             } else if (viewId === 'viewServices') {
                 const btn = document.getElementById("btnNavServices");
                 if (btn) btn.classList.add("active");
@@ -1084,7 +1095,7 @@
             }
         }
 
-        // ================= RELIABLE PUBLIC FETCH (DIRECT SUPABASE CALL) =================
+        // ================= RELIABLE PUBLIC FETCH =================
         async function fetchFreshServicesAndCategories() {
             if (!supabaseClient || isFetchingCategories) return;
             isFetchingCategories = true;
