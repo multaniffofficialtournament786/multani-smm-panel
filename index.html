@@ -18,8 +18,8 @@
         :root {
             --bg-deep: #05261d;
             --bg-radial: radial-gradient(circle at 50% 20%, #0d5c46 0%, #063326 50%, #031c15 100%);
-            --card-glass: rgba(6, 44, 34, 0.85);
-            --border-glass: rgba(34, 197, 94, 0.28);
+            --card-glass: rgba(6, 44, 34, 0.88);
+            --border-glass: rgba(34, 197, 94, 0.32);
             --gold-grad: linear-gradient(180deg, #FFE873 0%, #F59E0B 100%);
             --gold-border: #FCD34D;
             --text-main: #FFFFFF;
@@ -45,7 +45,7 @@
         h1, h2, h3, h4, .brand-font {
             font-family: var(--font-game);
             letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .hidden { display: none !important; }
@@ -62,7 +62,7 @@
         }
         
         .game-auth-card {
-            background: rgba(6, 40, 31, 0.95);
+            background: rgba(6, 40, 31, 0.96);
             border: 2px solid #22c55e;
             border-radius: 24px;
             padding: 26px 20px;
@@ -151,7 +151,7 @@
         /* ========= GAME TOP BAR ========= */
         .game-top-bar {
             height: 68px;
-            background: rgba(3, 30, 23, 0.92);
+            background: rgba(3, 30, 23, 0.94);
             backdrop-filter: blur(10px);
             border-bottom: 2px solid rgba(34, 197, 94, 0.3);
             padding: 0 12px;
@@ -694,7 +694,7 @@
                         <div class="form-group">
                             <label>Category</label>
                             <select id="orderCatSelect" onchange="handleCategoryFilter(this.value)" required>
-                                <option value="">Loading categories...</option>
+                                <option value="">Select Category</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -974,7 +974,8 @@
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
             
-            // Clean load public data
+            // 1. Instant load cached public data first to prevent blank screens
+            loadCachedCategoriesAndServices();
             fetchFreshServicesAndCategories();
             loadSiteAnnouncement();
 
@@ -998,8 +999,18 @@
                 console.warn(err);
             }
 
-            // If no active official session, stay on Auth Screen (Clean Logout Fix)
             showAuthScreen();
+        }
+
+        function loadCachedCategoriesAndServices() {
+            try {
+                const cachedCats = localStorage.getItem("multani_cached_cats");
+                const cachedSrvs = localStorage.getItem("multani_cached_srvs");
+                if (cachedCats) allCategories = JSON.parse(cachedCats);
+                if (cachedSrvs) allServices = JSON.parse(cachedSrvs);
+                if (allCategories.length > 0) populateCategoryDropdown();
+                if (allServices.length > 0) renderServicesPageTable();
+            } catch (e) {}
         }
 
         if (supabaseClient) {
@@ -1140,7 +1151,7 @@
             }
         }
 
-        // ================= CLEAN LOGOUT (FIXED INSTANTLY) =================
+        // ================= CLEAN LOGOUT =================
         async function directCleanLogout() {
             toggleSidebar();
             try {
@@ -1149,7 +1160,7 @@
                 }
             } catch (e) {}
 
-            localStorage.clear();
+            localStorage.removeItem("supabase.auth.token");
             sessionStorage.clear();
             window.location.hash = "";
             currentUser = null;
@@ -1160,7 +1171,7 @@
 
             setTimeout(() => {
                 window.location.reload();
-            }, 300);
+            }, 250);
         }
 
         function scrollToOrderForm() {
@@ -1289,12 +1300,12 @@
             }
         }
 
-        // ================= CATEGORIES & SERVICES FETCH (NO HANGING) =================
+        // ================= CATEGORIES & SERVICES FETCH (EXACT ADMIN MATCH) =================
         async function fetchFreshServicesAndCategories() {
             if (!supabaseClient) return;
 
             try {
-                // Parallel safe requests
+                // Fetch categories and services exactly as saved by Admin Panel
                 const [catsRes, srvsRes] = await Promise.all([
                     supabaseClient.from("categories").select("*").order("name", { ascending: true }),
                     supabaseClient.from("services").select("*").order("created_at", { ascending: false })
@@ -1302,25 +1313,28 @@
 
                 if (catsRes && catsRes.data && catsRes.data.length > 0) {
                     allCategories = catsRes.data;
-                } else if (srvsRes && srvsRes.data) {
-                    // Fallback: extract unique categories from services if category table restricted
-                    const uniqueCats = {};
-                    srvsRes.data.forEach(s => {
-                        const catId = s.category_id || 'general';
-                        const catName = s.category_name || s.category || 'General Services';
-                        uniqueCats[catId] = { id: catId, name: catName };
-                    });
-                    allCategories = Object.values(uniqueCats);
+                    localStorage.setItem("multani_cached_cats", JSON.stringify(allCategories));
                 }
 
-                if (srvsRes && srvsRes.data) {
+                if (srvsRes && srvsRes.data && srvsRes.data.length > 0) {
                     allServices = srvsRes.data.filter(s => s.is_active !== false && s.is_active !== 'false');
+                    localStorage.setItem("multani_cached_srvs", JSON.stringify(allServices));
+                }
+
+                // If categories table was empty but services exist, automatically build categories list from services
+                if ((!allCategories || allCategories.length === 0) && allServices.length > 0) {
+                    const uniqueCats = {};
+                    allServices.forEach(s => {
+                        const cId = s.category_id || 'general';
+                        uniqueCats[cId] = { id: cId, name: s.category_name || `Category #${cId}` };
+                    });
+                    allCategories = Object.values(uniqueCats);
                 }
 
                 populateCategoryDropdown();
                 renderServicesPageTable();
             } catch (e) {
-                console.warn("Categories fetch:", e);
+                console.warn("Categories fetch note:", e);
                 populateCategoryDropdown();
             }
         }
@@ -1468,7 +1482,7 @@
             }
         }
 
-        // ================= ORDERS LIST (NO INFINITE LOADING) =================
+        // ================= ORDERS LIST =================
         async function loadCustomerOrders() {
             const recentBody = document.getElementById("dashRecentOrdersBody");
             const list = document.getElementById("customerOrdersList");
@@ -1542,7 +1556,7 @@
             document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
         }
 
-        // ================= DEPOSIT SUBMIT (INSTANT NO HANG) =================
+        // ================= DEPOSIT SUBMIT =================
         async function handleDepositSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById("btnDepositSubmit");
@@ -1598,7 +1612,7 @@
             }
         }
 
-        // ================= TRANSACTIONS (NO INFINITE LOADING) =================
+        // ================= TRANSACTIONS =================
         async function loadTransactions() {
             const container = document.getElementById("transactionsListContainer");
             if (!container) return;
@@ -1640,7 +1654,7 @@
             }
         }
 
-        // ================= LIVE SUPPORT CHAT (NO HANGING BUTTON) =================
+        // ================= LIVE SUPPORT CHAT =================
         async function loadCustomerChat() {
             if (!currentUser || !supabaseClient) return;
             const body = document.getElementById("customerChatWindow");
