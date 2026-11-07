@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- NO-CACHE HEADERS: FIXES CHROME HANG/DATA-CLEAR ISSUE -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>MULTANI SMM | Super Admin Control Panel</title>
     
     <!-- Fonts & Icons -->
@@ -769,10 +773,14 @@
 
             if (!supabaseClient) return;
             
+            // Safety timeout guard (Max 1.5 seconds) - Prevents Chrome infinite hang
+            const sessionPromise = supabaseClient.auth.getSession();
+            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 1500));
+            
             try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session && session.user) {
-                    verifyAdminRole(session.user);
+                const res = await Promise.race([sessionPromise, timeoutPromise]);
+                if (res && res.data && res.data.session && res.data.session.user) {
+                    verifyAdminRole(res.data.session.user);
                 } else if (!isLocalAdminSessionActive()) {
                     showAdminAuth();
                 }
