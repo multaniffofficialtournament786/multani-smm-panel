@@ -7,12 +7,12 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>MULTANI SMM | Premium Services</title>
+    <title>MULTANI SMM VIP CLUB</title>
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700;800&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Rajdhani:wght@600;700;800&family=Fredoka:wght@600;700&family=Amiri:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Supabase CDN Client -->
@@ -20,429 +20,990 @@
 
     <style>
         :root {
-            --bg-base: #061109;
-            --bg-card: #0a1f12;
-            --bg-card-sec: #0f2b1a;
-            --accent-gold: #F59E0B;
-            --accent-green: #10B981;
-            --accent-red: #EF4444;
-            --accent-cyan: #00D5FF;
+            --bg-deep: #05261d;
+            --bg-radial: radial-gradient(circle at 50% 20%, #0d5c46 0%, #063326 50%, #031c15 100%);
+            --card-glass: rgba(6, 44, 34, 0.88);
+            --border-glass: rgba(34, 197, 94, 0.32);
+            --gold-grad: linear-gradient(180deg, #FFE873 0%, #F59E0B 100%);
+            --gold-border: #FCD34D;
             --text-main: #FFFFFF;
-            --text-muted: #8CA394;
-            --border-card: #164026;
-            --sidebar-w: 260px;
+            --text-muted: #A7F3D0;
+            --font-game: 'Fredoka', 'Rajdhani', sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; width: 100%; }
-        h1, h2, h3, h4, .brand-font { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--border-card); border-radius: 4px; }
-
-        /* Toast Container */
-        #toastContainer { position: fixed; top: 15px; right: 15px; left: 15px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-        .toast { padding: 12px 16px; background: rgba(10, 31, 18, 0.98); border-left: 4px solid var(--accent-gold); border-radius: 8px; display: flex; align-items: center; gap: 10px; color: #fff; font-size: 0.85rem; border: 1px solid var(--border-card); pointer-events: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
-        .toast.error { border-left-color: var(--accent-red); }
-        .toast.success { border-left-color: var(--accent-green); }
-
-        /* Auth Gateway */
-        #authContainer { width: 100%; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; background: radial-gradient(circle at 50% 20%, #113821 0%, #061109 100%); }
-        .auth-card { width: 100%; max-width: 410px; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 18px; padding: 26px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 5px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 10px 12px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 8px; color: var(--text-main); font-size: 0.88rem; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent-gold); }
+        body {
+            background: var(--bg-radial);
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            width: 100%;
+            padding-bottom: 90px;
+        }
 
-        .btn-vip { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; background: linear-gradient(135deg, var(--accent-gold), #d97706); color: #000; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; cursor: pointer; transition: transform 0.1s ease; width: 100%; }
-        .btn-vip:active { transform: scale(0.98); }
-        .btn-vip.btn-sec { background: var(--bg-card-sec); border: 1px solid var(--border-card); color: var(--text-main); }
-        .btn-vip.btn-green { background: linear-gradient(135deg, #10B981, #059669); color: #fff; }
-
-        /* Main Layout */
-        #appContainer { width: 100%; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 75px; }
-
-        /* Top Navbar */
-        .top-navbar { height: 62px; background: var(--bg-card); border-bottom: 1px solid var(--border-card); display: flex; align-items: center; justify-content: space-between; padding: 0 14px; position: sticky; top: 0; z-index: 90; }
-        .nav-wallet-chip { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-card); border-radius: 20px; padding: 5px 12px; cursor: pointer; }
-        .nav-wallet-chip i { color: var(--accent-gold); font-size: 0.95rem; }
-        .nav-wallet-val { font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 800; color: #fff; }
-
-        .currency-select { background: var(--bg-card-sec); border: 1px solid var(--border-card); color: #fff; border-radius: 6px; padding: 5px 8px; font-size: 0.75rem; font-weight: 700; outline: none; }
-        .nav-dp { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--accent-gold); object-fit: cover; cursor: pointer; }
-
-        /* Announcement Notice */
-        .marquee-box { background: rgba(245, 158, 11, 0.1); border-bottom: 1px solid rgba(245, 158, 11, 0.25); padding: 8px 12px; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; overflow: hidden; }
-        .notice-tag { background: var(--accent-gold); color: #000; font-size: 0.68rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; font-family: 'Rajdhani', sans-serif; flex-shrink: 0; }
-        .marquee-text { white-space: nowrap; animation: marquee 16s linear infinite; color: #fff; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        /* Content Views */
-        .content-body { padding: 14px; max-width: 900px; width: 100%; margin: 0 auto; flex: 1; }
-        .page-view { display: none; }
-        .page-view.active { display: block; }
-        .vip-card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 16px; margin-bottom: 14px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-
-        /* Services List (Customer View - Secret Provider) */
-        .service-customer-card { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
-        .srv-title { font-size: 0.95rem; font-weight: 700; color: #fff; line-height: 1.4; word-break: break-word; }
-        .srv-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-card); padding-top: 8px; font-size: 0.8rem; }
-        .srv-price { color: var(--accent-gold); font-size: 1.05rem; font-weight: 800; font-family: 'Rajdhani', sans-serif; }
-
-        /* Slip Cards (Deposits History) */
-        .slip-card { background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 14px; padding: 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
-        .slip-top { display: flex; justify-content: space-between; align-items: center; }
-        .slip-amount-row { display: flex; justify-content: space-between; align-items: baseline; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; border: 1px dashed var(--border-card); }
-        .slip-pkr { font-size: 1.15rem; font-weight: 800; color: var(--accent-gold); font-family: 'Rajdhani', sans-serif; }
-        .slip-usd { font-size: 0.9rem; font-weight: 700; color: var(--accent-green); }
-        .slip-details { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; word-break: break-all; }
-
-        /* Filter Tabs */
-        .filter-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
-        .tab-btn { padding: 6px 14px; background: var(--bg-card-sec); border: 1px solid var(--border-card); border-radius: 20px; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; white-space: nowrap; font-weight: 600; }
-        .tab-btn.active { background: var(--accent-gold); color: #000; border-color: var(--accent-gold); font-weight: 800; }
-
-        .badge { padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-        .badge-pending { background: rgba(234, 179, 8, 0.15); color: #EAB308; border: 1px solid #EAB308; }
-        .badge-completed, .badge-approved { background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid #10B981; }
-        .badge-cancelled, .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid #EF4444; }
-
-        /* Mobile Bottom Nav */
-        .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: rgba(10, 31, 18, 0.98); backdrop-filter: blur(12px); border-top: 1px solid var(--border-card); z-index: 1000; display: flex; justify-content: space-around; align-items: center; }
-        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--text-muted); font-size: 0.65rem; font-weight: 600; cursor: pointer; flex: 1; height: 100%; position: relative; }
-        .mobile-nav-item i { font-size: 1.15rem; }
-        .mobile-nav-item.active { color: var(--accent-gold); }
-
-        /* Modals */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 15px; }
-        .modal-overlay.active { display: flex; }
-        .modal-box { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; max-width: 480px; width: 100%; padding: 20px; }
+        h1, h2, h3, h4, .brand-font {
+            font-family: var(--font-game);
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
 
         .hidden { display: none !important; }
+
+        /* ========= AUTH SCREEN ========= */
+        #authGateContainer {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            background: var(--bg-radial);
+        }
+        
+        .game-auth-card {
+            background: rgba(6, 40, 31, 0.96);
+            border: 2px solid #22c55e;
+            border-radius: 24px;
+            padding: 26px 20px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.2);
+            text-align: center;
+            position: relative;
+        }
+
+        .crown-banner {
+            font-size: 3rem;
+            color: #FBBF24;
+            filter: drop-shadow(0 4px 10px rgba(245, 158, 11, 0.6));
+            margin-bottom: 8px;
+            animation: bounceSlow 2.5s infinite ease-in-out;
+        }
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .btn-google-auth {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 13px;
+            background: #ffffff;
+            color: #1f2937;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            margin-bottom: 16px;
+            transition: transform 0.15s ease;
+        }
+        .btn-google-auth:active { transform: scale(0.98); }
+        .btn-google-auth img { width: 22px; height: 22px; }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .auth-divider:not(:empty)::before { margin-right: .8em; }
+        .auth-divider:not(:empty)::after { margin-left: .8em; }
+
+        .auth-switch-tabs {
+            display: flex;
+            background: rgba(3, 24, 18, 0.9);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border-glass);
+        }
+        .auth-tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-family: var(--font-game);
+            font-size: 1.05rem;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .auth-tab-btn.active {
+            background: var(--gold-grad);
+            color: #5b2e04;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+        }
+
+        /* ========= GAME TOP BAR ========= */
+        .game-top-bar {
+            height: 68px;
+            background: rgba(3, 30, 23, 0.94);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(34, 197, 94, 0.3);
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1002;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .gold-rect-box {
+            background: #0f3d30;
+            border: 1.5px solid #F59E0B;
+            border-radius: 10px;
+            padding: 5px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #FFE873;
+            font-weight: 800;
+            font-family: var(--font-game);
+            font-size: 0.92rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 2px 6px rgba(245,158,11,0.2);
+        }
+        .gold-rect-box i { color: #FBBF24; font-size: 0.95rem; }
+
+        .currency-select-box {
+            background: #0f3d30;
+            border: 1.5px solid #22c55e;
+            color: #fff;
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .user-avatar-game {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #FBBF24;
+            object-fit: cover;
+            box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+            cursor: pointer;
+        }
+
+        /* NOTICE TICKER */
+        .announcement-bar {
+            background: linear-gradient(90deg, #07261d 0%, #0a3a2d 50%, #07261d 100%);
+            border-bottom: 1.5px solid rgba(245, 158, 11, 0.4);
+            height: 34px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 68px;
+            z-index: 1001;
+            overflow: hidden;
+        }
+        .announcement-badge {
+            background: var(--gold-grad);
+            color: #78350f;
+            height: 100%;
+            padding: 0 10px;
+            font-weight: 800;
+            font-size: 0.72rem;
+            font-family: var(--font-game);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        .ticker-wrapper { flex: 1; overflow: hidden; white-space: nowrap; }
+        .announcement-ticker {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: marquee 24s linear infinite;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #FFE873;
+        }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+        /* BISMILLAH & TITLE BOARD */
+        .game-center-board { text-align: center; padding: 14px 10px 6px 10px; }
+        .bismillah-calligraphy {
+            font-family: 'Amiri', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #FFE873;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8), 0 0 12px rgba(251, 191, 36, 0.4);
+            margin-bottom: 4px;
+        }
+        .welcome-to-text {
+            font-size: 0.82rem;
+            color: #FCD34D;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-family: var(--font-game);
+        }
+        .ludo-logo-text {
+            font-size: 2.2rem;
+            font-family: var(--font-game);
+            font-weight: 900;
+            background: linear-gradient(180deg, #FFFFFF 0%, #A7F3D0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 3px 10px rgba(0,0,0,0.6);
+            letter-spacing: 2px;
+            margin-top: -2px;
+        }
+
+        /* 3D TILE CARDS */
+        .cards-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 14px 0 18px 0;
+        }
+        .game-tile {
+            position: relative;
+            border-radius: 18px;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 125px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4), inset 0 -4px 0 rgba(0,0,0,0.25);
+            transition: transform 0.12s ease;
+        }
+        .game-tile:active { transform: scale(0.97); }
+
+        .tile-blue { background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%); color: #ffffff; }
+        .tile-green { background: linear-gradient(135deg, #34D399 0%, #059669 100%); color: #ffffff; }
+        .tile-yellow { background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%); color: #451a03; }
+        .tile-red { background: linear-gradient(135deg, #FB7185 0%, #E11D48 100%); color: #ffffff; }
+
+        .tile-icon-bubble { font-size: 2.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); margin-bottom: 6px; }
+        .tile-title { font-family: var(--font-game); font-size: 1.15rem; font-weight: 800; line-height: 1.1; }
+        .tile-subtitle { font-size: 0.75rem; font-weight: 700; opacity: 0.95; margin-top: 2px; text-transform: uppercase; }
+
+        /* MAIN CONTENT BODY */
+        .content-body { padding: 12px; max-width: 650px; width: 100%; margin: 0 auto; }
+        .app-view { display: none; }
+        .app-view.active { display: block; }
+
+        .vip-game-card {
+            background: var(--card-glass);
+            border: 2px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 18px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .form-group { margin-bottom: 12px; text-align: left; }
+        label { display: block; margin-bottom: 6px; font-size: 0.75rem; font-weight: 700; color: #A7F3D0; text-transform: uppercase; }
+        input, select, textarea {
+            width: 100%;
+            padding: 11px 14px;
+            background: rgba(3, 26, 19, 0.95);
+            border: 1.5px solid #10b981;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #FBBF24;
+            box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+        }
+
+        .btn-3d-play {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
+            color: #ffffff;
+            border: 2px solid #FDE68A;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            font-family: var(--font-game);
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(217, 119, 6, 0.4), inset 0 2px 0 rgba(255,255,255,0.4);
+            transition: transform 0.1s ease;
+        }
+        .btn-3d-play:active { transform: translateY(2px); }
+        .btn-3d-play.btn-cyan {
+            background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 100%);
+            border-color: #7dd3fc;
+            box-shadow: 0 6px 14px rgba(3, 105, 161, 0.4);
+        }
+        .btn-3d-play.btn-whatsapp {
+            background: linear-gradient(180deg, #25D366 0%, #128C7E 100%);
+            border-color: #86efac;
+            box-shadow: 0 6px 14px rgba(18, 140, 126, 0.5);
+            text-decoration: none;
+        }
+
+        /* AUTO WRAPPING SERVICES */
+        .services-card-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .service-item-box {
+            background: rgba(3, 27, 20, 0.95);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+        .service-item-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
+            white-space: normal;
+            word-break: break-word;
+        }
+        .service-item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            padding-top: 6px;
+            border-top: 1px dashed rgba(34, 197, 94, 0.25);
+            font-size: 0.78rem;
+        }
+
+        /* PAYMENT HISTORY TABS */
+        .filter-tabs-wrapper {
+            display: flex;
+            background: rgba(2, 20, 15, 0.95);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 14px;
+            width: 100%;
+        }
+        .filter-tab-pill {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: var(--font-game);
+            color: #A7F3D0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            text-transform: uppercase;
+        }
+        .filter-tab-pill.active {
+            background: var(--gold-grad);
+            color: #451a03;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .deposit-record-card {
+            background: rgba(2, 22, 16, 0.95);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .deposit-record-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
+
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
+        .badge-completed, .badge-approved { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
+        .badge-cancelled, .badge-rejected { background: rgba(239, 68, 68, 0.2); color: #EF4444; border: 1px solid #EF4444; }
+
+        /* CHAT WINDOW */
+        .chat-box {
+            background: rgba(2, 20, 15, 0.95);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 14px;
+            height: 330px;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .bubble-admin {
+            align-self: flex-start;
+            background: #0f4637;
+            color: #ECFDF5;
+            padding: 10px 14px;
+            border-radius: 14px 14px 14px 2px;
+            font-size: 0.85rem;
+            max-width: 82%;
+            border: 1px solid #10B981;
+        }
+        .bubble-user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: #ffffff;
+            padding: 10px 14px;
+            border-radius: 14px 14px 2px 14px;
+            font-size: 0.85rem;
+            max-width: 82%;
+        }
+
+        /* LUDO BOTTOM BAR */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 72px;
+            background: rgba(3, 27, 20, 0.97);
+            backdrop-filter: blur(12px);
+            border-top: 2px solid #22c55e;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -6px 20px rgba(0,0,0,0.6);
+        }
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: #6ee7b7;
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: var(--font-game);
+            cursor: pointer;
+            flex: 1;
+            height: 100%;
+        }
+        .mobile-nav-item i { font-size: 1.35rem; }
+        .mobile-nav-item.active { color: #FFE873; transform: translateY(-3px); }
+        .mobile-nav-item.active i { color: #FBBF24; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)); }
+
+        /* SIDEBAR */
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 19999; display: none; }
+        .sidebar-overlay.active { display: block; }
+        .sidebar {
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            width: 270px;
+            background: #04241b;
+            border-right: 2px solid #22c55e;
+            z-index: 20000;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-header {
+            padding: 18px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1.5px solid rgba(34, 197, 94, 0.3);
+            background: #021a13;
+        }
+        .sidebar-menu { list-style: none; padding: 12px 8px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; flex: 1; }
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: #A7F3D0;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: var(--font-game);
+            cursor: pointer;
+        }
+        .sidebar-menu li a:active, .sidebar-menu li a.active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #FFE873;
+            border-left: 4px solid #FBBF24;
+        }
+        .sidebar-menu li a.logout-btn { color: #f87171; border-top: 1px dashed rgba(239, 68, 68, 0.4); margin-top: 10px; padding-top: 14px; }
+
+        /* VIP POPUP MODAL */
+        .vip-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .vip-popup-card {
+            background: rgba(6, 40, 31, 0.98);
+            border: 2px solid #FBBF24;
+            border-radius: 24px;
+            padding: 24px 20px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 25px rgba(251, 191, 36, 0.3);
+            animation: popupZoom 0.25s ease-out;
+            position: relative;
+        }
+        @keyframes popupZoom {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #toastContainer { position: fixed; top: 75px; right: 15px; left: 15px; z-index: 999999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast { padding: 12px 16px; background: rgba(4, 34, 26, 0.98); border-left: 5px solid #FBBF24; border-radius: 10px; color: #fff; font-size: 0.88rem; font-weight: 600; border: 1px solid #22c55e; pointer-events: auto; }
+        .toast.error { border-left-color: #EF4444; }
+        .toast.success { border-left-color: #10B981; }
     </style>
 </head>
 <body>
 
     <div id="toastContainer"></div>
 
-    <!-- 1. CUSTOMER AUTH GATE (LOGIN / SIGNUP) -->
-    <div id="authContainer">
-        <div class="auth-card">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <i class="fa-solid fa-crown" style="font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 6px;"></i>
-                <h2>MULTANI SMM</h2>
-                <p style="color: var(--text-muted); font-size: 0.8rem;">High Speed Social Growth Services</p>
+    <!-- VIP FORGOT PASSWORD POPUP MODAL -->
+    <div id="forgotPwModal" class="vip-popup-overlay hidden">
+        <div class="vip-popup-card">
+            <div style="font-size: 2.8rem; color: #25D366; margin-bottom: 6px; filter: drop-shadow(0 4px 10px rgba(37,211,102,0.5));">
+                <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <h3 style="color: #FFE873; font-size: 1.4rem; margin-bottom: 8px;">RESET PASSWORD</h3>
+            <p style="color: #A7F3D0; font-size: 0.88rem; line-height: 1.45; margin-bottom: 16px;">
+                Please contact the official administrator to change or recover your account password.
+            </p>
+            
+            <div style="background: rgba(2, 20, 15, 0.9); border: 1.5px dashed #FBBF24; border-radius: 14px; padding: 12px; margin-bottom: 18px;">
+                <div style="color: #FFE873; font-family: var(--font-game); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.5px;">
+                    MUHAMMAD NADEEM
+                </div>
+                <div style="color: #25D366; font-size: 1.15rem; font-weight: 800; margin-top: 4px; font-family: var(--font-game);">
+                    <i class="fa-brands fa-whatsapp"></i> 03292488285
+                </div>
             </div>
 
-            <div class="filter-tabs" style="justify-content: center; margin-bottom: 15px;">
-                <button type="button" class="tab-btn active" id="tabAuthLogin" onclick="switchAuthMode('login')">Login</button>
-                <button type="button" class="tab-btn" id="tabAuthSignup" onclick="switchAuthMode('signup')">Sign Up</button>
+            <a href="https://wa.me/923292488285?text=Assalam-o-Alaikum%20Admin,%20Please%20help%20me%20change%20my%20MULTANI%20SMM%20account%20password." target="_blank" class="btn-3d-play btn-whatsapp" style="margin-bottom: 10px;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Open WhatsApp Chat
+            </a>
+            
+            <button type="button" class="btn-3d-play" onclick="closeForgotPwModal()" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); font-size: 0.9rem; padding: 10px;">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- 0. LOGIN & SIGNUP SCREEN -->
+    <div id="authGateContainer">
+        <div class="game-auth-card">
+            <div class="crown-banner"><i class="fa-solid fa-crown"></i></div>
+            <h2 style="font-size: 1.6rem; color: #FFE873; margin-bottom: 2px;">MULTANI VIP CLUB</h2>
+            <p style="font-size: 0.8rem; color: #A7F3D0; margin-bottom: 20px;">Ludo Pro Style SMM Platform</p>
+
+            <button type="button" class="btn-google-auth" onclick="handleGoogleOAuthLogin()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Sign in with Google
+            </button>
+
+            <div class="auth-divider">OR EMAIL LOGIN</div>
+
+            <div class="auth-switch-tabs">
+                <button type="button" class="auth-tab-btn active" id="tabBtnLogin" onclick="switchAuthTab('login')">Login</button>
+                <button type="button" class="auth-tab-btn" id="tabBtnRegister" onclick="switchAuthTab('register')">Register</button>
             </div>
 
-            <form onsubmit="handleCustomerAuth(event)" id="customerAuthForm">
-                <div class="form-group" id="groupFullName" style="display: none;">
+            <form id="customerLoginForm" onsubmit="handleCustomerLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="name@domain.com">
+                </div>
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label style="margin: 0;">Password</label>
+                        <span onclick="openForgotPwModal()" style="color: #FBBF24; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                            Forgot Password?
+                        </span>
+                    </div>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-3d-play" id="btnLoginSubmit"><i class="fa-solid fa-right-to-bracket"></i> Login Account</button>
+            </form>
+
+            <form id="customerRegisterForm" class="hidden" onsubmit="handleCustomerRegister(event)">
+                <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" id="custFullNameInput" placeholder="Muhammad Nadeem">
+                    <input type="text" id="regFullName" required placeholder="Muhammad Nadeem">
                 </div>
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" id="custEmailInput" required placeholder="yourname@gmail.com">
+                    <input type="email" id="regEmail" required placeholder="name@domain.com">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="custPasswordInput" required placeholder="••••••••">
+                    <input type="password" id="regPassword" required placeholder="Minimum 6 characters">
                 </div>
-
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 14px;" id="forgotPasswordWrap">
-                    <a href="javascript:void(0)" onclick="openVipForgotPopup()" style="font-size: 0.75rem; color: var(--accent-gold); text-decoration: none; font-weight: 600;">Forgot Password? (VIP Help)</a>
-                </div>
-
-                <button type="submit" class="btn-vip" id="btnCustomerAuth">Sign In</button>
+                <button type="submit" class="btn-3d-play" id="btnRegisterSubmit"><i class="fa-solid fa-user-plus"></i> Create Account</button>
             </form>
         </div>
     </div>
 
-    <!-- 2. CUSTOMER DASHBOARD APP -->
-    <div id="appContainer" class="hidden">
-        
-        <!-- TOP NAVBAR -->
-        <header class="top-navbar">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div class="nav-wallet-chip" onclick="navigateCustomer('depositView')">
-                    <i class="fa-solid fa-coins"></i>
-                    <span class="nav-wallet-val" id="topNavUserBalance">Rs 0.00</span>
-                </div>
-            </div>
+    <!-- SIDEBAR -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebarDrawer">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-crown" style="color: #FBBF24; font-size: 1.4rem;"></i>
+            <h3 style="color: #FFE873;">MULTANI VIP</h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a class="active" onclick="switchTab('viewDashboard')"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+            <li><a onclick="scrollToOrderForm()"><i class="fa-solid fa-cart-shopping"></i> New Order</a></li>
+            <li><a onclick="switchTab('viewServices')"><i class="fa-solid fa-list-check"></i> VIP Services</a></li>
+            <li><a onclick="switchTab('viewOrdersList')"><i class="fa-solid fa-box-archive"></i> Order History</a></li>
+            <li><a onclick="switchTab('viewAddFunds')"><i class="fa-solid fa-wallet"></i> Deposit Funds</a></li>
+            <li><a onclick="openPaymentHistoryView()"><i class="fa-solid fa-clock-rotate-left"></i> Payment History</a></li>
+            <li><a onclick="handleShareApp()"><i class="fa-solid fa-share-nodes" style="color: #38BDF8;"></i> Share App</a></li>
+            <li><a onclick="switchTab('viewSupport')"><i class="fa-solid fa-headset"></i> Live Support</a></li>
+            <li><a onclick="switchTab('viewProfile')"><i class="fa-solid fa-user-gear"></i> Account Profile</a></li>
+            <li><a class="logout-btn" onclick="directCleanLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </aside>
 
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <select class="currency-select" id="customerCurrencySelect" onchange="handleCurrencyChange(this.value)">
-                    <option value="PKR">🇵🇰 PKR (Rs)</option>
-                    <option value="USD">🇺🇸 USD ($)</option>
-                    <option value="INR">🇮🇳 INR (₹)</option>
+    <!-- MAIN PANEL APPLICATION -->
+    <div id="mainAppWrapper" class="hidden">
+        
+        <!-- TOP BAR -->
+        <header class="game-top-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button onclick="toggleSidebar()" style="background: none; border: none; color: #FFE873; font-size: 1.4rem; cursor: pointer; padding: 4px;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <div class="gold-rect-box">
+                    <i class="fa-solid fa-coins"></i>
+                    <span id="headerBalanceDisplay">Rs 0.00</span>
+                </div>
+                
+                <select class="currency-select-box" id="currencySelect" onchange="handleCurrencyChange(this.value)">
+                    <option value="PKR">🇵🇰 PKR</option>
+                    <option value="USD">🇺🇸 USD</option>
+                    <option value="INR">🇮🇳 INR</option>
                     <option value="AED">🇦🇪 AED</option>
                     <option value="SAR">🇸🇦 SAR</option>
                 </select>
-
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="topNavUserDp" class="nav-dp" onclick="navigateCustomer('profileView')" title="Profile">
+            </div>
+            
+            <div style="display: flex; align-items: center;" onclick="switchTab('viewProfile')">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-game">
             </div>
         </header>
 
-        <!-- LIVE NOTICE BANNER -->
-        <div class="marquee-box">
-            <span class="notice-tag">NOTICE</span>
-            <div class="marquee-text" id="liveAnnouncementBar">Welcome to MULTANI SMM! Fast delivery on all services.</div>
+        <!-- NOTICE -->
+        <div class="announcement-bar">
+            <div class="announcement-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
+            <div class="ticker-wrapper">
+                <div class="announcement-ticker" id="scrollingAnnouncementText">
+                    Welcome to MULTANI SMM VIP CLUB! All services instant speed. Binance USDT Rate: 1$ = 290 PKR.
+                </div>
+            </div>
         </div>
 
         <div class="content-body">
             
-            <!-- VIEW 1: NEW ORDER -->
-            <section id="orderView" class="page-view active">
-                <div class="vip-card">
-                    <h2 style="font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 14px;"><i class="fa-solid fa-cart-shopping"></i> Place New Order</h2>
-                    
-                    <form onsubmit="handlePlaceCustomerOrder(event)">
+            <!-- VIEW 1: DASHBOARD (HOME) -->
+            <div id="viewDashboard" class="app-view active">
+                
+                <div class="game-center-board">
+                    <div class="bismillah-calligraphy">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+                    <div class="welcome-to-text">WELCOME TO</div>
+                    <div class="ludo-logo-text">MULTANI SMM</div>
+                </div>
+
+                <!-- 4 METRIC STATS CARDS -->
+                <div class="cards-layout-grid">
+                    <div class="game-tile tile-blue" onclick="switchTab('viewOrdersList')">
+                        <div class="tile-icon-bubble"><i class="fa-solid fa-cart-shopping"></i></div>
+                        <div>
+                            <div class="tile-title" id="statTotalOrders">0</div>
+                            <div class="tile-subtitle">Total Orders</div>
+                        </div>
+                    </div>
+
+                    <div class="game-tile tile-green" onclick="switchTab('viewOrdersList')">
+                        <div class="tile-icon-bubble"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <div class="tile-title" id="statCompletedOrders">0</div>
+                            <div class="tile-subtitle">Completed</div>
+                        </div>
+                    </div>
+
+                    <div class="game-tile tile-yellow" onclick="switchTab('viewOrdersList')">
+                        <div class="tile-icon-bubble"><i class="fa-solid fa-hourglass-half"></i></div>
+                        <div>
+                            <div class="tile-title" id="statPendingOrders">0</div>
+                            <div class="tile-subtitle">Pending</div>
+                        </div>
+                    </div>
+
+                    <div class="game-tile tile-red" onclick="openPaymentHistoryView()">
+                        <div class="tile-icon-bubble"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                        <div>
+                            <div class="tile-title" id="statTotalSpent">Rs 0.00</div>
+                            <div class="tile-subtitle">Total Spent</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PLACE ORDER BOX -->
+                <div class="vip-game-card" id="homeOrderCard">
+                    <h3 style="color: #FFE873; margin-bottom: 12px; font-size: 1.2rem;">
+                        <i class="fa-solid fa-bolt" style="color: #FBBF24;"></i> PLACE ORDER
+                    </h3>
+                    <form onsubmit="handlePlaceOrder(event)">
                         <div class="form-group">
                             <label>Category</label>
-                            <select id="custCategorySelect" onchange="onCategorySelectChange()" required>
+                            <select id="orderCatSelect" onchange="handleCategoryFilter(this.value)" required>
                                 <option value="">Select Category</option>
                             </select>
                         </div>
-
                         <div class="form-group">
-                            <label>Service (100% Confidential)</label>
-                            <select id="custServiceSelect" onchange="onServiceSelectChange()" required>
-                                <option value="">Select Service</option>
+                            <label>Service</label>
+                            <select id="orderServiceSelect" onchange="handleServiceSelect(this.value)" required>
+                                <option value="">Select Category First</option>
                             </select>
                         </div>
-
-                        <div id="serviceDetailsBox" style="display: none; background: rgba(0,0,0,0.3); border: 1px dashed var(--border-card); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 0.8rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                <span>Rate / 1K:</span>
-                                <strong id="srvBoxRate" style="color: var(--accent-gold); font-family: 'Rajdhani', sans-serif; font-size: 1rem;">Rs 0</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>Min / Max:</span>
-                                <strong id="srvBoxMinMax">-</strong>
-                            </div>
-                        </div>
-
                         <div class="form-group">
-                            <label>Target Link / Username</label>
-                            <input type="text" id="custOrderLink" required placeholder="https://tiktok.com/@username/video/...">
+                            <label>Link / Profile URL</label>
+                            <input type="text" id="orderTargetLink" required placeholder="https://tiktok.com/@...">
                         </div>
-
                         <div class="form-group">
                             <label>Quantity</label>
-                            <input type="number" id="custOrderQty" required placeholder="1000" oninput="calculateOrderCharge()">
+                            <input type="number" id="orderQuantity" required oninput="calculateTotalCharge()" placeholder="1000">
+                            <small id="qtyLimitHint" style="color: #A7F3D0; font-size: 0.72rem; display:block; margin-top:3px;"></small>
                         </div>
-
-                        <div class="form-group">
-                            <label>Total Charge</label>
-                            <input type="text" id="custOrderChargeDisplay" readonly value="Rs 0.00" style="font-weight: 800; color: var(--accent-gold); font-family: 'Rajdhani', sans-serif; font-size: 1.15rem;">
+                        <div style="background: rgba(2, 20, 15, 0.9); border: 1.5px solid rgba(245, 158, 11, 0.5); padding: 12px; border-radius: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.85rem; color: #A7F3D0; font-weight: 700;">Total Price:</span>
+                            <span style="font-size: 1.25rem; font-weight: 800; color: #FFE873; font-family: var(--font-game);" id="orderTotalDisplay">Rs 0.00</span>
                         </div>
-
-                        <button type="submit" class="btn-vip" id="btnPlaceOrder" style="margin-top: 6px;"><i class="fa-solid fa-bolt"></i> Submit Order</button>
+                        <button type="submit" class="btn-3d-play" id="btnPlaceOrder"><i class="fa-solid fa-bolt"></i> Confirm Order</button>
                     </form>
                 </div>
-            </section>
 
-            <!-- VIEW 2: SERVICES PRICE LIST -->
-            <section id="servicesView" class="page-view">
-                <div class="vip-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <h2><i class="fa-solid fa-list"></i> Services & Rates</h2>
-                        <button class="btn-vip btn-sec" style="width: auto; padding: 4px 10px; font-size: 0.75rem;" onclick="refreshWrapper(this, loadCustomerServices)"><i class="fa-solid fa-rotate"></i> Refresh</button>
-                    </div>
-
-                    <div style="margin-bottom: 12px;">
-                        <input type="text" id="customerServiceSearch" oninput="filterCustomerServicesList()" placeholder="🔍 Search service name..." style="padding: 9px 12px;">
-                    </div>
-
-                    <div id="customerServicesCardsContainer">
-                        <p style="text-align: center; color: var(--text-muted); padding: 15px 0;">Loading services...</p>
+                <!-- RECENT ORDERS -->
+                <div class="vip-game-card">
+                    <h3 style="color: #34D399; margin-bottom: 10px; font-size: 1rem;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+                    <div style="display: flex; flex-direction: column; gap: 8px;" id="dashRecentOrdersBody">
+                        <p style="text-align: center; color: #A7F3D0; padding: 14px 0; font-size: 0.85rem;">No orders yet.</p>
                     </div>
                 </div>
-            </section>
 
-            <!-- VIEW 3: CUSTOMER ORDERS STREAM -->
-            <section id="myOrdersView" class="page-view">
-                <div class="vip-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <h2><i class="fa-solid fa-clock-rotate-left"></i> My Orders</h2>
-                        <button class="btn-vip btn-sec" style="width: auto; padding: 4px 10px; font-size: 0.75rem;" onclick="refreshWrapper(this, loadCustomerOrdersHistory)"><i class="fa-solid fa-rotate"></i> Refresh</button>
-                    </div>
+            </div>
 
-                    <div id="customerOrdersHistoryList">
-                        <p style="text-align: center; color: var(--text-muted); padding: 15px 0;">Loading orders...</p>
+            <!-- VIEW 2: SERVICES LIST -->
+            <div id="viewServices" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-list-check"></i> Available Services</h3>
+                    <div class="services-card-list" id="servicesListBody">
+                        <p style="text-align: center; color: #A7F3D0; padding: 16px 0;">Loading services...</p>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- VIEW 4: DEPOSIT FUNDS & PAYMENT HISTORY (WITH REJECTED FIX) -->
-            <section id="depositView" class="page-view">
-                <div class="vip-card">
-                    <h2 style="font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 12px;"><i class="fa-solid fa-wallet"></i> Add Funds (Auto Slip)</h2>
+            <!-- VIEW 3: MY ORDERS -->
+            <div id="viewOrdersList" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-boxes-stacked"></i> My Order History</h3>
+                    <div id="customerOrdersList" style="display: flex; flex-direction: column; gap: 8px;">
+                        <p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No orders placed yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 4: ADD FUNDS (DEPOSIT) -->
+            <div id="viewAddFunds" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-wallet"></i> Deposit Funds</h3>
                     
-                    <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-card); border-radius: 10px; padding: 12px; margin-bottom: 14px; font-size: 0.85rem;">
-                        <div style="margin-bottom: 6px;"><strong>Easypaisa:</strong> <span style="color: var(--accent-gold); font-family: monospace; font-size: 0.95rem;">03292488285</span> (Muhammad Nadeem)</div>
-                        <div><strong>Sadapay:</strong> <span style="color: var(--accent-gold); font-family: monospace; font-size: 0.95rem;">03292488285</span> (Muhammad Nadeem)</div>
+                    <div style="background: rgba(2, 20, 15, 0.9); border: 2px dashed #FBBF24; padding: 14px; border-radius: 14px; margin-bottom: 15px;">
+                        <div id="accountTitleDisplay" style="color: #A7F3D0; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Easypaisa Account:</div>
+                        <div id="accountNumberDisplay" style="color: #FFE873; font-weight: 800; font-size: 1.25rem; margin-top: 3px; font-family: var(--font-game);">03186815926</div>
+                        <div id="accountHolderDisplay" style="color: #34D399; font-weight: 700; font-size: 0.85rem; margin-top: 2px;">Title: Muhammad Nadeem</div>
+                        <small style="color: #A7F3D0; display: block; margin-top: 6px; font-size: 0.72rem;">Binance Rate: 1$ = 290 PKR</small>
                     </div>
 
-                    <form onsubmit="handleCustomerDepositSubmit(event)">
+                    <form onsubmit="handleDepositSubmit(event)">
                         <div class="form-group">
                             <label>Payment Method</label>
-                            <select id="depositMethodSelect" required>
+                            <select id="depMethod" required onchange="handlePaymentMethodChange(this.value)">
                                 <option value="Easypaisa">Easypaisa</option>
                                 <option value="Sadapay">Sadapay</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Amount (PKR)</label>
-                            <input type="number" id="depositAmountPkr" required placeholder="e.g. 500" min="50">
-                        </div>
-                        <div class="form-group">
-                            <label>Transaction ID (TRX ID)</label>
-                            <input type="text" id="depositTrxInput" required placeholder="e.g. 256888">
+                            <label>Amount Paid (PKR)</label>
+                            <input type="number" id="depAmountPKR" required placeholder="e.g. 500" oninput="calculateDepositUSD()">
+                            <small id="depUSDHint" style="color: #FFE873; font-weight: 700; display: block; margin-top: 3px;"></small>
                         </div>
                         <div class="form-group">
                             <label>Sender Account / Number</label>
-                            <input type="text" id="depositSenderInput" required placeholder="e.g. 03017573729">
+                            <input type="text" id="depSenderNum" required placeholder="03XXXXXXXXX">
                         </div>
-                        <button type="submit" class="btn-vip btn-green" id="btnSubmitDeposit"><i class="fa-solid fa-paper-plane"></i> Submit Deposit Slip</button>
+                        <div class="form-group">
+                            <label>Transaction ID (TRX ID)</label>
+                            <input type="text" id="depTrxId" required placeholder="e.g. 9845789123">
+                        </div>
+                        <button type="submit" class="btn-3d-play" id="btnDepositSubmit" style="margin-bottom: 10px;">
+                            SUBMIT DEPOSIT REQUEST
+                        </button>
                     </form>
-                </div>
 
-                <!-- PAYMENT SLIPS HISTORY (ALL, PENDING, APPROVED, REJECTED) -->
-                <div class="vip-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <h2><i class="fa-solid fa-receipt"></i> Payment History</h2>
-                        <button class="btn-vip btn-sec" style="width: auto; padding: 4px 10px; font-size: 0.75rem;" onclick="refreshWrapper(this, loadCustomerPaymentHistory)"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                    <button type="button" class="btn-3d-play btn-cyan" onclick="openPaymentHistoryView()">
+                        <i class="fa-solid fa-clock-rotate-left"></i> PAYMENT HISTORY
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 5: FULL SCREEN PAYMENT HISTORY VIEW (WITH REJECTED FIX & REJECTED TAB) -->
+            <div id="viewPaymentHistory" class="app-view">
+                <div class="vip-game-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                        <h3 style="color: #FFE873; margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Payment History</h3>
+                        <button type="button" onclick="switchTab('viewAddFunds')" style="background: rgba(3,27,20,0.8); border: 1.5px solid #22c55e; color: #FFE873; padding: 5px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem;">
+                            <i class="fa-solid fa-arrow-left"></i> Back
+                        </button>
                     </div>
 
                     <!-- 4 FILTER TABS INCLUDING REJECTED -->
-                    <div class="filter-tabs">
-                        <button class="tab-btn active" onclick="filterPaymentHistory('all', this)">ALL</button>
-                        <button class="tab-btn" onclick="filterPaymentHistory('pending', this)">PENDING</button>
-                        <button class="tab-btn" onclick="filterPaymentHistory('approved', this)">APPROVED</button>
-                        <button class="tab-btn" onclick="filterPaymentHistory('rejected', this)">REJECTED</button>
+                    <div class="filter-tabs-wrapper">
+                        <button type="button" class="filter-tab-pill active" onclick="filterPaymentHistory('all', this)">All</button>
+                        <button type="button" class="filter-tab-pill" onclick="filterPaymentHistory('pending', this)">Pending</button>
+                        <button type="button" class="filter-tab-pill" onclick="filterPaymentHistory('approved', this)">Approved</button>
+                        <button type="button" class="filter-tab-pill" onclick="filterPaymentHistory('rejected', this)">Rejected</button>
                     </div>
 
-                    <div id="customerPaymentSlipsContainer">
-                        <p style="text-align: center; color: var(--text-muted); padding: 15px 0;">Loading payment slips...</p>
+                    <div id="paymentHistoryListContainer" style="display: flex; flex-direction: column; min-height: 200px;">
+                        <p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">Loading payment history...</p>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- VIEW 5: CUSTOMER LIVE SUPPORT CHAT -->
-            <section id="chatView" class="page-view">
-                <div class="vip-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <h2><i class="fa-solid fa-headset"></i> Support Desk</h2>
-                        <button class="btn-vip btn-sec" style="width: auto; padding: 4px 10px; font-size: 0.75rem;" onclick="refreshWrapper(this, loadCustomerChatMessages)"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            <!-- VIEW 6: LIVE SUPPORT CHAT -->
+            <div id="viewSupport" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 10px;"><i class="fa-solid fa-headset"></i> Live Support Chat</h3>
+                    <div class="chat-box" id="customerChatWindow">
+                        <div class="bubble-admin">Assalam-o-Alaikum! Leave your question or TRX ID here. Admin will reply live.</div>
                     </div>
-
-                    <div style="height: 380px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-card); border-radius: 12px; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;" id="custChatMessagesArea">
-                        <p style="text-align: center; color: var(--text-muted); margin-top: 40px;">Send a message to start support chat.</p>
-                    </div>
-
-                    <form onsubmit="handleSendCustomerChat(event)" style="display: flex; gap: 8px;">
-                        <input type="text" id="custChatMsgInput" placeholder="Write your message..." required style="flex: 1;">
-                        <button type="submit" class="btn-vip" style="width: auto; padding: 0 16px;"><i class="fa-solid fa-paper-plane"></i></button>
+                    <form style="display: flex; gap: 8px;" onsubmit="handleSendCustomerChat(event)">
+                        <input type="text" id="customerChatInput" placeholder="Type message..." required style="flex:1;">
+                        <button type="submit" class="btn-3d-play" id="btnSendChat" style="width: auto; padding: 0 18px;"><i class="fa-solid fa-paper-plane"></i></button>
                     </form>
                 </div>
-            </section>
+            </div>
 
-            <!-- VIEW 6: PROFILE WITH GALLERY DP & FIXED PASSWORD -->
-            <section id="profileView" class="page-view">
-                <div class="vip-card" style="max-width: 480px; margin: 0 auto;">
-                    <h2 style="text-align: center; margin-bottom: 16px; color: var(--accent-gold);"><i class="fa-solid fa-user"></i> My Profile</h2>
-
-                    <div style="text-align: center; margin-bottom: 18px;">
-                        <div style="position: relative; display: inline-block;">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="customerProfileAvatarImg" style="width: 86px; height: 86px; border-radius: 50%; border: 3px solid var(--accent-gold); object-fit: cover;">
-                            <label for="custDpFileInput" style="position: absolute; bottom: 0; right: 0; background: var(--accent-gold); color: #000; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #000;">
-                                <i class="fa-solid fa-camera" style="font-size: 0.75rem;"></i>
-                            </label>
-                            <input type="file" id="custDpFileInput" accept="image/*" style="display: none;" onchange="handleCustomerDpUpload(event)">
-                        </div>
-                        <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Tap camera icon to update DP from gallery</p>
+            <!-- VIEW 7: PROFILE -->
+            <div id="viewProfile" class="app-view">
+                <div class="vip-game-card">
+                    <h3 style="color: #FFE873; margin-bottom: 14px; text-align: center;"><i class="fa-solid fa-id-card"></i> Player Profile</h3>
+                    
+                    <div style="text-align: center; margin-bottom: 16px;">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="profilePageAvatar" class="user-avatar-game" style="width: 80px; height: 80px;">
                     </div>
-
+                    
                     <div class="form-group">
-                        <label>Account Name</label>
-                        <input type="text" id="custProfileNameInput" placeholder="Name">
+                        <label>Full Name</label>
+                        <input type="text" id="profFullName" placeholder="Your Name">
                     </div>
-
                     <div class="form-group">
-                        <label>Email Address (Permanent Fixed)</label>
-                        <input type="email" id="custProfileEmailInput" readonly style="opacity: 0.8; background: rgba(0,0,0,0.5);">
+                        <label>WhatsApp Number</label>
+                        <input type="tel" id="profWhatsApp" placeholder="e.g. 03186815926">
                     </div>
-
+                    <div class="form-group">
+                        <label>Account Email (Fixed)</label>
+                        <input type="email" id="profEmail" readonly style="opacity: 0.85; background: rgba(0,0,0,0.5);">
+                    </div>
+                    
+                    <!-- FIXED PASSWORD BOX WITH SHOW/HIDE & ADMIN NOTICE -->
                     <div class="form-group">
                         <label>Account Password (Fixed)</label>
                         <div style="position: relative; display: flex; align-items: center;">
-                            <input type="password" id="custProfilePwInput" readonly value="••••••••" style="opacity: 0.8; background: rgba(0,0,0,0.5); padding-right: 42px;">
-                            <i class="fa-solid fa-eye" id="toggleCustPwIcon" onclick="toggleCustomerPasswordView()" style="position: absolute; right: 14px; color: var(--accent-gold); cursor: pointer;"></i>
+                            <input type="password" id="profPasswordDisplay" readonly value="••••••••" style="opacity: 0.85; background: rgba(0,0,0,0.5); padding-right: 42px;">
+                            <i class="fa-solid fa-eye" id="toggleProfPwBtn" onclick="toggleProfilePasswordView()" style="position: absolute; right: 14px; color: #FFE873; cursor: pointer; font-size: 1rem;"></i>
+                        </div>
+                        <div style="background: rgba(2, 20, 15, 0.85); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 8px 10px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <small style="color: #FFE873; font-weight: 700; font-size: 0.75rem;">
+                                <i class="fa-solid fa-circle-info"></i> پاس ورڈ چینج کرنے کے لیے ایڈمن سے رابطہ کریں
+                            </small>
+                            <span onclick="openForgotPwModal()" style="color: #38BDF8; font-size: 0.75rem; font-weight: 800; text-decoration: underline; cursor: pointer;">
+                                Admin
+                            </span>
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
-                        <button type="button" class="btn-vip btn-green" onclick="saveCustomerProfileName()"><i class="fa-solid fa-floppy-disk"></i> Save Name</button>
-                        <button type="button" class="btn-vip btn-sec" style="color: #ef4444;" onclick="triggerCustomerLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
-                    </div>
+                    <button type="button" class="btn-3d-play" id="btnSaveProfile" onclick="handleSaveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
                 </div>
-            </section>
+            </div>
 
         </div>
 
-        <!-- MOBILE BOTTOM NAV -->
+        <!-- LUDO BOTTOM NAVIGATION -->
         <nav class="mobile-bottom-nav">
-            <div class="mobile-nav-item active" onclick="navigateCustomer('orderView', this)">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span>Order</span>
+            <div class="mobile-nav-item active" id="btnNavHome" onclick="switchTab('viewDashboard', this)">
+                <i class="fa-solid fa-dice"></i><span>Home</span>
             </div>
-            <div class="mobile-nav-item" onclick="navigateCustomer('servicesView', this)">
-                <i class="fa-solid fa-crown"></i>
-                <span>Services</span>
+            <div class="mobile-nav-item" id="btnNavOrder" onclick="scrollToOrderForm()">
+                <i class="fa-solid fa-cart-shopping"></i><span>Order</span>
             </div>
-            <div class="mobile-nav-item" onclick="navigateCustomer('myOrdersView', this)">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-                <span>Orders</span>
+            <div class="mobile-nav-item" id="btnNavServices" onclick="switchTab('viewServices', this)">
+                <i class="fa-solid fa-crown"></i><span>Services</span>
             </div>
-            <div class="mobile-nav-item" onclick="navigateCustomer('depositView', this)">
-                <i class="fa-solid fa-wallet"></i>
-                <span>Deposit</span>
+            <div class="mobile-nav-item" id="btnNavOrders" onclick="switchTab('viewOrdersList', this)">
+                <i class="fa-solid fa-trophy"></i><span>Orders</span>
             </div>
-            <div class="mobile-nav-item" onclick="navigateCustomer('chatView', this)">
-                <i class="fa-solid fa-headset"></i>
-                <span>Support</span>
+            <div class="mobile-nav-item" id="btnNavSupport" onclick="switchTab('viewSupport', this)">
+                <i class="fa-solid fa-comments"></i><span>Support</span>
             </div>
         </nav>
-    </div>
-
-    <!-- VIP FORGOT POPUP -->
-    <div id="vipForgotModal" class="modal-overlay">
-        <div class="modal-box" style="text-align: center;">
-            <i class="fa-brands fa-whatsapp" style="font-size: 2.8rem; color: #25D366; margin-bottom: 8px;"></i>
-            <h3 style="color: var(--accent-gold); margin-bottom: 6px;">VIP Support Assistant</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 16px;">
-                For instant password recovery & VIP account assistance, contact administrator Muhammad Nadeem on WhatsApp.
-            </p>
-            <a href="https://wa.me/923292488285?text=Hello%20Multani%20SMM%20Admin,%20I%20need%20help%20with%20my%20account%20password." target="_blank" class="btn-vip btn-green" style="text-decoration: none; margin-bottom: 8px;">
-                <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp (03292488285)
-            </a>
-            <button type="button" class="btn-vip btn-sec" onclick="closeVipForgotPopup()">Close</button>
-        </div>
     </div>
 
     <script>
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
-        // AUTO-REFRESH DISABLED: PERMANENTLY STOPS CHROME TOKEN-CORRUPTION & INFINITE HANG
-        let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        // AUTO-REFRESH DISABLED: PERMANENTLY STOPS CHROME TOKEN CORRUPTION & INFINITE LOADING LOOP
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: {
                 persistSession: true,
                 autoRefreshToken: false,
@@ -451,280 +1012,27 @@
             }
         }) : null;
 
-        let currentCustomer = null;
-        let customerCategories = [];
-        let customerServices = [];
-        let customerPaymentSlips = [];
+        let currentUser = null;
+        let currentUserProfile = null;
+        let allServices = [];
+        let allCategories = [];
+        let allCustomerDeposits = [];
+        let loadedOrdersCache = [];
+        let selectedService = null;
         let activePaymentFilter = 'all';
 
-        const CURRENCIES = {
-            PKR: { symbol: "Rs ", rate: 290.00 },
-            USD: { symbol: "$", rate: 1.00 },
-            INR: { symbol: "₹", rate: 94.35 },
-            AED: { symbol: "AED ", rate: 3.67 },
-            SAR: { symbol: "SAR ", rate: 3.75 }
-        };
-        let activeCurrency = localStorage.getItem("cust_currency") || "PKR";
-
-        function formatCustomerPrice(amountInUSD) {
-            const c = CURRENCIES[activeCurrency] || CURRENCIES.PKR;
-            const converted = (parseFloat(amountInUSD) || 0) * c.rate;
-            return `${c.symbol}${converted.toFixed(2)}`;
+        // POPUP CONTROLS
+        function openForgotPwModal() {
+            document.getElementById("forgotPwModal").classList.remove("hidden");
+        }
+        function closeForgotPwModal() {
+            document.getElementById("forgotPwModal").classList.add("hidden");
         }
 
-        function handleCurrencyChange(curr) {
-            activeCurrency = curr;
-            localStorage.setItem("cust_currency", curr);
-            renderCustomerServicesCards(customerServices);
-            onServiceSelectChange();
-            updateCustomerBalanceDisplay();
-            filterPaymentHistory(activePaymentFilter);
-        }
-
-        function notify(msg, type = "info") {
-            const container = document.getElementById("toastContainer");
-            if (!container) return;
-            const toast = document.createElement("div");
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3500);
-        }
-
-        async function refreshWrapper(buttonEl, asyncCallback) {
-            if (!buttonEl) return;
-            const icon = buttonEl.querySelector("i");
-            if (icon) icon.classList.add("fa-spin");
-            buttonEl.disabled = true;
-
-            try {
-                await asyncCallback();
-                notify("Refreshed successfully!", "success");
-            } catch(e) {
-                notify("Refresh note: " + e.message, "info");
-            } finally {
-                if (icon) icon.classList.remove("fa-spin");
-                buttonEl.disabled = false;
-            }
-        }
-
-        // ================= PERMANENT SESSION PERSISTENCE & HARD GUARD =================
-        function isLocalCustomerSessionActive() {
-            return localStorage.getItem("multani_customer_active") === "true";
-        }
-
-        window.addEventListener("DOMContentLoaded", async () => {
-            const curSelect = document.getElementById("customerCurrencySelect");
-            if (curSelect) curSelect.value = activeCurrency;
-
-            // 1. Instant Local Check
-            if (isLocalCustomerSessionActive()) {
-                currentCustomer = {
-                    id: localStorage.getItem("multani_cust_id"),
-                    email: localStorage.getItem("multani_cust_email"),
-                    user_metadata: { full_name: localStorage.getItem("multani_cust_name") }
-                };
-                initCustomerApp();
-            } else {
-                showAuthGateway();
-            }
-
-            if (!supabaseClient) return;
-
-            // Strict 800ms Safety Timeout Guard
-            const sessionPromise = supabaseClient.auth.getSession();
-            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 800));
-
-            try {
-                const res = await Promise.race([sessionPromise, timeoutPromise]);
-                if (res && res.data && res.data.session && res.data.session.user) {
-                    verifyCustomerSession(res.data.session.user);
-                } else if (!isLocalCustomerSessionActive()) {
-                    showAuthGateway();
-                }
-            } catch (e) {
-                if (!isLocalCustomerSessionActive()) showAuthGateway();
-            }
-        });
-
-        function verifyCustomerSession(user) {
-            currentCustomer = user;
-            localStorage.setItem("multani_customer_active", "true");
-            localStorage.setItem("multani_cust_id", user.id);
-            localStorage.setItem("multani_cust_email", user.email);
-            if (user.user_metadata && user.user_metadata.full_name) {
-                localStorage.setItem("multani_cust_name", user.user_metadata.full_name);
-            }
-            initCustomerApp();
-        }
-
-        function showAuthGateway() {
-            document.getElementById("authContainer").classList.remove("hidden");
-            document.getElementById("appContainer").classList.add("hidden");
-        }
-
-        let authMode = 'login';
-        function switchAuthMode(mode) {
-            authMode = mode;
-            if (mode === 'login') {
-                document.getElementById("tabAuthLogin").classList.add("active");
-                document.getElementById("tabAuthSignup").classList.remove("active");
-                document.getElementById("groupFullName").style.display = "none";
-                document.getElementById("forgotPasswordWrap").style.display = "flex";
-                document.getElementById("btnCustomerAuth").innerText = "Sign In";
-            } else {
-                document.getElementById("tabAuthSignup").classList.add("active");
-                document.getElementById("tabAuthLogin").classList.remove("active");
-                document.getElementById("groupFullName").style.display = "block";
-                document.getElementById("forgotPasswordWrap").style.display = "none";
-                document.getElementById("btnCustomerAuth").innerText = "Create Account";
-            }
-        }
-
-        async function handleCustomerAuth(e) {
-            e.preventDefault();
-            const email = document.getElementById("custEmailInput").value.trim().toLowerCase();
-            const password = document.getElementById("custPasswordInput").value;
-            const btn = document.getElementById("btnCustomerAuth");
-
-            btn.disabled = true;
-            btn.innerText = "Connecting...";
-
-            try {
-                if (authMode === 'login') {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-                    localStorage.setItem("multani_cust_pw", password);
-                    verifyCustomerSession(data.user);
-                } else {
-                    const fullName = document.getElementById("custFullNameInput").value.trim() || "Customer";
-                    const { data, error } = await supabaseClient.auth.signUp({
-                        email,
-                        password,
-                        options: { data: { full_name: fullName } }
-                    });
-                    if (error) throw error;
-
-                    if (data.user) {
-                        await supabaseClient.from("profiles").upsert({
-                            id: data.user.id,
-                            full_name: fullName,
-                            email: email,
-                            balance: 0.00
-                        });
-                        localStorage.setItem("multani_cust_pw", password);
-                        verifyCustomerSession(data.user);
-                    }
-                }
-            } catch (err) {
-                notify(err.message, "error");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = (authMode === 'login') ? "Sign In" : "Create Account";
-            }
-        }
-
-        async function triggerCustomerLogout() {
-            if (supabaseClient) {
-                await supabaseClient.auth.signOut();
-            }
-            localStorage.removeItem("multani_customer_active");
-            localStorage.removeItem("multani_cust_id");
-            localStorage.removeItem("multani_cust_email");
-            localStorage.removeItem("multani_cust_name");
-            localStorage.removeItem("multani_cust_pw");
-            showAuthGateway();
-            notify("Logged out successfully!", "info");
-        }
-
-        function initCustomerApp() {
-            document.getElementById("authContainer").classList.add("hidden");
-            document.getElementById("appContainer").classList.remove("hidden");
-            loadLiveAnnouncement();
-            loadCustomerProfileAndBalance();
-            loadCustomerCategoriesAndServices();
-            loadCustomerOrdersHistory();
-            loadCustomerPaymentHistory();
-            loadCustomerChatMessages();
-        }
-
-        // LIVE ANNOUNCEMENT
-        async function loadLiveAnnouncement() {
-            try {
-                const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
-                if (data && data.value) {
-                    document.getElementById("liveAnnouncementBar").innerText = data.value;
-                }
-            } catch (e) {}
-        }
-
-        // PROFILE & BALANCE
-        async function loadCustomerProfileAndBalance() {
-            if (!currentCustomer) return;
-
-            const savedDp = localStorage.getItem("multani_cust_dp");
-            if (savedDp) {
-                document.getElementById("customerProfileAvatarImg").src = savedDp;
-                document.getElementById("topNavUserDp").src = savedDp;
-            }
-
-            document.getElementById("custProfileEmailInput").value = currentCustomer.email || '';
-            const savedPw = localStorage.getItem("multani_cust_pw");
-            if (savedPw) {
-                document.getElementById("custProfilePwInput").value = savedPw;
-            }
-
-            try {
-                const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentCustomer.id).maybeSingle();
-                if (data) {
-                    currentCustomer.balance = data.balance || 0;
-                    document.getElementById("custProfileNameInput").value = data.full_name || '';
-                    if (data.avatar_url && !savedDp) {
-                        document.getElementById("customerProfileAvatarImg").src = data.avatar_url;
-                        document.getElementById("topNavUserDp").src = data.avatar_url;
-                    }
-                    updateCustomerBalanceDisplay();
-                }
-            } catch (e) {}
-        }
-
-        function updateCustomerBalanceDisplay() {
-            const bal = currentCustomer ? currentCustomer.balance : 0;
-            document.getElementById("topNavUserBalance").innerText = formatCustomerPrice(bal);
-        }
-
-        function handleCustomerDpUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const base64Img = e.target.result;
-                document.getElementById("customerProfileAvatarImg").src = base64Img;
-                document.getElementById("topNavUserDp").src = base64Img;
-                localStorage.setItem("multani_cust_dp", base64Img);
-
-                if (currentCustomer) {
-                    await supabaseClient.from("profiles").update({ avatar_url: base64Img }).eq("id", currentCustomer.id);
-                }
-                notify("Profile image updated!", "success");
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function saveCustomerProfileName() {
-            const name = document.getElementById("custProfileNameInput").value.trim();
-            if (!name || !currentCustomer) return;
-
-            const { error } = await supabaseClient.from("profiles").update({ full_name: name }).eq("id", currentCustomer.id);
-            if (error) return notify(error.message, "error");
-            localStorage.setItem("multani_cust_name", name);
-            notify("Profile name updated!", "success");
-        }
-
-        function toggleCustomerPasswordView() {
-            const input = document.getElementById("custProfilePwInput");
-            const icon = document.getElementById("toggleCustPwIcon");
+        // TOGGLE PASSWORD VISIBILITY IN PROFILE
+        function toggleProfilePasswordView() {
+            const input = document.getElementById("profPasswordDisplay");
+            const icon = document.getElementById("toggleProfPwBtn");
             if (input.type === "password") {
                 input.type = "text";
                 icon.classList.remove("fa-eye");
@@ -736,386 +1044,946 @@
             }
         }
 
-        // ================= SERVICES LIST (100% SECRET PROVIDER) =================
-        async function loadCustomerCategoriesAndServices() {
+        // FAST LOCAL PERSISTENCE BACKUP (Never logs out on refresh)
+        function saveLocalActiveUser(user) {
+            if (!user) return;
             try {
-                const [catsRes, srvsRes] = await Promise.all([
-                    supabaseClient.from("categories").select("*").eq("is_active", true).order("name", { ascending: true }),
-                    supabaseClient.from("services").select("id, category_id, name, rate_per_1k, min_quantity, max_quantity").eq("is_active", true).order("id", { ascending: true })
-                ]);
-
-                customerCategories = catsRes.data || [];
-                customerServices = srvsRes.data || [];
-
-                const catSelect = document.getElementById("custCategorySelect");
-                catSelect.innerHTML = '<option value="">Select Category</option>' + 
-                    customerCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
-
-                renderCustomerServicesCards(customerServices);
-            } catch (e) {
-                console.error("Services error:", e);
-            }
+                localStorage.setItem("multani_active_session", JSON.stringify({
+                    id: user.id,
+                    email: user.email || '',
+                    user_metadata: user.user_metadata || {}
+                }));
+            } catch(e) {}
         }
 
-        function onCategorySelectChange() {
-            const catId = document.getElementById("custCategorySelect").value;
-            const srvSelect = document.getElementById("custServiceSelect");
-
-            if (!catId) {
-                srvSelect.innerHTML = '<option value="">Select Service</option>';
-                onServiceSelectChange();
-                return;
-            }
-
-            const filtered = customerServices.filter(s => String(s.category_id) === String(catId));
-            srvSelect.innerHTML = '<option value="">Select Service</option>' + 
-                filtered.map(s => `<option value="${s.id}">${s.name} - ${formatCustomerPrice(s.rate_per_1k)}</option>`).join("");
-            
-            onServiceSelectChange();
-        }
-
-        function onServiceSelectChange() {
-            const srvId = document.getElementById("custServiceSelect").value;
-            const detailsBox = document.getElementById("serviceDetailsBox");
-
-            if (!srvId) {
-                detailsBox.style.display = "none";
-                calculateOrderCharge();
-                return;
-            }
-
-            const srv = customerServices.find(s => String(s.id) === String(srvId));
-            if (!srv) return;
-
-            detailsBox.style.display = "block";
-            document.getElementById("srvBoxRate").innerText = `${formatCustomerPrice(srv.rate_per_1k)} / 1K`;
-            document.getElementById("srvBoxMinMax").innerText = `${srv.min_quantity} - ${srv.max_quantity}`;
-            calculateOrderCharge();
-        }
-
-        function calculateOrderCharge() {
-            const srvId = document.getElementById("custServiceSelect").value;
-            const qty = parseInt(document.getElementById("custOrderQty").value) || 0;
-            const srv = customerServices.find(s => String(s.id) === String(srvId));
-
-            if (!srv || qty <= 0) {
-                document.getElementById("custOrderChargeDisplay").value = formatCustomerPrice(0);
-                return 0;
-            }
-
-            const chargeUSD = (qty / 1000) * parseFloat(srv.rate_per_1k);
-            document.getElementById("custOrderChargeDisplay").value = formatCustomerPrice(chargeUSD);
-            return chargeUSD;
-        }
-
-        function renderCustomerServicesCards(list) {
-            const container = document.getElementById("customerServicesCardsContainer");
-            if (!list || list.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 15px 0;">No services found.</p>`;
-                return;
-            }
-
-            const catMap = new Map(customerCategories.map(c => [String(c.id), c.name]));
-
-            container.innerHTML = list.map(s => `
-                <div class="service-customer-card">
-                    <div class="srv-title">${s.name}</div>
-                    <div style="font-size: 0.75rem; color: var(--accent-cyan);">Category: ${catMap.get(String(s.category_id)) || 'General'}</div>
-                    <div class="srv-meta">
-                        <span>Min/Max: <strong>${s.min_quantity} - ${s.max_quantity}</strong></span>
-                        <div class="srv-price">${formatCustomerPrice(s.rate_per_1k)} / 1K</div>
-                    </div>
-                </div>
-            `).join("");
-        }
-
-        function filterCustomerServicesList() {
-            const q = (document.getElementById("customerServiceSearch").value || '').toLowerCase().trim();
-            if (!q) {
-                renderCustomerServicesCards(customerServices);
-                return;
-            }
-            const filtered = customerServices.filter(s => s.name && s.name.toLowerCase().includes(q));
-            renderCustomerServicesCards(filtered);
-        }
-
-        // ================= PLACE NEW ORDER =================
-        async function handlePlaceCustomerOrder(e) {
-            e.preventDefault();
-            if (!currentCustomer) return notify("Please login first", "error");
-
-            const srvId = document.getElementById("custServiceSelect").value;
-            const link = document.getElementById("custOrderLink").value.trim();
-            const qty = parseInt(document.getElementById("custOrderQty").value) || 0;
-            const srv = customerServices.find(s => String(s.id) === String(srvId));
-
-            if (!srv) return notify("Please select a valid service", "error");
-            if (qty < srv.min_quantity || qty > srv.max_quantity) {
-                return notify(`Quantity must be between ${srv.min_quantity} and ${srv.max_quantity}`, "error");
-            }
-
-            const chargeUSD = (qty / 1000) * parseFloat(srv.rate_per_1k);
-            const userBal = parseFloat(currentCustomer.balance || 0);
-
-            if (userBal < chargeUSD) {
-                return notify("Insufficient balance! Please add funds in Deposit section.", "error");
-            }
-
-            const btn = document.getElementById("btnPlaceOrder");
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
-
+        function getLocalActiveUser() {
             try {
-                // Deduct Balance & Create Order
-                const newBal = userBal - chargeUSD;
-                await supabaseClient.from("profiles").update({ balance: newBal }).eq("id", currentCustomer.id);
-                currentCustomer.balance = newBal;
-                updateCustomerBalanceDisplay();
-
-                const { error } = await supabaseClient.from("orders").insert([{
-                    user_id: currentCustomer.id,
-                    service_id: srv.id,
-                    target_link: link,
-                    quantity: qty,
-                    charge: chargeUSD,
-                    status: 'pending'
-                }]);
-
-                if (error) throw error;
-
-                notify("Order submitted successfully!", "success");
-                document.getElementById("custOrderLink").value = "";
-                document.getElementById("custOrderQty").value = "";
-                onServiceSelectChange();
-                loadCustomerOrdersHistory();
-                navigateCustomer('myOrdersView');
-            } catch (err) {
-                notify("Order Error: " + err.message, "error");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-bolt"></i> Submit Order`;
-            }
+                const s = localStorage.getItem("multani_active_session");
+                return s ? JSON.parse(s) : null;
+            } catch(e) { return null; }
         }
 
-        // ================= MY ORDERS =================
-        async function loadCustomerOrdersHistory() {
-            if (!currentCustomer) return;
-            const container = document.getElementById("customerOrdersHistoryList");
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from("orders")
-                    .select("id, order_number, target_link, quantity, charge, status, created_at, services(name)")
-                    .eq("user_id", currentCustomer.id)
-                    .order("created_at", { ascending: false });
-
-                if (error || !data || data.length === 0) {
-                    container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 15px 0;">No orders placed yet.</p>`;
-                    return;
-                }
-
-                container.innerHTML = data.map(o => `
-                    <div class="service-customer-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <strong style="color: var(--accent-gold);">#${o.order_number || String(o.id).substring(0,5)}</strong>
-                            <span class="badge badge-${o.status}">${o.status}</span>
-                        </div>
-                        <div class="srv-title">${o.services ? o.services.name : 'Social Service'}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); word-break: break-all;">Link: ${o.target_link}</div>
-                        <div class="srv-meta">
-                            <span>Qty: <strong>${o.quantity}</strong></span>
-                            <span style="font-weight: 700; color: #fff;">Charge: ${formatCustomerPrice(o.charge)}</span>
-                        </div>
-                    </div>
-                `).join("");
-            } catch (err) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted);">No orders found.</p>`;
-            }
+        function clearLocalActiveUser() {
+            localStorage.removeItem("multani_active_session");
         }
 
-        // ================= DEPOSITS & PAYMENT HISTORY (WITH REJECTED FIX) =================
-        async function handleCustomerDepositSubmit(e) {
-            e.preventDefault();
-            if (!currentCustomer) return notify("Please login first", "error");
+        const PAYMENT_METHODS_DATA = {
+            Easypaisa: { title: "Easypaisa Account:", number: "03186815926", name: "Title: Muhammad Nadeem" },
+            Sadapay: { title: "Sadapay Account:", number: "03281926729", name: "Title: Muhammad Nadeem" }
+        };
 
-            const method = document.getElementById("depositMethodSelect").value;
-            const pkrVal = parseFloat(document.getElementById("depositAmountPkr").value) || 0;
-            const trx = document.getElementById("depositTrxInput").value.trim();
-            const sender = document.getElementById("depositSenderInput").value.trim();
-
-            if (pkrVal < 50) return notify("Minimum deposit is Rs 50", "error");
-            if (!trx || !sender) return notify("Please fill all details", "error");
-
-            const usdVal = (pkrVal / 290.00);
-            const btn = document.getElementById("btnSubmitDeposit");
-            btn.disabled = true;
-            btn.innerText = "Submitting Slip...";
-
-            try {
-                const { error } = await supabaseClient.from("deposits").insert([{
-                    user_id: currentCustomer.id,
-                    payment_method: method,
-                    amount: usdVal,
-                    transaction_id: trx,
-                    sender_account: sender,
-                    status: 'pending'
-                }]);
-
-                if (error) throw error;
-
-                notify("Deposit slip submitted! Admin will verify soon.", "success");
-                document.getElementById("depositAmountPkr").value = "";
-                document.getElementById("depositTrxInput").value = "";
-                document.getElementById("depositSenderInput").value = "";
-                await loadCustomerPaymentHistory();
-            } catch (err) {
-                notify("Deposit Failed: " + err.message, "error");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Deposit Slip`;
-            }
+        function handlePaymentMethodChange(method) {
+            const data = PAYMENT_METHODS_DATA[method] || PAYMENT_METHODS_DATA.Easypaisa;
+            document.getElementById("accountTitleDisplay").innerText = data.title;
+            document.getElementById("accountNumberDisplay").innerText = data.number;
+            document.getElementById("accountHolderDisplay").innerText = data.name;
         }
 
-        async function loadCustomerPaymentHistory() {
-            if (!currentCustomer) return;
-            const container = document.getElementById("customerPaymentSlipsContainer");
+        const CURRENCIES = {
+            PKR: { symbol: "Rs ", rate: 290.00 },
+            USD: { symbol: "$", rate: 1.00 },
+            INR: { symbol: "₹", rate: 94.35 },
+            AED: { symbol: "AED ", rate: 3.67 },
+            SAR: { symbol: "SAR ", rate: 3.75 }
+        };
+        let activeCurrency = localStorage.getItem("app_currency") || "PKR";
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from("deposits")
-                    .select("*")
-                    .eq("user_id", currentCustomer.id)
-                    .order("created_at", { ascending: false });
-
-                customerPaymentSlips = data || [];
-                filterPaymentHistory(activePaymentFilter);
-            } catch (err) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted);">No payment history found.</p>`;
-            }
+        function formatPrice(amountInUSD) {
+            const c = CURRENCIES[activeCurrency] || CURRENCIES.PKR;
+            const converted = (parseFloat(amountInUSD) || 0) * c.rate;
+            return `${c.symbol}${converted.toFixed(2)}`;
         }
 
-        function filterPaymentHistory(filterType, element) {
-            activePaymentFilter = filterType;
-            if (element) {
-                document.querySelectorAll("#depositView .tab-btn").forEach(b => b.classList.remove("active"));
-                element.classList.add("active");
-            }
+        function handleCurrencyChange(curr) {
+            activeCurrency = curr;
+            localStorage.setItem("app_currency", curr);
+            updateWalletDisplay();
+            const catSelect = document.getElementById("orderCatSelect");
+            renderServiceDropdown(catSelect ? catSelect.value : "");
+            renderServicesPageTable();
+            calculateTotalCharge();
+            calculateDashboardMetrics();
+            renderPaymentHistoryList(activePaymentFilter);
+        }
 
-            const container = document.getElementById("customerPaymentSlipsContainer");
+        function notify(msg, type = "info") {
+            const container = document.getElementById("toastContainer");
             if (!container) return;
-
-            let filtered = customerPaymentSlips;
-            if (filterType === 'pending') {
-                filtered = customerPaymentSlips.filter(d => (d.status || '').toLowerCase() === 'pending');
-            } else if (filterType === 'approved') {
-                filtered = customerPaymentSlips.filter(d => (d.status || '').toLowerCase() === 'completed' || (d.status || '').toLowerCase() === 'approved');
-            } else if (filterType === 'rejected') {
-                filtered = customerPaymentSlips.filter(d => (d.status || '').toLowerCase() === 'rejected' || (d.status || '').toLowerCase() === 'cancelled');
-            }
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 15px 0;">No ${filterType === 'all' ? '' : filterType} slips found.</p>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(d => {
-                const rawStatus = (d.status || 'pending').toLowerCase();
-                let statusLabel = 'PENDING';
-                let badgeClass = 'badge-pending';
-
-                if (rawStatus === 'completed' || rawStatus === 'approved') {
-                    statusLabel = 'APPROVED';
-                    badgeClass = 'badge-approved';
-                } else if (rawStatus === 'rejected' || rawStatus === 'cancelled') {
-                    statusLabel = 'REJECTED';
-                    badgeClass = 'badge-rejected';
-                }
-
-                const pkrAmount = (parseFloat(d.amount || 0) * 290.00).toFixed(0);
-
-                return `
-                    <div class="slip-card">
-                        <div class="slip-top">
-                            <strong style="color: #fff; font-size: 0.95rem;">${d.payment_method || 'Deposit'}</strong>
-                            <span class="badge ${badgeClass}">${statusLabel}</span>
-                        </div>
-                        <div class="slip-amount-row">
-                            <span class="slip-pkr">Rs ${pkrAmount} PKR</span>
-                            <span class="slip-usd">$${parseFloat(d.amount).toFixed(4)} USD</span>
-                        </div>
-                        <div class="slip-details">
-                            <div><strong>TRX:</strong> <span style="color:var(--accent-gold); font-family:monospace;">${d.transaction_id || '-'}</span></div>
-                            <div><strong>Sender:</strong> ${d.sender_account || '-'}</div>
-                            <div style="font-size:0.72rem; opacity:0.6; margin-top:3px;"><i class="fa-solid fa-clock"></i> ${new Date(d.created_at).toLocaleString()}</div>
-                        </div>
-                    </div>
-                `;
-            }).join("");
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
         }
 
-        // ================= SUPPORT CHAT =================
-        async function loadCustomerChatMessages() {
-            if (!currentCustomer) return;
-            const container = document.getElementById("custChatMessagesArea");
+        function toggleSidebar() {
+            document.getElementById("sidebarDrawer").classList.toggle("open");
+            document.getElementById("sidebarOverlay").classList.toggle("active");
+        }
 
-            try {
-                const { data } = await supabaseClient
-                    .from("chat_messages")
-                    .select("*")
-                    .eq("user_id", currentCustomer.id)
-                    .order("created_at", { ascending: true });
+        function handleShareApp() {
+            const shareUrl = window.location.origin + window.location.pathname;
+            if (navigator.share) {
+                navigator.share({ title: 'MULTANI VIP CLUB', text: 'Join MULTANI SMM VIP Panel!', url: shareUrl }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(shareUrl);
+                notify("Link copied to clipboard!", "success");
+            }
+            toggleSidebar();
+        }
 
-                if (!data || data.length === 0) {
-                    container.innerHTML = `<p style="text-align: center; color: var(--text-muted); margin-top: 40px;">Send a message to start support chat.</p>`;
-                    return;
+        function showAuthScreen() {
+            document.getElementById("mainAppWrapper").classList.add("hidden");
+            document.getElementById("authGateContainer").classList.remove("hidden");
+        }
+
+        function showPanelScreen() {
+            document.getElementById("authGateContainer").classList.add("hidden");
+            document.getElementById("mainAppWrapper").classList.remove("hidden");
+        }
+
+        // ================= INSTANT INITIALIZATION WITH STRICT 800MS SAFETY TIMEOUT =================
+        function checkImmediateSession() {
+            const cachedUser = getLocalActiveUser();
+            if (cachedUser) {
+                currentUser = cachedUser;
+                showPanelScreen();
+                fillIdentityImmediately(cachedUser);
+            }
+        }
+
+        async function initMultaniApp() {
+            checkImmediateSession();
+
+            const currSel = document.getElementById("currencySelect");
+            if (currSel) currSel.value = activeCurrency;
+            
+            loadCachedCategoriesAndServices();
+
+            if (supabaseClient) {
+                supabaseClient.auth.onAuthStateChange((event, session) => {
+                    if (session && session.user) {
+                        currentUser = session.user;
+                        saveLocalActiveUser(session.user);
+                        showPanelScreen();
+                        postLoginSuccess(currentUser);
+                    } else if (event === 'SIGNED_OUT') {
+                        currentUser = null;
+                        currentUserProfile = null;
+                        clearLocalActiveUser();
+                        showAuthScreen();
+                    }
+                });
+
+                // Safety timeout guard (Strict 800ms) - Prevents Chrome hanging
+                const sessionPromise = supabaseClient.auth.getSession();
+                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 800));
+
+                try {
+                    const res = await Promise.race([sessionPromise, timeoutPromise]);
+                    if (res && res.data && res.data.session && res.data.session.user) {
+                        currentUser = res.data.session.user;
+                        saveLocalActiveUser(res.data.session.user);
+                        showPanelScreen();
+                        postLoginSuccess(currentUser);
+                    } else if (!getLocalActiveUser() && !window.location.hash.includes("access_token")) {
+                        showAuthScreen();
+                    }
+                } catch(e) {
+                    if (!getLocalActiveUser()) showAuthScreen();
                 }
+            } else {
+                if (!getLocalActiveUser()) showAuthScreen();
+            }
 
-                container.innerHTML = data.map(m => `
-                    <div style="align-self: ${m.sender_type==='user'?'flex-end':'flex-start'}; background: ${m.sender_type==='user'?'linear-gradient(135deg, var(--accent-gold), #d97706)':'#164026'}; color: ${m.sender_type==='user'?'#000':'#fff'}; padding: 8px 12px; border-radius: 12px; font-size: 0.82rem; max-width: 82%; word-break: break-word; font-weight: 500;">
-                        ${m.message}
-                        <div style="font-size: 0.62rem; opacity: 0.7; text-align: right; margin-top: 2px;">${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
-                    </div>
-                `).join("");
-                container.scrollTop = container.scrollHeight;
+            fetchFreshServicesAndCategories();
+            loadSiteAnnouncement();
+        }
+
+        function loadCachedCategoriesAndServices() {
+            try {
+                const cachedCats = localStorage.getItem("multani_cached_cats");
+                const cachedSrvs = localStorage.getItem("multani_cached_srvs");
+                if (cachedCats) allCategories = JSON.parse(cachedCats);
+                if (cachedSrvs) allServices = JSON.parse(cachedSrvs);
+                if (allCategories.length > 0) populateCategoryDropdown();
+                if (allServices.length > 0) renderServicesPageTable();
             } catch (e) {}
         }
 
-        async function handleSendCustomerChat(e) {
+        window.addEventListener("DOMContentLoaded", initMultaniApp);
+
+        async function postLoginSuccess(user) {
+            fillIdentityImmediately(user);
+            await ensureUserProfile(user);
+            await loadUserProfile();
+            loadCustomerOrders();
+            loadCustomerChat();
+            loadCustomerDepositsHistory();
+        }
+
+        function fillIdentityImmediately(user) {
+            if (!user) return;
+            const meta = user.user_metadata || {};
+            const email = user.email || '';
+            const name = meta.full_name || meta.name || (email ? email.split('@')[0] : 'Member');
+            const avatar = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+
+            const profNameInput = document.getElementById("profFullName");
+            const profEmailInput = document.getElementById("profEmail");
+            const navAvatar = document.getElementById("navAvatarImg");
+            const profAvatar = document.getElementById("profilePageAvatar");
+            const profPwInput = document.getElementById("profPasswordDisplay");
+
+            if (profNameInput && !profNameInput.value) profNameInput.value = name;
+            if (profEmailInput) profEmailInput.value = email;
+            if (navAvatar) navAvatar.src = avatar;
+            if (profAvatar) profAvatar.src = avatar;
+
+            const rememberedPw = localStorage.getItem(`cust_pw_${user.id}`) || localStorage.getItem(`last_typed_pw`);
+            if (profPwInput && rememberedPw) {
+                profPwInput.value = rememberedPw;
+            }
+        }
+
+        function switchAuthTab(mode) {
+            const tabLog = document.getElementById("tabBtnLogin");
+            const tabReg = document.getElementById("tabBtnRegister");
+            const formLog = document.getElementById("customerLoginForm");
+            const formReg = document.getElementById("customerRegisterForm");
+
+            if (mode === 'login') {
+                tabLog.classList.add("active");
+                tabReg.classList.remove("active");
+                formLog.classList.remove("hidden");
+                formReg.classList.add("hidden");
+            } else {
+                tabReg.classList.add("active");
+                tabLog.classList.remove("active");
+                formReg.classList.remove("hidden");
+                formLog.classList.add("hidden");
+            }
+        }
+
+        async function handleGoogleOAuthLogin() {
+            const currentCleanUrl = window.location.origin + window.location.pathname;
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: currentCleanUrl }
+            });
+            if (error) notify("Google Login Error: " + error.message, "error");
+        }
+
+        async function handleCustomerLogin(e) {
             e.preventDefault();
-            if (!currentCustomer) return;
-            const input = document.getElementById("custChatMsgInput");
-            const msg = input.value.trim();
-            if (!msg) return;
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            const btn = document.getElementById("btnLoginSubmit");
 
-            input.value = "";
-            await supabaseClient.from("chat_messages").insert([{
-                user_id: currentCustomer.id,
-                sender_type: 'user',
-                message: msg,
-                is_read: false
-            }]);
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Logging in...`;
 
-            loadCustomerChatMessages();
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Login Account`;
+
+            if (error) return notify(error.message, "error");
+            
+            // Save typed password locally for user's own profile view
+            if (data.user) {
+                localStorage.setItem(`cust_pw_${data.user.id}`, password);
+                localStorage.setItem(`last_typed_pw`, password);
+            }
+
+            notify("Welcome back!", "success");
+            currentUser = data.user;
+            saveLocalActiveUser(data.user);
+            showPanelScreen();
+            postLoginSuccess(currentUser);
         }
 
-        // VIP FORGOT POPUP
-        function openVipForgotPopup() {
-            document.getElementById("vipForgotModal").classList.add("active");
-        }
-        function closeVipForgotPopup() {
-            document.getElementById("vipForgotModal").classList.remove("active");
+        async function handleCustomerRegister(e) {
+            e.preventDefault();
+            const fullName = document.getElementById("regFullName").value.trim();
+            const email = document.getElementById("regEmail").value.trim();
+            const password = document.getElementById("regPassword").value;
+            const btn = document.getElementById("btnRegisterSubmit");
+
+            if (password.length < 6) return notify("Password must be at least 6 characters", "error");
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Creating...`;
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+                options: { data: { full_name: fullName } }
+            });
+
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> Create Account`;
+
+            if (error) return notify(error.message, "error");
+
+            if (data.user) {
+                localStorage.setItem(`cust_pw_${data.user.id}`, password);
+                localStorage.setItem(`last_typed_pw`, password);
+                currentUser = data.user;
+                saveLocalActiveUser(data.user);
+                await ensureUserProfile(data.user, fullName);
+                showPanelScreen();
+                postLoginSuccess(currentUser);
+            }
+            notify("Account created successfully!", "success");
         }
 
-        // NAVIGATION
-        function navigateCustomer(viewId, element) {
-            document.querySelectorAll(".page-view").forEach(v => v.classList.remove("active"));
-            document.querySelectorAll(".mobile-nav-item").forEach(m => m.classList.remove("active"));
+        // ================= UNIFIED PROFILE ENSURE =================
+        async function ensureUserProfile(user, fallbackName = null) {
+            try {
+                if (!user || !user.id || !supabaseClient) return;
+                const meta = user.user_metadata || {};
+                const resolvedName = fallbackName || meta.full_name || meta.name || (user.email ? user.email.split('@')[0] : 'Member');
+                const resolvedAvatar = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+                const resolvedEmail = user.email || '';
+
+                const { data: existing } = await supabaseClient.from("profiles").select("id, email, full_name").eq("id", user.id).maybeSingle();
+                if (!existing) {
+                    await supabaseClient.from("profiles").insert({
+                        id: user.id,
+                        full_name: resolvedName,
+                        email: resolvedEmail,
+                        avatar_url: resolvedAvatar,
+                        balance: 0.0000
+                    });
+                } else {
+                    const updates = {};
+                    if (!existing.email && resolvedEmail) updates.email = resolvedEmail;
+                    if (!existing.full_name && resolvedName) updates.full_name = resolvedName;
+                    if (Object.keys(updates).length > 0) {
+                        await supabaseClient.from("profiles").update(updates).eq("id", user.id);
+                    }
+                }
+            } catch (err) {
+                console.warn("Profile check:", err);
+            }
+        }
+
+        // ================= 100% MANUAL LOGOUT ONLY =================
+        async function directCleanLogout() {
+            document.getElementById("sidebarDrawer").classList.remove("open");
+            document.getElementById("sidebarOverlay").classList.remove("active");
+
+            showAuthScreen();
+
+            currentUser = null;
+            currentUserProfile = null;
+            allCustomerDeposits = [];
+            loadedOrdersCache = [];
+            clearLocalActiveUser();
+
+            try {
+                if (supabaseClient) {
+                    await supabaseClient.auth.signOut({ scope: 'local' });
+                }
+            } catch (e) {}
+
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.hash = "";
+
+            notify("Logged out successfully!", "info");
+        }
+
+        function scrollToOrderForm() {
+            switchTab('viewDashboard');
+            const target = document.getElementById("homeOrderCard");
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            const btnOrder = document.getElementById("btnNavOrder");
+            const btnHome = document.getElementById("btnNavHome");
+            if (btnOrder) btnOrder.classList.add("active");
+            if (btnHome) btnHome.classList.remove("active");
+            document.getElementById("sidebarDrawer").classList.remove("open");
+            document.getElementById("sidebarOverlay").classList.remove("active");
+        }
+
+        function switchTab(viewId, element) {
+            document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
+            document.querySelectorAll(".mobile-nav-item").forEach(i => i.classList.remove("active"));
+            document.querySelectorAll(".sidebar-menu li a").forEach(a => a.classList.remove("active"));
 
             const target = document.getElementById(viewId);
             if (target) target.classList.add("active");
             if (element) element.classList.add("active");
 
+            if (viewId === 'viewDashboard') {
+                const btn = document.getElementById("btnNavHome");
+                if (btn) btn.classList.add("active");
+                fetchFreshServicesAndCategories();
+                loadCustomerOrders();
+            } else if (viewId === 'viewServices') {
+                const btn = document.getElementById("btnNavServices");
+                if (btn) btn.classList.add("active");
+                renderServicesPageTable();
+            } else if (viewId === 'viewOrdersList') {
+                const btn = document.getElementById("btnNavOrders");
+                if (btn) btn.classList.add("active");
+                loadCustomerOrders();
+            } else if (viewId === 'viewSupport') {
+                const btn = document.getElementById("btnNavSupport");
+                if (btn) btn.classList.add("active");
+                loadCustomerChat();
+            } else if (viewId === 'viewProfile') {
+                loadUserProfile();
+            } else if (viewId === 'viewPaymentHistory') {
+                loadCustomerDepositsHistory();
+            }
+
+            document.getElementById("sidebarDrawer").classList.remove("open");
+            document.getElementById("sidebarOverlay").classList.remove("active");
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function loadSiteAnnouncement() {
+            try {
+                if (!supabaseClient) return;
+                const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
+                if (data && data.value) {
+                    document.getElementById("scrollingAnnouncementText").innerText = data.value;
+                }
+            } catch (e) {}
+        }
+
+        async function loadUserProfile() {
+            if (!currentUser) return;
+            try {
+                let dbProfile = null;
+                if (supabaseClient) {
+                    const { data } = await supabaseClient.from("profiles").select("*").eq("id", currentUser.id).maybeSingle();
+                    dbProfile = data;
+                }
+                const meta = currentUser.user_metadata || {};
+                const name = (dbProfile && dbProfile.full_name) || meta.full_name || meta.name || (currentUser.email ? currentUser.email.split('@')[0] : 'Member');
+                const userEmail = (dbProfile && dbProfile.email) || currentUser.email || '';
+                
+                currentUserProfile = dbProfile || { balance: 0 };
+                document.getElementById("profFullName").value = name;
+                
+                const emailInput = document.getElementById("profEmail");
+                if (emailInput) emailInput.value = userEmail;
+
+                const pwDisplay = document.getElementById("profPasswordDisplay");
+                const savedPw = localStorage.getItem(`cust_pw_${currentUser.id}`) || localStorage.getItem(`last_typed_pw`);
+                if (pwDisplay && savedPw) {
+                    pwDisplay.value = savedPw;
+                }
+
+                const savedWhatsapp = (dbProfile && dbProfile.whatsapp) || localStorage.getItem(`whatsapp_${currentUser.id}`) || '';
+                const waInput = document.getElementById("profWhatsApp");
+                if (waInput) waInput.value = savedWhatsapp;
+                
+                const avatar = (dbProfile && dbProfile.avatar_url) || meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+                document.getElementById("navAvatarImg").src = avatar;
+                document.getElementById("profilePageAvatar").src = avatar;
+                updateWalletDisplay();
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        function updateWalletDisplay() {
+            if (!currentUserProfile) return;
+            document.getElementById("headerBalanceDisplay").innerText = formatPrice(parseFloat(currentUserProfile.balance || 0));
+        }
+
+        async function handleSaveProfile() {
+            const name = document.getElementById("profFullName").value.trim();
+            const whatsapp = document.getElementById("profWhatsApp").value.trim();
+            const btn = document.getElementById("btnSaveProfile");
+
+            if (!name) return notify("Please enter your name", "error");
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+            try {
+                if (supabaseClient && currentUser) {
+                    await supabaseClient.from("profiles").update({ 
+                        full_name: name,
+                        whatsapp: whatsapp 
+                    }).eq("id", currentUser.id);
+                }
+                notify("Profile updated successfully!", "success");
+                loadUserProfile();
+            } catch (e) {
+                notify("Saved locally!", "success");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Profile`;
+            }
+        }
+
+        // ================= CATEGORIES & SERVICES FETCH =================
+        async function fetchFreshServicesAndCategories() {
+            if (!supabaseClient) return;
+
+            try {
+                const [catsRes, srvsRes] = await Promise.all([
+                    supabaseClient.from("categories").select("*").order("name", { ascending: true }),
+                    supabaseClient.from("services").select("*").order("created_at", { ascending: false })
+                ]);
+
+                if (catsRes && catsRes.data && catsRes.data.length > 0) {
+                    allCategories = catsRes.data;
+                    localStorage.setItem("multani_cached_cats", JSON.stringify(allCategories));
+                }
+
+                if (srvsRes && srvsRes.data && srvsRes.data.length > 0) {
+                    allServices = srvsRes.data.filter(s => s.is_active !== false && s.is_active !== 'false');
+                    localStorage.setItem("multani_cached_srvs", JSON.stringify(allServices));
+                }
+
+                if ((!allCategories || allCategories.length === 0) && allServices.length > 0) {
+                    const uniqueCats = {};
+                    allServices.forEach(s => {
+                        const cId = s.category_id || 'general';
+                        uniqueCats[cId] = { id: cId, name: s.category_name || `Category #${cId}` };
+                    });
+                    allCategories = Object.values(uniqueCats);
+                }
+
+                populateCategoryDropdown();
+                renderServicesPageTable();
+            } catch (e) {
+                console.warn("Categories fetch note:", e);
+                populateCategoryDropdown();
+            }
+        }
+
+        function populateCategoryDropdown() {
+            const catSelect = document.getElementById("orderCatSelect");
+            if (!catSelect) return;
+
+            if (!allCategories || allCategories.length === 0) {
+                catSelect.innerHTML = '<option value="">Select Category</option>';
+                return;
+            }
+
+            const currentVal = catSelect.value;
+            catSelect.innerHTML = '<option value="">Select Category</option>' + 
+                allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+
+            if (currentVal) {
+                catSelect.value = currentVal;
+            }
+            renderServiceDropdown(catSelect.value);
+        }
+
+        function handleCategoryFilter(catId) { 
+            renderServiceDropdown(catId); 
+        }
+
+        function renderServiceDropdown(catId) {
+            const srvSelect = document.getElementById("orderServiceSelect");
+            if (!srvSelect) return;
+            
+            if (!catId) {
+                srvSelect.innerHTML = '<option value="">Select Category First</option>';
+                selectedService = null;
+                calculateTotalCharge();
+                return;
+            }
+
+            const filtered = allServices.filter(s => String(s.category_id).trim() === String(catId).trim());
+            
+            if (filtered.length === 0) {
+                srvSelect.innerHTML = '<option value="">No services in this category</option>';
+                selectedService = null;
+                calculateTotalCharge();
+                return;
+            }
+
+            srvSelect.innerHTML = '<option value="">Select Service</option>' + 
+                filtered.map(s => `<option value="${s.id}">${s.name} - (${formatPrice(parseFloat(s.rate_per_1k))}/1k)</option>`).join("");
+
+            selectedService = null;
+            calculateTotalCharge();
+        }
+
+        function renderServicesPageTable() {
+            const body = document.getElementById("servicesListBody");
+            if (!body) return;
+            if (!allServices || allServices.length === 0) {
+                body.innerHTML = `<p style="text-align: center; color: #A7F3D0; padding: 16px 0;">No services found.</p>`;
+                return;
+            }
+
+            body.innerHTML = allServices.map(s => `
+                <div class="service-item-box">
+                    <div class="service-item-title">${s.name}</div>
+                    <div class="service-item-meta">
+                        <span>Min/Max: <strong>${s.min_quantity} - ${s.max_quantity}</strong></span>
+                        <strong style="color: #FFE873; font-size: 0.95rem; font-family: var(--font-game);">${formatPrice(parseFloat(s.rate_per_1k))} / 1k</strong>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function handleServiceSelect(srvId) {
+            selectedService = allServices.find(s => String(s.id).trim() === String(srvId).trim()) || null;
+            const hint = document.getElementById("qtyLimitHint");
+            if (selectedService && hint) {
+                hint.innerText = `Min: ${selectedService.min_quantity} | Max: ${selectedService.max_quantity}`;
+            } else if (hint) {
+                hint.innerText = "";
+            }
+            calculateTotalCharge();
+        }
+
+        function calculateTotalCharge() {
+            const qty = parseInt(document.getElementById("orderQuantity").value) || 0;
+            const display = document.getElementById("orderTotalDisplay");
+            if (!selectedService || qty <= 0) {
+                if (display) display.innerText = formatPrice(0);
+                return;
+            }
+            const chargeUSD = (qty / 1000) * parseFloat(selectedService.rate_per_1k);
+            if (display) display.innerText = formatPrice(chargeUSD);
+        }
+
+        async function handlePlaceOrder(e) {
+            e.preventDefault();
+            if (!currentUser) return notify("Please login first!", "error");
+            if (!selectedService) return notify("Select a service first!", "error");
+
+            const qty = parseInt(document.getElementById("orderQuantity").value);
+            if (qty < selectedService.min_quantity || qty > selectedService.max_quantity) {
+                return notify(`Quantity must be between ${selectedService.min_quantity} and ${selectedService.max_quantity}`, "error");
+            }
+
+            const chargeUSD = (qty / 1000) * parseFloat(selectedService.rate_per_1k);
+            if (parseFloat((currentUserProfile && currentUserProfile.balance) || 0) < chargeUSD) {
+                return notify("Insufficient wallet balance. Please deposit funds.", "error");
+            }
+
+            const link = document.getElementById("orderTargetLink").value.trim();
+            const btn = document.getElementById("btnPlaceOrder");
+            btn.disabled = true;
+            btn.innerText = "Placing Order...";
+
+            try {
+                const { data: newOrderData, error: orderErr } = await supabaseClient.from("orders").insert({
+                    user_id: currentUser.id,
+                    service_id: selectedService.id,
+                    target_link: link,
+                    quantity: qty,
+                    charge: chargeUSD,
+                    status: 'pending'
+                }).select().maybeSingle();
+
+                if (orderErr) throw orderErr;
+
+                await supabaseClient.from("profiles").update({
+                    balance: parseFloat(currentUserProfile.balance) - chargeUSD
+                }).eq("id", currentUser.id);
+
+                try {
+                    if (newOrderData && newOrderData.id) {
+                        await supabaseClient.rpc("place_auto_provider_order", { p_order_id: newOrderData.id });
+                    }
+                } catch (e) {}
+
+                notify("Order placed successfully!", "success");
+                document.getElementById("orderTargetLink").value = "";
+                document.getElementById("orderQuantity").value = "";
+                loadUserProfile();
+                loadCustomerOrders();
+            } catch (err) {
+                notify("Order failed: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Confirm Order";
+            }
+        }
+
+        // ================= ORDERS LIST & METRIC CARDS =================
+        async function loadCustomerOrders() {
+            const recentBody = document.getElementById("dashRecentOrdersBody");
+            const list = document.getElementById("customerOrdersList");
+
+            if (!currentUser || !supabaseClient) {
+                if (recentBody) recentBody.innerHTML = `<p style="text-align: center; color: #A7F3D0; padding: 14px 0; font-size: 0.85rem;">No orders yet.</p>`;
+                if (list) list.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No orders placed yet.</p>`;
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from("orders")
+                    .select("*")
+                    .eq("user_id", currentUser.id)
+                    .order("created_at", { ascending: false });
+
+                loadedOrdersCache = data || [];
+                calculateDashboardMetrics();
+                
+                if (loadedOrdersCache.length === 0) {
+                    if (recentBody) recentBody.innerHTML = `<p style="text-align: center; color: #A7F3D0; padding: 14px 0; font-size: 0.85rem;">No orders yet.</p>`;
+                    if (list) list.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No orders placed yet.</p>`;
+                    return;
+                }
+
+                if (recentBody) {
+                    recentBody.innerHTML = loadedOrdersCache.slice(0, 5).map(o => {
+                        const srv = allServices.find(s => String(s.id) === String(o.service_id));
+                        return `
+                            <div style="background: rgba(2, 20, 15, 0.9); border: 1.5px solid var(--border-glass); border-radius: 12px; padding: 10px 12px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
+                                    <strong style="color: #FFE873;">#${o.order_number || (o.id ? String(o.id).substring(0,5) : '')}</strong>
+                                    <span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span>
+                                </div>
+                                <div style="font-size: 0.85rem; color: #fff;">${srv ? srv.name : 'Service'}</div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #A7F3D0; margin-top: 4px;">
+                                    <span>Qty: ${o.quantity}</span>
+                                    <strong style="color: #FFE873;">${formatPrice(parseFloat(o.charge))}</strong>
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+                }
+
+                if (list) {
+                    list.innerHTML = loadedOrdersCache.map(o => {
+                        const srv = allServices.find(s => String(s.id) === String(o.service_id));
+                        return `
+                            <div style="background: rgba(2, 20, 15, 0.9); border: 1.5px solid var(--border-glass); border-radius: 12px; padding: 12px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px;">
+                                    <strong style="color: #FFE873;">#${o.order_number || (o.id ? String(o.id).substring(0,5) : '')}</strong>
+                                    <span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span>
+                                </div>
+                                <div style="font-size: 0.85rem; color: #fff;">${srv ? srv.name : 'Service'}</div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #A7F3D0; margin-top: 6px;">
+                                    <span>Qty: ${o.quantity}</span>
+                                    <strong style="color: #FFE873;">${formatPrice(parseFloat(o.charge))}</strong>
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+                }
+            } catch (err) {
+                console.error("Orders load:", err);
+            }
+        }
+
+        function calculateDashboardMetrics() {
+            const total = loadedOrdersCache.length;
+            const completed = loadedOrdersCache.filter(o => (o.status || '').toLowerCase() === 'completed').length;
+            const pending = loadedOrdersCache.filter(o => (o.status || '').toLowerCase() === 'pending' || (o.status || '').toLowerCase() === 'in_progress').length;
+            const totalSpentUSD = loadedOrdersCache.reduce((sum, o) => sum + (parseFloat(o.charge) || 0), 0);
+
+            document.getElementById("statTotalOrders").innerText = total;
+            document.getElementById("statCompletedOrders").innerText = completed;
+            document.getElementById("statPendingOrders").innerText = pending;
+            document.getElementById("statTotalSpent").innerText = formatPrice(totalSpentUSD);
+        }
+
+        function calculateDepositUSD() {
+            const pkr = parseFloat(document.getElementById("depAmountPKR").value) || 0;
+            const usd = (pkr / 290.00).toFixed(4);
+            document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
+        }
+
+        // ================= DEPOSIT SUBMIT =================
+        async function handleDepositSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnDepositSubmit");
+
+            if (!currentUser) return notify("Please login first!", "error");
+
+            const pkr = parseFloat(document.getElementById("depAmountPKR").value);
+            if (isNaN(pkr) || pkr <= 0) return notify("Please enter valid amount", "error");
+
+            const usd = parseFloat((pkr / 290.00).toFixed(4));
+            const method = document.getElementById("depMethod").value;
+            const sender = document.getElementById("depSenderNum").value.trim();
+            const trx = document.getElementById("depTrxId").value.trim();
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+
+            try {
+                const { error: depError } = await supabaseClient.from("deposits").insert([{
+                    user_id: currentUser.id,
+                    amount: usd,
+                    payment_method: method,
+                    sender_account: sender,
+                    transaction_id: trx,
+                    status: 'pending'
+                }]);
+
+                if (depError) throw depError;
+
+                notify("Deposit request submitted! Admin will verify soon.", "success");
+                
+                document.getElementById("depAmountPKR").value = "";
+                document.getElementById("depSenderNum").value = "";
+                document.getElementById("depTrxId").value = "";
+                document.getElementById("depUSDHint").innerText = "";
+
+                await loadCustomerDepositsHistory();
+                openPaymentHistoryView();
+            } catch (err) {
+                console.error("Deposit error:", err);
+                notify("Failed: " + (err.message || "Network error"), "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "SUBMIT DEPOSIT REQUEST";
+            }
+        }
+
+        // ================= FULL SCREEN PAYMENT HISTORY SYSTEM (WITH REJECTED FIX) =================
+        function openPaymentHistoryView() {
+            switchTab('viewPaymentHistory');
+        }
+
+        async function loadCustomerDepositsHistory() {
+            const container = document.getElementById("paymentHistoryListContainer");
+            if (!container) return;
+
+            if (!currentUser || !supabaseClient) {
+                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No payments found.</p>`;
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from("deposits")
+                    .select("*")
+                    .eq("user_id", currentUser.id)
+                    .order("created_at", { ascending: false });
+
+                allCustomerDeposits = data || [];
+                renderPaymentHistoryList(activePaymentFilter);
+            } catch (e) {
+                console.error("Deposits load:", e);
+                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No payments found.</p>`;
+            }
+        }
+
+        function filterPaymentHistory(filterType, element) {
+            activePaymentFilter = filterType;
+            document.querySelectorAll(".filter-tabs-wrapper .filter-tab-pill").forEach(el => el.classList.remove("active"));
+            if (element) element.classList.add("active");
+            renderPaymentHistoryList(filterType);
+        }
+
+        function renderPaymentHistoryList(filterType = 'all') {
+            const container = document.getElementById("paymentHistoryListContainer");
+            if (!container) return;
+
+            let filtered = allCustomerDeposits;
+            if (filterType === 'pending') {
+                filtered = allCustomerDeposits.filter(d => (d.status || '').toLowerCase() === 'pending');
+            } else if (filterType === 'approved') {
+                filtered = allCustomerDeposits.filter(d => (d.status || '').toLowerCase() === 'completed' || (d.status || '').toLowerCase() === 'approved');
+            } else if (filterType === 'rejected') {
+                filtered = allCustomerDeposits.filter(d => (d.status || '').toLowerCase() === 'rejected' || (d.status || '').toLowerCase() === 'cancelled');
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No ${filterType === 'all' ? '' : filterType} records found.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(d => {
+                const rawStatus = (d.status || 'pending').toLowerCase();
+                let statusText = 'PENDING';
+                let statusBadgeClass = 'badge-pending';
+
+                if (rawStatus === 'completed' || rawStatus === 'approved') {
+                    statusText = 'APPROVED';
+                    statusBadgeClass = 'badge-approved';
+                } else if (rawStatus === 'rejected' || rawStatus === 'cancelled') {
+                    statusText = 'REJECTED';
+                    statusBadgeClass = 'badge-rejected';
+                }
+
+                const pkrAmount = (parseFloat(d.amount || 0) * 290.00).toFixed(0);
+
+                return `
+                    <div class="deposit-record-card">
+                        <div class="deposit-record-row">
+                            <strong style="color: #FFE873; font-size: 0.95rem;">${d.payment_method || 'Deposit'}</strong>
+                            <span class="badge ${statusBadgeClass}">${statusText}</span>
+                        </div>
+                        <div class="deposit-record-row" style="color: #fff; font-size: 0.88rem; font-weight: 700;">
+                            <span>Rs ${pkrAmount} PKR</span>
+                            <span style="color: #34D399; font-family: var(--font-game); font-size: 1.05rem;">$${parseFloat(d.amount).toFixed(4)} USD</span>
+                        </div>
+                        <div class="deposit-record-row" style="color: #A7F3D0; font-size: 0.75rem; border-top: 1px dashed rgba(34,197,94,0.25); padding-top: 5px; margin-top: 3px;">
+                            <span>TRX: <strong>${d.transaction_id || '-'}</strong></span>
+                            <span>Sender: <strong>${d.sender_account || '-'}</strong></span>
+                        </div>
+                        <small style="color: rgba(167, 243, 208, 0.65); font-size: 0.68rem; text-align: right;">${new Date(d.created_at).toLocaleString()}</small>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        // ================= LIVE SUPPORT CHAT =================
+        async function loadCustomerChat() {
+            if (!currentUser || !supabaseClient) return;
+            const body = document.getElementById("customerChatWindow");
+            try {
+                const { data } = await supabaseClient
+                    .from("chat_messages")
+                    .select("*")
+                    .eq("user_id", currentUser.id)
+                    .order("created_at", { ascending: true });
+
+                if (data && data.length > 0) {
+                    body.innerHTML = `
+                        <div class="bubble-admin">Assalam-o-Alaikum! Leave your question or TRX ID here. Admin will reply live.</div>
+                    ` + data.map(m => `
+                        <div class="${m.sender_type === 'admin' ? 'bubble-admin' : 'bubble-user'}">${m.message}</div>
+                    `).join("");
+                    body.scrollTop = body.scrollHeight;
+                }
+            } catch (e) {
+                console.warn("Chat load:", e);
+            }
+        }
+
+        async function handleSendCustomerChat(e) {
+            e.preventDefault();
+            if (!currentUser) return notify("Please login first!", "error");
+            
+            const input = document.getElementById("customerChatInput");
+            const btn = document.getElementById("btnSendChat");
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            btn.disabled = true;
+
+            try {
+                const { error } = await supabaseClient.from("chat_messages").insert([{
+                    user_id: currentUser.id,
+                    sender_type: 'user',
+                    message: msg,
+                    is_read: false
+                }]);
+
+                if (error) throw error;
+                
+                input.value = "";
+                await loadCustomerChat();
+            } catch (err) {
+                console.error("Chat send:", err);
+                notify("Could not send message: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
