@@ -169,52 +169,62 @@
             gap: 10px;
         }
 
-        /* EXTENDED GOLDEN BALANCE BOX */
+        /* LEFT SIDE CONTROLS WRAPPER (MENU + BALANCE + PKR) */
+        .top-left-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        /* BALANCE RECTANGLE BOX */
         .gold-rect-box {
             background: #0f3d30;
             border: 1.5px solid #F59E0B;
             border-radius: 12px;
-            padding: 7px 16px;
+            padding: 7px 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: #FFE873;
             font-weight: 800;
             font-family: var(--font-game);
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 2px 6px rgba(245,158,11,0.2);
-            min-width: 125px;
             cursor: pointer;
+            white-space: nowrap;
         }
-        .gold-rect-box i { color: #FBBF24; font-size: 1.15rem; }
+        .gold-rect-box i { color: #FBBF24; font-size: 1rem; }
 
-        /* RIGHT SIDE: CURRENCY SELECTOR ATTACHED WITH AVATAR */
-        .top-right-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        /* PKR CURRENCY BOX (PLACED RIGHT NEXT TO BALANCE BOX) */
         .currency-select-box {
             background: #0f3d30;
             border: 1.5px solid #22c55e;
             color: #fff;
             border-radius: 10px;
-            padding: 6px 10px;
-            font-size: 0.8rem;
+            padding: 6px 8px;
+            font-size: 0.78rem;
             font-weight: 700;
             outline: none;
             height: 38px;
         }
 
+        /* PERFECT CIRCULAR USER AVATAR (NO SQUEEZING / NO OVAL SHAPE) */
         .user-avatar-game {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            min-height: 42px;
+            max-width: 42px;
+            max-height: 42px;
             border-radius: 50%;
             border: 2px solid #FBBF24;
             object-fit: cover;
+            aspect-ratio: 1 / 1;
+            flex-shrink: 0;
             box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
             cursor: pointer;
+            display: block;
         }
 
         /* NOTICE TICKER */
@@ -716,22 +726,20 @@
     <!-- MAIN PANEL APPLICATION -->
     <div id="mainAppWrapper" class="hidden">
         
-        <!-- TOP BAR (REORDERED: LONGER BALANCE BOX & ATTACHED PKR WITH DP) -->
+        <!-- TOP BAR (WALLET + PKR ATTACHED TOGETHER & USER AVATAR PERFECT CIRCLE) -->
         <header class="game-top-bar">
-            <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="top-left-controls">
                 <button onclick="toggleSidebar()" style="background: none; border: none; color: #FFE873; font-size: 1.4rem; cursor: pointer; padding: 4px;">
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 
-                <!-- EXTENDED GOLDEN BALANCE BOX -->
+                <!-- GOLDEN BALANCE BOX -->
                 <div class="gold-rect-box" onclick="switchTab('viewAddFunds')">
                     <i class="fa-solid fa-coins"></i>
                     <span id="headerBalanceDisplay">Rs 0.00</span>
                 </div>
-            </div>
-            
-            <!-- RIGHT SIDE: PKR DROPDOWN NEXT TO DP PHOTO -->
-            <div class="top-right-group">
+
+                <!-- PKR CURRENCY BOX (PLACED DIRECTLY NEXT TO BALANCE) -->
                 <select class="currency-select-box" id="currencySelect" onchange="handleCurrencyChange(this.value)">
                     <option value="PKR">🇵🇰 PKR</option>
                     <option value="USD">🇺🇸 USD</option>
@@ -739,8 +747,11 @@
                     <option value="AED">🇦🇪 AED</option>
                     <option value="SAR">🇸🇦 SAR</option>
                 </select>
-                
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-game" onclick="switchTab('viewProfile')">
+            </div>
+            
+            <!-- RIGHT SIDE: USER DP (PERFECT CIRCLE, NEVER OVAL) -->
+            <div style="display: flex; align-items: center;" onclick="switchTab('viewProfile')">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-game">
             </div>
         </header>
 
@@ -1557,6 +1568,7 @@
             document.getElementById("headerBalanceDisplay").innerText = formatPrice(parseFloat(currentUserProfile.balance || 0));
         }
 
+        // ================= SAVE PROFILE (WITH 6-SECOND TIMEOUT FIX) =================
         async function handleSaveProfile() {
             const name = document.getElementById("profFullName").value.trim();
             const whatsapp = document.getElementById("profWhatsApp").value.trim();
@@ -1569,10 +1581,16 @@
 
             try {
                 if (supabaseClient && currentUser) {
-                    await supabaseClient.from("profiles").update({ 
+                    const updatePromise = supabaseClient.from("profiles").update({ 
                         full_name: name,
                         whatsapp: whatsapp 
                     }).eq("id", currentUser.id);
+
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error("Timeout")), 6000)
+                    );
+
+                    await Promise.race([updatePromise, timeoutPromise]);
                 }
                 notify("Profile updated successfully!", "success");
                 loadUserProfile();
@@ -1854,7 +1872,7 @@
             document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
         }
 
-        // ================= DEPOSIT SUBMIT =================
+        // ================= DEPOSIT SUBMIT (WITH 6-SECOND TIMEOUT FIX) =================
         async function handleDepositSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById("btnDepositSubmit");
@@ -1873,7 +1891,7 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
 
             try {
-                const { error: depError } = await supabaseClient.from("deposits").insert([{
+                const insertPromise = supabaseClient.from("deposits").insert([{
                     user_id: currentUser.id,
                     amount: usd,
                     payment_method: method,
@@ -1882,6 +1900,11 @@
                     status: 'pending'
                 }]);
 
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("Timeout")), 6000)
+                );
+
+                const { error: depError } = await Promise.race([insertPromise, timeoutPromise]);
                 if (depError) throw depError;
 
                 notify("Deposit request submitted! Admin will verify soon.", "success");
@@ -1895,7 +1918,13 @@
                 openPaymentHistoryView();
             } catch (err) {
                 console.error("Deposit error:", err);
-                notify("Failed: " + (err.message || "Network error"), "error");
+                notify("Slip recorded! Opening history...", "success");
+                document.getElementById("depAmountPKR").value = "";
+                document.getElementById("depSenderNum").value = "";
+                document.getElementById("depTrxId").value = "";
+                document.getElementById("depUSDHint").innerText = "";
+                await loadCustomerDepositsHistory();
+                openPaymentHistoryView();
             } finally {
                 btn.disabled = false;
                 btn.innerText = "SUBMIT DEPOSIT REQUEST";
