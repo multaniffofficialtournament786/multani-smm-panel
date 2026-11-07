@@ -50,7 +50,7 @@
 
         .hidden { display: none !important; }
 
-        /* LOADING SPLASH ON REFRESH */
+        /* LOADING SPLASH */
         #appSplashLoader {
             position: fixed;
             inset: 0;
@@ -61,10 +61,11 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
+            transition: opacity 0.25s ease;
         }
         .spinner-coin {
-            width: 48px;
-            height: 48px;
+            width: 46px;
+            height: 46px;
             border: 4px solid rgba(251, 191, 36, 0.2);
             border-top-color: #FBBF24;
             border-radius: 50%;
@@ -578,7 +579,7 @@
 
     <div id="toastContainer"></div>
 
-    <!-- INITIAL SPLASH SCREEN (PREVENTS FLASH & PERSISTS SESSION ON REFRESH) -->
+    <!-- INITIAL SPLASH LOADER -->
     <div id="appSplashLoader">
         <div class="spinner-coin"></div>
         <p style="color: #FFE873; font-weight: 700; font-family: var(--font-game); font-size: 0.9rem;">Connecting to MULTANI VIP...</p>
@@ -654,7 +655,7 @@
         </ul>
     </aside>
 
-    <!-- MAIN PANEL APPLICATION (HIDDEN BY DEFAULT UNTIL VERIFIED) -->
+    <!-- MAIN PANEL APPLICATION -->
     <div id="mainAppWrapper" class="hidden">
         
         <!-- TOP BAR -->
@@ -951,6 +952,7 @@
         let allCustomerDeposits = [];
         let loadedOrdersCache = [];
         let selectedService = null;
+        let appInitialized = false;
 
         const PAYMENT_METHODS_DATA = {
             Easypaisa: { title: "Easypaisa Account:", number: "03186815926", name: "Title: Muhammad Nadeem" },
@@ -1016,26 +1018,44 @@
             toggleSidebar();
         }
 
+        function hideSplash() {
+            const loader = document.getElementById("appSplashLoader");
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.classList.add("hidden"), 250);
+            }
+        }
+
         function showAuthScreen() {
-            document.getElementById("appSplashLoader").classList.add("hidden");
+            hideSplash();
             document.getElementById("mainAppWrapper").classList.add("hidden");
             document.getElementById("authGateContainer").classList.remove("hidden");
         }
 
         function showPanelScreen() {
-            document.getElementById("appSplashLoader").classList.add("hidden");
+            hideSplash();
             document.getElementById("authGateContainer").classList.add("hidden");
             document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
-        // ================= BULLETPROOF INITIALIZATION =================
+        // ================= INSTANT NON-BLOCKING INITIALIZATION =================
         async function initMultaniApp() {
+            if (appInitialized) return;
+            appInitialized = true;
+
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
             
             loadCachedCategoriesAndServices();
-            fetchFreshServicesAndCategories();
-            loadSiteAnnouncement();
+
+            // Safety timeout: loader must disappear within 1.5s regardless of slow network
+            setTimeout(() => {
+                if (!currentUser) {
+                    showAuthScreen();
+                } else {
+                    showPanelScreen();
+                }
+            }, 1500);
 
             if (!supabaseClient) {
                 showAuthScreen();
@@ -1043,7 +1063,6 @@
             }
 
             try {
-                // Check active session on refresh
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
                     currentUser = session.user;
@@ -1051,15 +1070,18 @@
                     if (window.location.hash) {
                         window.history.replaceState(null, null, window.location.pathname);
                     }
-                    await postLoginSuccess(currentUser);
-                    return;
+                    postLoginSuccess(currentUser);
+                } else {
+                    showAuthScreen();
                 }
             } catch (err) {
-                console.warn("Session check:", err);
+                console.warn("Session check error:", err);
+                showAuthScreen();
             }
 
-            // No active session -> show login gate
-            showAuthScreen();
+            // Async background loads (will not freeze the screen)
+            fetchFreshServicesAndCategories();
+            loadSiteAnnouncement();
         }
 
         function loadCachedCategoriesAndServices() {
@@ -1074,14 +1096,11 @@
         }
 
         if (supabaseClient) {
-            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (event === 'SIGNED_IN' && session && session.user) {
                     currentUser = session.user;
                     showPanelScreen();
-                    if (window.location.hash) {
-                        window.history.replaceState(null, null, window.location.pathname);
-                    }
-                    await postLoginSuccess(currentUser);
+                    postLoginSuccess(currentUser);
                 } else if (event === 'SIGNED_OUT') {
                     currentUser = null;
                     currentUserProfile = null;
@@ -1211,30 +1230,24 @@
             }
         }
 
-        // ================= INSTANT & BULLETPROOF LOGOUT =================
+        // ================= 100% INSTANT LOGOUT =================
         async function directCleanLogout() {
-            // 1. Immediately Close Sidebar
             document.getElementById("sidebarDrawer").classList.remove("open");
             document.getElementById("sidebarOverlay").classList.remove("active");
 
-            // 2. Hide Dashboard & Show Login Card Right Away
-            document.getElementById("mainAppWrapper").classList.add("hidden");
-            document.getElementById("authGateContainer").classList.remove("hidden");
+            showAuthScreen();
 
-            // 3. Clear State
             currentUser = null;
             currentUserProfile = null;
             allCustomerDeposits = [];
             loadedOrdersCache = [];
 
-            // 4. Supabase SignOut
             try {
                 if (supabaseClient) {
                     await supabaseClient.auth.signOut({ scope: 'local' });
                 }
             } catch (e) {}
 
-            // 5. Total Storage Clear
             localStorage.clear();
             sessionStorage.clear();
             window.location.hash = "";
@@ -1408,7 +1421,7 @@
             if (!catSelect) return;
 
             if (!allCategories || allCategories.length === 0) {
-                catSelect.innerHTML = '<option value="">No categories available</option>';
+                catSelect.innerHTML = '<option value="">Select Category</option>';
                 return;
             }
 
