@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- NO-CACHE HEADERS: FIXES CHROME HANG/DATA-CLEAR ISSUE -->
+    <!-- HARD CACHE BUSTING: PREVENTS CHROME PERSISTENT DATA ISSUES -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -685,10 +685,12 @@
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         const SINGLE_ADMIN_EMAIL = "pardesinadeem7866@gmail.com";
         
+        // SUPABASE CLIENT SETUP: AUTO-REFRESH DISABLED TO PREVENT CHROME HANG/TOKEN CORRUPTION
         let supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: {
                 persistSession: true,
-                autoRefreshToken: true,
+                autoRefreshToken: false,
+                detectSessionInUrl: false,
                 storage: window.localStorage
             }
         }) : null;
@@ -736,7 +738,7 @@
             setTimeout(() => { toast.remove(); }, 3500);
         }
 
-        // UNIVERSAL REFRESH BUTTON WRAPPER (Visual Spinner + Action)
+        // UNIVERSAL REFRESH BUTTON WRAPPER (Visual Spinner + Async Action)
         async function refreshWrapper(buttonEl, asyncCallback) {
             if (!buttonEl) return;
             const icon = buttonEl.querySelector("i");
@@ -754,7 +756,7 @@
             }
         }
 
-        // ================= PERMANENT SESSION PERSISTENCE =================
+        // ================= PERMANENT SESSION PERSISTENCE & HARD GUARD =================
         function isLocalAdminSessionActive() {
             return localStorage.getItem("multani_super_admin_active") === "true";
         }
@@ -763,7 +765,7 @@
             const curSelect = document.getElementById("adminCurrencySelect");
             if (curSelect) curSelect.value = activeAdminCurrency;
             
-            // Check local lock first
+            // Immediate check: If user already logged in locally, open immediately without waiting
             if (isLocalAdminSessionActive()) {
                 currentAdminUser = { email: SINGLE_ADMIN_EMAIL };
                 initAdminPanel();
@@ -773,9 +775,9 @@
 
             if (!supabaseClient) return;
             
-            // Safety timeout guard (Max 1.5 seconds) - Prevents Chrome infinite hang
+            // Safety timeout guard (Strict 800ms) - Prevents Chrome infinite hang completely
             const sessionPromise = supabaseClient.auth.getSession();
-            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 1500));
+            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 800));
             
             try {
                 const res = await Promise.race([sessionPromise, timeoutPromise]);
