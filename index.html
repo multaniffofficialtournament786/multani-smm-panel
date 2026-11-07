@@ -1016,12 +1016,12 @@
         const SUPABASE_URL = "https://ghenauyyuxoniedwzabk.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
         
-        // AUTO-REFRESH DISABLED: PERMANENTLY STOPS CHROME TOKEN CORRUPTION & INFINITE LOADING LOOP
+        // AUTO-REFRESH DISABLED (PREVENTS CORRUPTION LOOP), BUT URL DETECTION ENABLED FOR GOOGLE LOGIN
         const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             auth: {
                 persistSession: true,
                 autoRefreshToken: false,
-                detectSessionInUrl: false,
+                detectSessionInUrl: true,
                 storage: window.localStorage
             }
         }) : null;
@@ -1156,7 +1156,7 @@
             document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
-        // ================= INSTANT INITIALIZATION WITH STRICT 800MS SAFETY TIMEOUT =================
+        // ================= INSTANT INITIALIZATION & GOOGLE AUTH SYNC =================
         function checkImmediateSession() {
             const cachedUser = getLocalActiveUser();
             if (cachedUser) {
@@ -1174,13 +1174,20 @@
             
             loadCachedCategoriesAndServices();
 
+            // Detect if returning from Google OAuth Redirect
+            const isOAuthRedirect = window.location.hash && (window.location.hash.includes("access_token") || window.location.hash.includes("refresh_token"));
+
             if (supabaseClient) {
-                supabaseClient.auth.onAuthStateChange((event, session) => {
+                supabaseClient.auth.onAuthStateChange(async (event, session) => {
                     if (session && session.user) {
                         currentUser = session.user;
                         saveLocalActiveUser(session.user);
                         showPanelScreen();
-                        postLoginSuccess(currentUser);
+                        await postLoginSuccess(currentUser);
+                        if (isOAuthRedirect) {
+                            // Clean hash to keep URL pure and prevent re-evaluating token
+                            window.history.replaceState(null, null, window.location.pathname);
+                        }
                     } else if (event === 'SIGNED_OUT') {
                         currentUser = null;
                         currentUserProfile = null;
@@ -1189,9 +1196,10 @@
                     }
                 });
 
-                // Safety timeout guard (Strict 800ms) - Prevents Chrome hanging
+                // Set timeout: If OAuth redirect give 2500ms to parse token, otherwise fast 800ms
+                const timeoutWait = isOAuthRedirect ? 2500 : 800;
                 const sessionPromise = supabaseClient.auth.getSession();
-                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), 800));
+                const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), timeoutWait));
 
                 try {
                     const res = await Promise.race([sessionPromise, timeoutPromise]);
@@ -1200,11 +1208,11 @@
                         saveLocalActiveUser(res.data.session.user);
                         showPanelScreen();
                         postLoginSuccess(currentUser);
-                    } else if (!getLocalActiveUser() && !window.location.hash.includes("access_token")) {
+                    } else if (!getLocalActiveUser() && !isOAuthRedirect) {
                         showAuthScreen();
                     }
                 } catch(e) {
-                    if (!getLocalActiveUser()) showAuthScreen();
+                    if (!getLocalActiveUser() && !isOAuthRedirect) showAuthScreen();
                 }
             } else {
                 if (!getLocalActiveUser()) showAuthScreen();
