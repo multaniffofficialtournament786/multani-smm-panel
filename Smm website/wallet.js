@@ -24,14 +24,14 @@ async function handleDepositSubmit(e) {
         const local = getLocalActiveUser();
         if (local && local.id) currentUser = local;
         else {
-            notify("Please login first!", "error");
+            alert("Please login first!");
             return;
         }
     }
 
     const pkr = parseFloat(document.getElementById("depAmountPKR").value);
     if (isNaN(pkr) || pkr <= 0) {
-        notify("Please enter valid amount", "error");
+        alert("Please enter valid amount");
         return;
     }
 
@@ -40,11 +40,26 @@ async function handleDepositSubmit(e) {
     const sender = document.getElementById("depSenderNum").value.trim();
     const trx = document.getElementById("depTrxId").value.trim();
 
-    // Disable button and show loading
+    // UI Loading state
     btn.disabled = true;
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
 
+    // Safety timeout to ensure button never stays stuck forever
+    let isFinished = false;
+    const safetyTimer = setTimeout(() => {
+        if (!isFinished) {
+            isFinished = true;
+            btn.disabled = false;
+            btn.innerText = "SUBMIT DEPOSIT REQUEST";
+            alert("Connection timeout or network issue. Please check your internet.");
+        }
+    }, 6000);
+
     try {
+        if (!supabaseClient) {
+            throw new Error("Supabase client not initialized");
+        }
+
         const { data, error } = await supabaseClient.from("deposits").insert([{
             user_id: currentUser.id,
             amount: usd,
@@ -54,9 +69,12 @@ async function handleDepositSubmit(e) {
             status: 'pending'
         }]).select();
 
+        isFinished = true;
+        clearTimeout(safetyTimer);
+
         if (error) throw error;
 
-        notify("Deposit request submitted! Admin will verify soon.", "success");
+        alert("Deposit request submitted successfully! Admin will verify soon.");
         
         document.getElementById("depAmountPKR").value = "";
         document.getElementById("depSenderNum").value = "";
@@ -66,10 +84,11 @@ async function handleDepositSubmit(e) {
         openPaymentHistoryView();
         await loadCustomerDepositsHistory();
     } catch (err) {
+        isFinished = true;
+        clearTimeout(safetyTimer);
         console.error("Deposit insert error:", err);
-        notify("Deposit Error: " + (err.message || "Failed to submit"), "error");
+        alert("Deposit Error: " + (err.message || "Failed to submit"));
     } finally {
-        // ALWAYS restore button state so it never gets stuck
         btn.disabled = false;
         btn.innerText = "SUBMIT DEPOSIT REQUEST";
     }
