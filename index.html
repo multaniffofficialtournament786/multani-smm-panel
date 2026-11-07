@@ -358,6 +358,12 @@
             border-color: #7dd3fc;
             box-shadow: 0 6px 14px rgba(3, 105, 161, 0.4);
         }
+        .btn-3d-play.btn-whatsapp {
+            background: linear-gradient(180deg, #25D366 0%, #128C7E 100%);
+            border-color: #86efac;
+            box-shadow: 0 6px 14px rgba(18, 140, 126, 0.5);
+            text-decoration: none;
+        }
 
         /* AUTO WRAPPING SERVICES */
         .services-card-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
@@ -546,6 +552,35 @@
         }
         .sidebar-menu li a.logout-btn { color: #f87171; border-top: 1px dashed rgba(239, 68, 68, 0.4); margin-top: 10px; padding-top: 14px; }
 
+        /* VIP POPUP MODAL */
+        .vip-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .vip-popup-card {
+            background: rgba(6, 40, 31, 0.98);
+            border: 2px solid #FBBF24;
+            border-radius: 24px;
+            padding: 24px 20px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 25px rgba(251, 191, 36, 0.3);
+            animation: popupZoom 0.25s ease-out;
+            position: relative;
+        }
+        @keyframes popupZoom {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         #toastContainer { position: fixed; top: 75px; right: 15px; left: 15px; z-index: 999999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
         .toast { padding: 12px 16px; background: rgba(4, 34, 26, 0.98); border-left: 5px solid #FBBF24; border-radius: 10px; color: #fff; font-size: 0.88rem; font-weight: 600; border: 1px solid #22c55e; pointer-events: auto; }
         .toast.error { border-left-color: #EF4444; }
@@ -555,6 +590,36 @@
 <body>
 
     <div id="toastContainer"></div>
+
+    <!-- VIP FORGOT PASSWORD POPUP MODAL -->
+    <div id="forgotPwModal" class="vip-popup-overlay hidden">
+        <div class="vip-popup-card">
+            <div style="font-size: 2.8rem; color: #25D366; margin-bottom: 6px; filter: drop-shadow(0 4px 10px rgba(37,211,102,0.5));">
+                <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <h3 style="color: #FFE873; font-size: 1.4rem; margin-bottom: 8px;">RESET PASSWORD</h3>
+            <p style="color: #A7F3D0; font-size: 0.88rem; line-height: 1.45; margin-bottom: 16px;">
+                Please contact the official administrator to change or recover your account password.
+            </p>
+            
+            <div style="background: rgba(2, 20, 15, 0.9); border: 1.5px dashed #FBBF24; border-radius: 14px; padding: 12px; margin-bottom: 18px;">
+                <div style="color: #FFE873; font-family: var(--font-game); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.5px;">
+                    MUHAMMAD NADEEM
+                </div>
+                <div style="color: #25D366; font-size: 1.15rem; font-weight: 800; margin-top: 4px; font-family: var(--font-game);">
+                    <i class="fa-brands fa-whatsapp"></i> 03292488285
+                </div>
+            </div>
+
+            <a href="https://wa.me/923292488285?text=Assalam-o-Alaikum%20Admin,%20Please%20help%20me%20change%20my%20MULTANI%20SMM%20account%20password." target="_blank" class="btn-3d-play btn-whatsapp" style="margin-bottom: 10px;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Open WhatsApp Chat
+            </a>
+            
+            <button type="button" class="btn-3d-play" onclick="closeForgotPwModal()" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); font-size: 0.9rem; padding: 10px;">
+                Close
+            </button>
+        </div>
+    </div>
 
     <!-- 0. LOGIN & SIGNUP SCREEN -->
     <div id="authGateContainer">
@@ -581,7 +646,12 @@
                     <input type="email" id="loginEmail" required placeholder="name@domain.com">
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label style="margin: 0;">Password</label>
+                        <span onclick="openForgotPwModal()" style="color: #FBBF24; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                            Forgot Password?
+                        </span>
+                    </div>
                     <input type="password" id="loginPassword" required placeholder="••••••••">
                 </div>
                 <button type="submit" class="btn-3d-play" id="btnLoginSubmit"><i class="fa-solid fa-right-to-bracket"></i> Login Account</button>
@@ -877,6 +947,24 @@
                         <label>Account Email (Fixed)</label>
                         <input type="email" id="profEmail" readonly style="opacity: 0.85; background: rgba(0,0,0,0.5);">
                     </div>
+                    
+                    <!-- FIXED PASSWORD BOX WITH SHOW/HIDE & ADMIN NOTICE -->
+                    <div class="form-group">
+                        <label>Account Password (Fixed)</label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input type="password" id="profPasswordDisplay" readonly value="••••••••" style="opacity: 0.85; background: rgba(0,0,0,0.5); padding-right: 42px;">
+                            <i class="fa-solid fa-eye" id="toggleProfPwBtn" onclick="toggleProfilePasswordView()" style="position: absolute; right: 14px; color: #FFE873; cursor: pointer; font-size: 1rem;"></i>
+                        </div>
+                        <div style="background: rgba(2, 20, 15, 0.85); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 8px 10px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <small style="color: #FFE873; font-weight: 700; font-size: 0.75rem;">
+                                <i class="fa-solid fa-circle-info"></i> پاس ورڈ چینج کرنے کے لیے ایڈمن سے رابطہ کریں
+                            </small>
+                            <span onclick="openForgotPwModal()" style="color: #38BDF8; font-size: 0.75rem; font-weight: 800; text-decoration: underline; cursor: pointer;">
+                                Admin
+                            </span>
+                        </div>
+                    </div>
+
                     <button type="button" class="btn-3d-play" id="btnSaveProfile" onclick="handleSaveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
                 </div>
             </div>
@@ -923,6 +1011,29 @@
         let allCustomerDeposits = [];
         let loadedOrdersCache = [];
         let selectedService = null;
+
+        // POPUP CONTROLS
+        function openForgotPwModal() {
+            document.getElementById("forgotPwModal").classList.remove("hidden");
+        }
+        function closeForgotPwModal() {
+            document.getElementById("forgotPwModal").classList.add("hidden");
+        }
+
+        // TOGGLE PASSWORD VISIBILITY IN PROFILE
+        function toggleProfilePasswordView() {
+            const input = document.getElementById("profPasswordDisplay");
+            const icon = document.getElementById("toggleProfPwBtn");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
 
         // FAST LOCAL PERSISTENCE BACKUP (Never logs out on refresh)
         function saveLocalActiveUser(user) {
@@ -1040,7 +1151,6 @@
             loadCachedCategoriesAndServices();
 
             if (supabaseClient) {
-                // Listen to Auth State
                 supabaseClient.auth.onAuthStateChange((event, session) => {
                     if (session && session.user) {
                         currentUser = session.user;
@@ -1055,7 +1165,6 @@
                     }
                 });
 
-                // Check Supabase Session
                 try {
                     const { data: { session } } = await supabaseClient.auth.getSession();
                     if (session && session.user) {
@@ -1110,11 +1219,17 @@
             const profEmailInput = document.getElementById("profEmail");
             const navAvatar = document.getElementById("navAvatarImg");
             const profAvatar = document.getElementById("profilePageAvatar");
+            const profPwInput = document.getElementById("profPasswordDisplay");
 
             if (profNameInput && !profNameInput.value) profNameInput.value = name;
             if (profEmailInput) profEmailInput.value = email;
             if (navAvatar) navAvatar.src = avatar;
             if (profAvatar) profAvatar.src = avatar;
+
+            const rememberedPw = localStorage.getItem(`cust_pw_${user.id}`) || localStorage.getItem(`last_typed_pw`);
+            if (profPwInput && rememberedPw) {
+                profPwInput.value = rememberedPw;
+            }
         }
 
         function switchAuthTab(mode) {
@@ -1159,6 +1274,13 @@
             btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Login Account`;
 
             if (error) return notify(error.message, "error");
+            
+            // Save typed password locally for user's own profile view
+            if (data.user) {
+                localStorage.setItem(`cust_pw_${data.user.id}`, password);
+                localStorage.setItem(`last_typed_pw`, password);
+            }
+
             notify("Welcome back!", "success");
             currentUser = data.user;
             saveLocalActiveUser(data.user);
@@ -1190,6 +1312,8 @@
             if (error) return notify(error.message, "error");
 
             if (data.user) {
+                localStorage.setItem(`cust_pw_${data.user.id}`, password);
+                localStorage.setItem(`last_typed_pw`, password);
                 currentUser = data.user;
                 saveLocalActiveUser(data.user);
                 await ensureUserProfile(data.user, fullName);
@@ -1235,7 +1359,6 @@
             document.getElementById("sidebarDrawer").classList.remove("open");
             document.getElementById("sidebarOverlay").classList.remove("active");
 
-            // Instant switch to login screen
             showAuthScreen();
 
             currentUser = null;
@@ -1336,6 +1459,12 @@
                 const emailInput = document.getElementById("profEmail");
                 if (emailInput) emailInput.value = userEmail;
 
+                const pwDisplay = document.getElementById("profPasswordDisplay");
+                const savedPw = localStorage.getItem(`cust_pw_${currentUser.id}`) || localStorage.getItem(`last_typed_pw`);
+                if (pwDisplay && savedPw) {
+                    pwDisplay.value = savedPw;
+                }
+
                 const savedWhatsapp = (dbProfile && dbProfile.whatsapp) || localStorage.getItem(`whatsapp_${currentUser.id}`) || '';
                 const waInput = document.getElementById("profWhatsApp");
                 if (waInput) waInput.value = savedWhatsapp;
@@ -1423,7 +1552,7 @@
             if (!catSelect) return;
 
             if (!allCategories || allCategories.length === 0) {
-                catSelect.innerHTML = '<option value="">No categories available</option>';
+                catSelect.innerHTML = '<option value="">Select Category</option>';
                 return;
             }
 
