@@ -947,13 +947,21 @@
                 </div>
             </div>
 
-            <!-- VIEW 7: PROFILE -->
+            <!-- VIEW 7: PROFILE (WITH GALLERY DP UPLOAD BUTTON RESTORED) -->
             <div id="viewProfile" class="app-view">
                 <div class="vip-game-card">
                     <h3 style="color: #FFE873; margin-bottom: 14px; text-align: center;"><i class="fa-solid fa-id-card"></i> Player Profile</h3>
                     
+                    <!-- AVATAR WITH CAMERA UPLOAD ICON -->
                     <div style="text-align: center; margin-bottom: 16px;">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="profilePageAvatar" class="user-avatar-game" style="width: 80px; height: 80px;">
+                        <div style="position: relative; display: inline-block;">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="profilePageAvatar" class="user-avatar-game" style="width: 86px; height: 86px; border: 3px solid #FBBF24;">
+                            <label for="custProfileDpInput" style="position: absolute; bottom: 0; right: 0; background: var(--gold-grad); color: #000; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #05261d; box-shadow: 0 2px 6px rgba(0,0,0,0.6);" title="Change Photo from Gallery">
+                                <i class="fa-solid fa-camera" style="font-size: 0.85rem;"></i>
+                            </label>
+                            <input type="file" id="custProfileDpInput" accept="image/*" style="display: none;" onchange="handleGalleryDpUpload(event)">
+                        </div>
+                        <p style="font-size: 0.72rem; color: #A7F3D0; margin-top: 6px;">Tap camera icon to update DP from gallery</p>
                     </div>
                     
                     <div class="form-group">
@@ -1185,7 +1193,6 @@
                         showPanelScreen();
                         await postLoginSuccess(currentUser);
                         if (isOAuthRedirect) {
-                            // Clean hash to keep URL pure and prevent re-evaluating token
                             window.history.replaceState(null, null, window.location.pathname);
                         }
                     } else if (event === 'SIGNED_OUT') {
@@ -1196,7 +1203,6 @@
                     }
                 });
 
-                // Set timeout: If OAuth redirect give 2500ms to parse token, otherwise fast 800ms
                 const timeoutWait = isOAuthRedirect ? 2500 : 800;
                 const sessionPromise = supabaseClient.auth.getSession();
                 const timeoutPromise = new Promise(resolve => setTimeout(() => resolve({ timeout: true }), timeoutWait));
@@ -1249,7 +1255,10 @@
             const meta = user.user_metadata || {};
             const email = user.email || '';
             const name = meta.full_name || meta.name || (email ? email.split('@')[0] : 'Member');
-            const avatar = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+
+            // Prefer custom uploaded DP from local storage
+            const customDp = localStorage.getItem(`cust_dp_${user.id}`);
+            const avatar = customDp || meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
 
             const profNameInput = document.getElementById("profFullName");
             const profEmailInput = document.getElementById("profEmail");
@@ -1266,6 +1275,33 @@
             if (profPwInput && rememberedPw) {
                 profPwInput.value = rememberedPw;
             }
+        }
+
+        // ================= GALLERY DP UPLOAD HANDLER =================
+        function handleGalleryDpUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Data = e.target.result;
+                const profAvatar = document.getElementById("profilePageAvatar");
+                const navAvatar = document.getElementById("navAvatarImg");
+
+                if (profAvatar) profAvatar.src = base64Data;
+                if (navAvatar) navAvatar.src = base64Data;
+
+                if (currentUser) {
+                    localStorage.setItem(`cust_dp_${currentUser.id}`, base64Data);
+                    try {
+                        if (supabaseClient) {
+                            await supabaseClient.from("profiles").update({ avatar_url: base64Data }).eq("id", currentUser.id);
+                        }
+                    } catch(err) {}
+                }
+                notify("Profile photo updated from gallery!", "success");
+            };
+            reader.readAsDataURL(file);
         }
 
         function switchAuthTab(mode) {
@@ -1311,7 +1347,6 @@
 
             if (error) return notify(error.message, "error");
             
-            // Save typed password locally for user's own profile view
             if (data.user) {
                 localStorage.setItem(`cust_pw_${data.user.id}`, password);
                 localStorage.setItem(`last_typed_pw`, password);
@@ -1365,7 +1400,8 @@
                 if (!user || !user.id || !supabaseClient) return;
                 const meta = user.user_metadata || {};
                 const resolvedName = fallbackName || meta.full_name || meta.name || (user.email ? user.email.split('@')[0] : 'Member');
-                const resolvedAvatar = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+                const customDp = localStorage.getItem(`cust_dp_${user.id}`);
+                const resolvedAvatar = customDp || meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
                 const resolvedEmail = user.email || '';
 
                 const { data: existing } = await supabaseClient.from("profiles").select("id, email, full_name").eq("id", user.id).maybeSingle();
@@ -1505,7 +1541,9 @@
                 const waInput = document.getElementById("profWhatsApp");
                 if (waInput) waInput.value = savedWhatsapp;
                 
-                const avatar = (dbProfile && dbProfile.avatar_url) || meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+                const customDp = localStorage.getItem(`cust_dp_${currentUser.id}`);
+                const avatar = customDp || (dbProfile && dbProfile.avatar_url) || meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80';
+                
                 document.getElementById("navAvatarImg").src = avatar;
                 document.getElementById("profilePageAvatar").src = avatar;
                 updateWalletDisplay();
