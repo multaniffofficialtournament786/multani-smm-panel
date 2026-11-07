@@ -1,9 +1,18 @@
-// Direct Supabase Configuration to prevent any loading errors
-const SUPABASE_URL = "YAHAN_APNA_SUPABASE_URL_LIKHEIN";
-const SUPABASE_ANON_KEY = "YAHAN_APNA_SUPABASE_ANON_KEY_LIKHEIN";
+// Direct initialization inside wallet.js to avoid any loading or undefined errors
+const SUPABASE_URL = "https://kffkcfnawguztldjuxnu.supabase.co"; // Aapka project URL
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // Aapki anon key (jo config.js mein hai)
 
-// NOTE: Agar aapke paas config.js mein URL aur Key hain, toh upar wale quotes mein daal dein. 
-// Lekin agar window.supabaseClient pehle se hai toh wohi use ho jayega.
+let directSupabaseClient = null;
+
+function getDirectClient() {
+    if (directSupabaseClient) return directSupabaseClient;
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+        directSupabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        return directSupabaseClient;
+    }
+    // Fallback to window client if available
+    return window.supabaseClient || null;
+}
 
 const PAYMENT_METHODS_DATA = {
     Easypaisa: { title: "Easypaisa Account:", number: "03186815926", name: "Title: Muhammad Nadeem" },
@@ -21,19 +30,6 @@ function calculateDepositUSD() {
     const pkr = parseFloat(document.getElementById("depAmountPKR").value) || 0;
     const usd = (pkr / 290.00).toFixed(4);
     document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
-}
-
-function getSafeSupabase() {
-    if (window.supabaseClient) return window.supabaseClient;
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-        const url = window.SUPABASE_URL || SUPABASE_URL;
-        const key = window.SUPABASE_ANON_KEY || SUPABASE_ANON_KEY;
-        if (url && key && url !== "YAHAN_APNA_SUPABASE_URL_LIKHEIN") {
-            window.supabaseClient = window.supabase.createClient(url, key);
-            return window.supabaseClient;
-        }
-    }
-    return null;
 }
 
 async function handleDepositSubmit(e) {
@@ -55,13 +51,9 @@ async function handleDepositSubmit(e) {
         return;
     }
 
-    let client = getSafeSupabase();
-    if (!client && window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
-        client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-    }
-
+    const client = getDirectClient();
     if (!client) {
-        alert("Supabase client not loaded. Check your config.js file.");
+        alert("Database connection error! Please refresh the page.");
         return;
     }
 
@@ -120,7 +112,7 @@ async function loadCustomerDepositsHistory() {
         }
     }
 
-    const client = getSafeSupabase();
+    const client = getDirectClient();
     if (!client) {
         container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">Database connection error.</p>`;
         return;
@@ -137,7 +129,7 @@ async function loadCustomerDepositsHistory() {
 
         allCustomerDeposits = data || [];
         renderPaymentHistoryList(activePaymentFilter);
-    } catch (e) {
+    }catch (e) {
         console.error("History fetch error:", e);
         container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No records found.</p>`;
     }
