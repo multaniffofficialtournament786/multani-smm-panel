@@ -654,6 +654,7 @@
         let allCategories = [];
         let selectedService = null;
         let onConfirmAction = null;
+        let isFetchingCategories = false;
 
         const PAYMENT_METHODS_DATA = {
             Easypaisa: {
@@ -754,14 +755,14 @@
             document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
-        // ================= AUTH INITIALIZATION & AUTO SYNC =================
+        // ================= INSTANT CACHE & STABLE AUTH INIT =================
         async function initMultaniApp() {
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
             
-            // 1. Direct load public data immediately (Categories & Services)
+            // 1. Instant Cache Render: Zero-second delay for user
+            loadCachedCategoriesAndServices();
             loadSiteAnnouncement();
-            loadServicesAndCategories();
 
             if (!supabaseClient) {
                 showAuthScreen();
@@ -769,12 +770,14 @@
             }
 
             try {
-                // Supabase official session check (handles both Google OAuth redirect & email session)
+                // Official Supabase Session Check
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 
                 if (session && session.user) {
                     currentUser = session.user;
+                    localStorage.setItem("multani_vip_session", JSON.stringify({ user: currentUser }));
                     showPanelScreen();
+                    
                     if (window.location.hash) {
                         window.history.replaceState(null, null, window.location.pathname);
                     }
@@ -782,10 +785,10 @@
                     return;
                 }
             } catch (err) {
-                console.warn("Session check error:", err);
+                console.warn("Session fetch notice:", err);
             }
 
-            // Fallback: Check local user
+            // Fallback: Check local user storage
             const savedStr = localStorage.getItem("multani_vip_session");
             if (savedStr) {
                 try {
@@ -800,6 +803,8 @@
             }
 
             showAuthScreen();
+            // Still sync fresh public services in background
+            fetchFreshServicesAndCategories();
         }
 
         if (supabaseClient) {
@@ -825,10 +830,10 @@
         async function postLoginSuccess(user) {
             await ensureUserProfile(user);
             await loadUserProfile();
+            fetchFreshServicesAndCategories();
             loadCustomerOrders();
             loadCustomerChat();
             loadTransactions();
-            loadServicesAndCategories();
         }
 
         function switchAuthTab(mode) {
@@ -933,11 +938,11 @@
                     await supabaseClient.from("profiles").update({ avatar_url: resolvedAvatar }).eq("id", user.id);
                 }
             } catch (err) {
-                console.warn("Profile sync error:", err);
+                console.warn("Profile check:", err);
             }
         }
 
-        // ================= FULL LOGOUT WIPE (FIXES LOOP) =================
+        // ================= PROFESSIONAL CLEAN LOGOUT =================
         function askCustomerLogout() {
             toggleSidebar();
             showVipModal("CONFIRM LOGOUT", "Are you sure you want to sign out?", "fa-solid fa-arrow-right-from-bracket", async () => {
@@ -947,8 +952,7 @@
                     }
                 } catch (e) {}
 
-                // Clear all stored sessions & tokens
-                localStorage.clear();
+                localStorage.removeItem("multani_vip_session");
                 sessionStorage.clear();
                 window.location.hash = "";
 
@@ -960,7 +964,7 @@
 
                 setTimeout(() => {
                     window.location.reload();
-                }, 400);
+                }, 300);
             });
         }
 
@@ -980,11 +984,11 @@
             } else if (viewId === 'viewOrder') {
                 const btn = document.getElementById("btnNavOrder");
                 if (btn) btn.classList.add("active");
-                loadServicesAndCategories();
+                populateCategoryDropdown();
             } else if (viewId === 'viewServices') {
                 const btn = document.getElementById("btnNavServices");
                 if (btn) btn.classList.add("active");
-                loadServicesAndCategories();
+                renderServicesPageTable();
             } else if (viewId === 'viewOrdersList') {
                 const btn = document.getElementById("btnNavOrders");
                 if (btn) btn.classList.add("active");
@@ -1005,10 +1009,17 @@
         }
 
         async function loadSiteAnnouncement() {
+            const cachedNotice = localStorage.getItem("cached_announcement");
+            if (cachedNotice) {
+                document.getElementById("scrollingAnnouncementText").innerText = cachedNotice;
+            }
             try {
                 if (!supabaseClient) return;
                 const { data } = await supabaseClient.from("site_settings").select("value").eq("key", "announcement").maybeSingle();
-                if (data && data.value) document.getElementById("scrollingAnnouncementText").innerText = data.value;
+                if (data && data.value) {
+                    document.getElementById("scrollingAnnouncementText").innerText = data.value;
+                    localStorage.setItem("cached_announcement", data.value);
+                }
             } catch (e) {}
         }
 
@@ -1029,7 +1040,7 @@
                 document.getElementById("navUserName").innerText = name;
                 document.getElementById("profFullName").value = name;
                 
-                // Show fixed account email guaranteed
+                // Show fixed Gmail guaranteed
                 const emailInput = document.getElementById("profEmail");
                 if (emailInput) emailInput.value = userEmail;
 
@@ -1083,44 +1094,66 @@
             }
         }
 
-        // ================= CATEGORIES & SERVICES (DIRECT PUBLIC FETCH) =================
-        async function loadServicesAndCategories() {
-            if (!supabaseClient) return;
+        // ================= STALE-WHILE-REVALIDATE CACHING SYSTEM =================
+        function loadCachedCategoriesAndServices() {
             try {
-                const { data: cats } = await supabaseClient
-                    .from("categories")
-                    .select("*")
-                    .order("name", { ascending: true });
+                const cCats = localStorage.getItem("cached_categories");
+                const cSrvs = localStorage.getItem("cached_services");
+                if (cCats) allCategories = JSON.parse(cCats) || [];
+                if (cSrvs) allServices = JSON.parse(cSrvs) || [];
 
-                const { data: srvs } = await supabaseClient
-                    .from("services")
-                    .select("*")
-                    .order("created_at", { ascending: false });
+                if (allCategories.length > 0 || allServices.length > 0) {
+                    populateCategoryDropdown();
+                    renderServicesPageTable();
+                }
+            } catch (e) {}
+        }
 
-                allCategories = (cats && cats.length > 0) ? cats : [];
-                allServices = (srvs || []).filter(s => s.is_active !== false && s.is_active !== 'false');
+        async function fetchFreshServicesAndCategories() {
+            if (!supabaseClient || isFetchingCategories) return;
+            isFetchingCategories = true;
 
-                const catSelect = document.getElementById("orderCatSelect");
-                if (catSelect) {
-                    if (allCategories.length === 0) {
-                        catSelect.innerHTML = '<option value="">No Categories Available</option>';
-                    } else {
-                        const currentCatVal = catSelect.value;
-                        catSelect.innerHTML = '<option value="">Select Category</option>' + 
-                            allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
-                        
-                        if (currentCatVal) {
-                            catSelect.value = currentCatVal;
-                        }
-                    }
-                    renderServiceDropdown(catSelect.value);
+            try {
+                const [catsRes, srvsRes] = await Promise.all([
+                    supabaseClient.from("categories").select("*").order("name", { ascending: true }),
+                    supabaseClient.from("services").select("*").order("created_at", { ascending: false })
+                ]);
+
+                if (catsRes.data && catsRes.data.length > 0) {
+                    allCategories = catsRes.data;
+                    localStorage.setItem("cached_categories", JSON.stringify(allCategories));
+                }
+                if (srvsRes.data && srvsRes.data.length > 0) {
+                    allServices = srvsRes.data.filter(s => s.is_active !== false && s.is_active !== 'false');
+                    localStorage.setItem("cached_services", JSON.stringify(allServices));
                 }
 
+                populateCategoryDropdown();
                 renderServicesPageTable();
             } catch (e) {
-                console.error("Services load error:", e);
-                renderServicesPageTable();
+                console.warn("Background sync delay:", e);
+            } finally {
+                isFetchingCategories = false;
             }
+        }
+
+        function populateCategoryDropdown() {
+            const catSelect = document.getElementById("orderCatSelect");
+            if (!catSelect) return;
+
+            if (!allCategories || allCategories.length === 0) {
+                catSelect.innerHTML = '<option value="">Select Category</option>';
+                return;
+            }
+
+            const currentVal = catSelect.value;
+            catSelect.innerHTML = '<option value="">Select Category</option>' + 
+                allCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+
+            if (currentVal) {
+                catSelect.value = currentVal;
+            }
+            renderServiceDropdown(catSelect.value);
         }
 
         function handleCategoryFilter(catId) { 
@@ -1138,6 +1171,7 @@
                 return;
             }
 
+            // Loose & Trim safe match (UUID & Integer proof)
             const filtered = allServices.filter(s => String(s.category_id).trim() === String(catId).trim());
             
             if (filtered.length === 0) {
@@ -1251,9 +1285,14 @@
 
         // ================= ORDERS LIST (NEVER STUCK) =================
         async function loadCustomerOrders() {
-            if (!currentUser || !supabaseClient) return;
             const recentBody = document.getElementById("dashRecentOrdersBody");
             const list = document.getElementById("customerOrdersList");
+
+            if (!currentUser || !supabaseClient) {
+                if (recentBody) recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 14px 0;">No orders yet.</td></tr>`;
+                if (list) list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">No orders placed yet.</p>`;
+                return;
+            }
 
             try {
                 const { data, error } = await supabaseClient
@@ -1311,7 +1350,7 @@
                     }).join("");
                 }
             } catch (err) {
-                console.error("Orders load error:", err);
+                console.error("Orders load:", err);
                 if (recentBody) recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 14px 0;">No orders yet.</td></tr>`;
                 if (list) list.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px 0;">No orders placed yet.</p>`;
             }
@@ -1323,7 +1362,7 @@
             document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
         }
 
-        // ================= DEPOSIT SUBMIT WITH INSTANT RESET & WALLET SYNC =================
+        // ================= DEPOSIT SUBMIT (INSTANT SUCCESS & TRANSACTIONS) =================
         async function handleDepositSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById("btnDepositSubmit");
@@ -1342,7 +1381,6 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
 
             try {
-                // 1. Insert deposit request
                 const { error: depError } = await supabaseClient.from("deposits").insert([{
                     user_id: currentUser.id,
                     amount: usd,
@@ -1354,7 +1392,6 @@
 
                 if (depError) throw depError;
 
-                // 2. Also log in transactions
                 try {
                     await supabaseClient.from("transactions").insert([{
                         user_id: currentUser.id,
@@ -1364,7 +1401,6 @@
                     }]);
                 } catch (tErr) {}
 
-                // Save locally
                 const localTrxs = JSON.parse(localStorage.getItem(`local_trx_${currentUser.id}`) || '[]');
                 localTrxs.unshift({
                     created_at: new Date().toISOString(),
@@ -1383,8 +1419,8 @@
 
                 loadTransactions();
             } catch (err) {
-                console.error("Deposit submit error:", err);
-                notify("Failed to submit: " + (err.message || "Network error"), "error");
+                console.error("Deposit error:", err);
+                notify("Failed: " + (err.message || "Network error"), "error");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Submit Deposit Request";
@@ -1434,7 +1470,7 @@
                     </table>
                 `;
             } catch (e) {
-                console.error("Transactions load error:", e);
+                console.error("Transactions load:", e);
                 container.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 15px 0;">No transactions yet.</p>`;
             }
         }
@@ -1459,7 +1495,7 @@
                     body.scrollTop = body.scrollHeight;
                 }
             } catch (e) {
-                console.warn("Chat load error:", e);
+                console.warn("Chat load:", e);
             }
         }
 
@@ -1492,8 +1528,8 @@
                 if (error) throw error;
                 input.value = "";
             } catch (err) {
-                console.error("Chat send error:", err);
-                notify("Could not send message: " + (err.message || "Network issue"), "error");
+                console.error("Chat send:", err);
+                notify("Could not send: " + (err.message || "Network issue"), "error");
             } finally {
                 btn.disabled = false;
             }
