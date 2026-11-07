@@ -1,3 +1,10 @@
+// Direct Supabase Configuration to prevent any loading errors
+const SUPABASE_URL = "YAHAN_APNA_SUPABASE_URL_LIKHEIN";
+const SUPABASE_ANON_KEY = "YAHAN_APNA_SUPABASE_ANON_KEY_LIKHEIN";
+
+// NOTE: Agar aapke paas config.js mein URL aur Key hain, toh upar wale quotes mein daal dein. 
+// Lekin agar window.supabaseClient pehle se hai toh wohi use ho jayega.
+
 const PAYMENT_METHODS_DATA = {
     Easypaisa: { title: "Easypaisa Account:", number: "03186815926", name: "Title: Muhammad Nadeem" },
     Sadapay: { title: "Sadapay Account:", number: "03281926729", name: "Title: Muhammad Nadeem" }
@@ -16,11 +23,15 @@ function calculateDepositUSD() {
     document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
 }
 
-function getSupabaseInstance() {
+function getSafeSupabase() {
     if (window.supabaseClient) return window.supabaseClient;
-    if (window.supabase && typeof window.supabase.createClient === 'function' && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
-        window.supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-        return window.supabaseClient;
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+        const url = window.SUPABASE_URL || SUPABASE_URL;
+        const key = window.SUPABASE_ANON_KEY || SUPABASE_ANON_KEY;
+        if (url && key && url !== "YAHAN_APNA_SUPABASE_URL_LIKHEIN") {
+            window.supabaseClient = window.supabase.createClient(url, key);
+            return window.supabaseClient;
+        }
     }
     return null;
 }
@@ -44,9 +55,13 @@ async function handleDepositSubmit(e) {
         return;
     }
 
-    const client = getSupabaseInstance();
+    let client = getSafeSupabase();
+    if (!client && window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+        client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    }
+
     if (!client) {
-        alert("Database connection error! Check config.js");
+        alert("Supabase client not loaded. Check your config.js file.");
         return;
     }
 
@@ -105,7 +120,7 @@ async function loadCustomerDepositsHistory() {
         }
     }
 
-    const client = getSupabaseInstance();
+    const client = getSafeSupabase();
     if (!client) {
         container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">Database connection error.</p>`;
         return;
