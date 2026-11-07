@@ -50,6 +50,28 @@
 
         .hidden { display: none !important; }
 
+        /* LOADING SPLASH ON REFRESH */
+        #appSplashLoader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            z-index: 9999999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .spinner-coin {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(251, 191, 36, 0.2);
+            border-top-color: #FBBF24;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
         /* ========= AUTH SCREEN ========= */
         #authGateContainer {
             width: 100%;
@@ -164,7 +186,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        /* WIDE RECTANGULAR BALANCE BOX MATCHING PKR SELECTOR */
         .gold-rect-box {
             background: #0f3d30;
             border: 1.5px solid #F59E0B;
@@ -179,10 +200,7 @@
             font-size: 0.92rem;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 2px 6px rgba(245,158,11,0.2);
         }
-        .gold-rect-box i {
-            color: #FBBF24;
-            font-size: 0.95rem;
-        }
+        .gold-rect-box i { color: #FBBF24; font-size: 0.95rem; }
 
         .currency-select-box {
             background: #0f3d30;
@@ -244,10 +262,7 @@
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
         /* BISMILLAH & TITLE BOARD */
-        .game-center-board {
-            text-align: center;
-            padding: 14px 10px 6px 10px;
-        }
+        .game-center-board { text-align: center; padding: 14px 10px 6px 10px; }
         .bismillah-calligraphy {
             font-family: 'Amiri', serif;
             font-size: 1.4rem;
@@ -255,7 +270,6 @@
             color: #FFE873;
             text-shadow: 0 2px 6px rgba(0,0,0,0.8), 0 0 12px rgba(251, 191, 36, 0.4);
             margin-bottom: 4px;
-            letter-spacing: 0.5px;
         }
         .welcome-to-text {
             font-size: 0.82rem;
@@ -277,7 +291,7 @@
             margin-top: -2px;
         }
 
-        /* 3D TILE CARDS (STATS) */
+        /* 3D TILE CARDS */
         .cards-layout-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -306,7 +320,7 @@
 
         .tile-icon-bubble { font-size: 2.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); margin-bottom: 6px; }
         .tile-title { font-family: var(--font-game); font-size: 1.15rem; font-weight: 800; line-height: 1.1; }
-        .tile-subtitle { font-size: 0.75rem; font-weight: 700; opacity: 0.95; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tile-subtitle { font-size: 0.75rem; font-weight: 700; opacity: 0.95; margin-top: 2px; text-transform: uppercase; }
 
         /* MAIN CONTENT BODY */
         .content-body { padding: 12px; max-width: 650px; width: 100%; margin: 0 auto; }
@@ -335,7 +349,6 @@
             color: #ffffff;
             font-size: 0.9rem;
             outline: none;
-            transition: border-color 0.2s;
         }
         input:focus, select:focus, textarea:focus {
             border-color: #FBBF24;
@@ -368,7 +381,7 @@
             box-shadow: 0 6px 14px rgba(3, 105, 161, 0.4);
         }
 
-        /* RESPONSIVE FULL-WIDTH SERVICES LIST (NO HORIZONTAL SCROLL) */
+        /* AUTO WRAP SERVICES */
         .services-card-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .service-item-box {
             background: rgba(3, 27, 20, 0.95);
@@ -379,7 +392,6 @@
             flex-direction: column;
             gap: 6px;
             width: 100%;
-            box-sizing: border-box;
         }
         .service-item-title {
             font-size: 0.92rem;
@@ -388,7 +400,6 @@
             line-height: 1.35;
             white-space: normal;
             word-break: break-word;
-            overflow-wrap: anywhere;
         }
         .service-item-meta {
             display: flex;
@@ -400,7 +411,7 @@
             font-size: 0.78rem;
         }
 
-        /* FILTER TABS (PAYMENT HISTORY) */
+        /* FILTER TABS */
         .filter-tabs-wrapper {
             display: flex;
             background: rgba(2, 20, 15, 0.95);
@@ -441,12 +452,7 @@
             flex-direction: column;
             gap: 6px;
         }
-        .deposit-record-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.82rem;
-        }
+        .deposit-record-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; }
 
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
         .badge-pending { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
@@ -483,7 +489,6 @@
             border-radius: 14px 14px 2px 14px;
             font-size: 0.85rem;
             max-width: 82%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         /* LUDO BOTTOM BAR */
@@ -513,22 +518,12 @@
             cursor: pointer;
             flex: 1;
             height: 100%;
-            transition: color 0.15s ease, transform 0.15s ease;
         }
-        .mobile-nav-item i {
-            font-size: 1.35rem;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-        }
-        .mobile-nav-item.active {
-            color: #FFE873;
-            transform: translateY(-3px);
-        }
-        .mobile-nav-item.active i {
-            color: #FBBF24;
-            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.8));
-        }
+        .mobile-nav-item i { font-size: 1.35rem; }
+        .mobile-nav-item.active { color: #FFE873; transform: translateY(-3px); }
+        .mobile-nav-item.active i { color: #FBBF24; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)); }
 
-        /* SIDEBAR (NOW INDEPENDENT OUTSIDE WRAPPER) */
+        /* SIDEBAR */
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 19999; display: none; }
         .sidebar-overlay.active { display: block; }
         .sidebar {
@@ -573,9 +568,8 @@
         }
         .sidebar-menu li a.logout-btn { color: #f87171; border-top: 1px dashed rgba(239, 68, 68, 0.4); margin-top: 10px; padding-top: 14px; }
 
-        /* TOAST */
         #toastContainer { position: fixed; top: 75px; right: 15px; left: 15px; z-index: 999999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-        .toast { padding: 12px 16px; background: rgba(4, 34, 26, 0.98); border-left: 5px solid #FBBF24; border-radius: 10px; color: #fff; font-size: 0.88rem; font-weight: 600; border: 1px solid #22c55e; pointer-events: auto; box-shadow: 0 6px 18px rgba(0,0,0,0.6); }
+        .toast { padding: 12px 16px; background: rgba(4, 34, 26, 0.98); border-left: 5px solid #FBBF24; border-radius: 10px; color: #fff; font-size: 0.88rem; font-weight: 600; border: 1px solid #22c55e; pointer-events: auto; }
         .toast.error { border-left-color: #EF4444; }
         .toast.success { border-left-color: #10B981; }
     </style>
@@ -584,8 +578,14 @@
 
     <div id="toastContainer"></div>
 
+    <!-- INITIAL SPLASH SCREEN (PREVENTS FLASH & PERSISTS SESSION ON REFRESH) -->
+    <div id="appSplashLoader">
+        <div class="spinner-coin"></div>
+        <p style="color: #FFE873; font-weight: 700; font-family: var(--font-game); font-size: 0.9rem;">Connecting to MULTANI VIP...</p>
+    </div>
+
     <!-- 0. LOGIN & SIGNUP SCREEN -->
-    <div id="authGateContainer">
+    <div id="authGateContainer" class="hidden">
         <div class="game-auth-card">
             <div class="crown-banner"><i class="fa-solid fa-crown"></i></div>
             <h2 style="font-size: 1.6rem; color: #FFE873; margin-bottom: 2px;">MULTANI VIP CLUB</h2>
@@ -633,7 +633,7 @@
         </div>
     </div>
 
-    <!-- SIDEBAR (INDEPENDENT) -->
+    <!-- SIDEBAR -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <aside class="sidebar" id="sidebarDrawer">
         <div class="sidebar-header">
@@ -654,7 +654,7 @@
         </ul>
     </aside>
 
-    <!-- MAIN PANEL APPLICATION -->
+    <!-- MAIN PANEL APPLICATION (HIDDEN BY DEFAULT UNTIL VERIFIED) -->
     <div id="mainAppWrapper" class="hidden">
         
         <!-- TOP BAR -->
@@ -664,7 +664,6 @@
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 
-                <!-- WIDE RECTANGLE RS BALANCE BOX -->
                 <div class="gold-rect-box">
                     <i class="fa-solid fa-coins"></i>
                     <span id="headerBalanceDisplay">Rs 0.00</span>
@@ -699,7 +698,6 @@
             <!-- VIEW 1: DASHBOARD (HOME) -->
             <div id="viewDashboard" class="app-view active">
                 
-                <!-- BISMILLAH & TITLE -->
                 <div class="game-center-board">
                     <div class="bismillah-calligraphy">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
                     <div class="welcome-to-text">WELCOME TO</div>
@@ -786,7 +784,7 @@
 
             </div>
 
-            <!-- VIEW 2: SERVICES LIST (AUTO WRAPPING) -->
+            <!-- VIEW 2: SERVICES LIST -->
             <div id="viewServices" class="app-view">
                 <div class="vip-game-card">
                     <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-list-check"></i> Available Services</h3>
@@ -844,14 +842,13 @@
                         </button>
                     </form>
 
-                    <!-- PAYMENT HISTORY BUTTON -->
                     <button type="button" class="btn-3d-play btn-cyan" onclick="openPaymentHistoryView()">
                         <i class="fa-solid fa-clock-rotate-left"></i> PAYMENT HISTORY
                     </button>
                 </div>
             </div>
 
-            <!-- VIEW 5: FULL SCREEN PAYMENT HISTORY VIEW (WITH TABS) -->
+            <!-- VIEW 5: FULL SCREEN PAYMENT HISTORY VIEW -->
             <div id="viewPaymentHistory" class="app-view">
                 <div class="vip-game-card">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
@@ -952,19 +949,12 @@
         let allServices = [];
         let allCategories = [];
         let allCustomerDeposits = [];
+        let loadedOrdersCache = [];
         let selectedService = null;
 
         const PAYMENT_METHODS_DATA = {
-            Easypaisa: {
-                title: "Easypaisa Account:",
-                number: "03186815926",
-                name: "Title: Muhammad Nadeem"
-            },
-            Sadapay: {
-                title: "Sadapay Account:",
-                number: "03281926729",
-                name: "Title: Muhammad Nadeem"
-            }
+            Easypaisa: { title: "Easypaisa Account:", number: "03186815926", name: "Title: Muhammad Nadeem" },
+            Sadapay: { title: "Sadapay Account:", number: "03281926729", name: "Title: Muhammad Nadeem" }
         };
 
         function handlePaymentMethodChange(method) {
@@ -1027,16 +1017,18 @@
         }
 
         function showAuthScreen() {
-            document.getElementById("authGateContainer").classList.remove("hidden");
+            document.getElementById("appSplashLoader").classList.add("hidden");
             document.getElementById("mainAppWrapper").classList.add("hidden");
+            document.getElementById("authGateContainer").classList.remove("hidden");
         }
 
         function showPanelScreen() {
+            document.getElementById("appSplashLoader").classList.add("hidden");
             document.getElementById("authGateContainer").classList.add("hidden");
             document.getElementById("mainAppWrapper").classList.remove("hidden");
         }
 
-        // ================= INSTANT INITIALIZATION =================
+        // ================= BULLETPROOF INITIALIZATION =================
         async function initMultaniApp() {
             const currSel = document.getElementById("currencySelect");
             if (currSel) currSel.value = activeCurrency;
@@ -1051,6 +1043,7 @@
             }
 
             try {
+                // Check active session on refresh
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
                     currentUser = session.user;
@@ -1062,9 +1055,10 @@
                     return;
                 }
             } catch (err) {
-                console.warn(err);
+                console.warn("Session check:", err);
             }
 
+            // No active session -> show login gate
             showAuthScreen();
         }
 
@@ -1217,20 +1211,21 @@
             }
         }
 
-        // ================= 100% BULLETPROOF & INSTANT LOGOUT =================
+        // ================= INSTANT & BULLETPROOF LOGOUT =================
         async function directCleanLogout() {
             // 1. Immediately Close Sidebar
             document.getElementById("sidebarDrawer").classList.remove("open");
             document.getElementById("sidebarOverlay").classList.remove("active");
 
-            // 2. FORCE INSTANT DOM SWITCH (Hide Main, Show Auth Form Right Now)
+            // 2. Hide Dashboard & Show Login Card Right Away
             document.getElementById("mainAppWrapper").classList.add("hidden");
             document.getElementById("authGateContainer").classList.remove("hidden");
 
-            // 3. Clear Current State In Memory
+            // 3. Clear State
             currentUser = null;
             currentUserProfile = null;
             allCustomerDeposits = [];
+            loadedOrdersCache = [];
 
             // 4. Supabase SignOut
             try {
@@ -1239,7 +1234,7 @@
                 }
             } catch (e) {}
 
-            // 5. Total Storage & Token Purge
+            // 5. Total Storage Clear
             localStorage.clear();
             sessionStorage.clear();
             window.location.hash = "";
@@ -1458,7 +1453,6 @@
             calculateTotalCharge();
         }
 
-        // ================= FULL SCREEN AUTO-WRAPPING SERVICES RENDER =================
         function renderServicesPageTable() {
             const body = document.getElementById("servicesListBody");
             if (!body) return;
@@ -1555,8 +1549,7 @@
             }
         }
 
-        // ================= ORDERS LIST & METRIC CARDS CALCULATION =================
-        let loadedOrdersCache = [];
+        // ================= ORDERS LIST & METRIC CARDS =================
         async function loadCustomerOrders() {
             const recentBody = document.getElementById("dashRecentOrdersBody");
             const list = document.getElementById("customerOrdersList");
