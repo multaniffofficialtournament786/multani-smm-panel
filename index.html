@@ -166,23 +166,34 @@
             top: 0;
             z-index: 1002;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            gap: 10px;
         }
 
+        /* EXTENDED GOLDEN BALANCE BOX */
         .gold-rect-box {
             background: #0f3d30;
             border: 1.5px solid #F59E0B;
-            border-radius: 10px;
-            padding: 5px 12px;
+            border-radius: 12px;
+            padding: 7px 16px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             color: #FFE873;
             font-weight: 800;
             font-family: var(--font-game);
-            font-size: 0.92rem;
+            font-size: 1.05rem;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 2px 6px rgba(245,158,11,0.2);
+            min-width: 125px;
+            cursor: pointer;
         }
-        .gold-rect-box i { color: #FBBF24; font-size: 0.95rem; }
+        .gold-rect-box i { color: #FBBF24; font-size: 1.15rem; }
+
+        /* RIGHT SIDE: CURRENCY SELECTOR ATTACHED WITH AVATAR */
+        .top-right-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
         .currency-select-box {
             background: #0f3d30;
@@ -190,9 +201,10 @@
             color: #fff;
             border-radius: 10px;
             padding: 6px 10px;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             font-weight: 700;
             outline: none;
+            height: 38px;
         }
 
         .user-avatar-game {
@@ -704,18 +716,22 @@
     <!-- MAIN PANEL APPLICATION -->
     <div id="mainAppWrapper" class="hidden">
         
-        <!-- TOP BAR -->
+        <!-- TOP BAR (REORDERED: LONGER BALANCE BOX & ATTACHED PKR WITH DP) -->
         <header class="game-top-bar">
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
                 <button onclick="toggleSidebar()" style="background: none; border: none; color: #FFE873; font-size: 1.4rem; cursor: pointer; padding: 4px;">
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 
-                <div class="gold-rect-box">
+                <!-- EXTENDED GOLDEN BALANCE BOX -->
+                <div class="gold-rect-box" onclick="switchTab('viewAddFunds')">
                     <i class="fa-solid fa-coins"></i>
                     <span id="headerBalanceDisplay">Rs 0.00</span>
                 </div>
-                
+            </div>
+            
+            <!-- RIGHT SIDE: PKR DROPDOWN NEXT TO DP PHOTO -->
+            <div class="top-right-group">
                 <select class="currency-select-box" id="currencySelect" onchange="handleCurrencyChange(this.value)">
                     <option value="PKR">🇵🇰 PKR</option>
                     <option value="USD">🇺🇸 USD</option>
@@ -723,10 +739,8 @@
                     <option value="AED">🇦🇪 AED</option>
                     <option value="SAR">🇸🇦 SAR</option>
                 </select>
-            </div>
-            
-            <div style="display: flex; align-items: center;" onclick="switchTab('viewProfile')">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-game">
+                
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" id="navAvatarImg" class="user-avatar-game" onclick="switchTab('viewProfile')">
             </div>
         </header>
 
