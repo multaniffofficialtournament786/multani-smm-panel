@@ -299,42 +299,14 @@
             filter: brightness(0.95);
         }
 
-        /* Colors based on Ludo style */
-        .tile-yellow {
-            background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
-            color: #451a03;
-        }
-        .tile-purple {
-            background: linear-gradient(135deg, #818CF8 0%, #4F46E5 100%);
-            color: #ffffff;
-        }
-        .tile-green {
-            background: linear-gradient(135deg, #34D399 0%, #059669 100%);
-            color: #ffffff;
-        }
-        .tile-blue {
-            background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%);
-            color: #ffffff;
-        }
+        .tile-yellow { background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%); color: #451a03; }
+        .tile-purple { background: linear-gradient(135deg, #818CF8 0%, #4F46E5 100%); color: #ffffff; }
+        .tile-green { background: linear-gradient(135deg, #34D399 0%, #059669 100%); color: #ffffff; }
+        .tile-blue { background: linear-gradient(135deg, #38BDF8 0%, #0284C7 100%); color: #ffffff; }
 
-        .tile-icon-bubble {
-            font-size: 2.2rem;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-            margin-bottom: 6px;
-        }
-        .tile-title {
-            font-family: var(--font-game);
-            font-size: 1.05rem;
-            font-weight: 800;
-            line-height: 1.1;
-            text-transform: uppercase;
-        }
-        .tile-subtitle {
-            font-size: 0.72rem;
-            font-weight: 700;
-            opacity: 0.9;
-            margin-top: 2px;
-        }
+        .tile-icon-bubble { font-size: 2.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); margin-bottom: 6px; }
+        .tile-title { font-family: var(--font-game); font-size: 1.05rem; font-weight: 800; line-height: 1.1; text-transform: uppercase; }
+        .tile-subtitle { font-size: 0.72rem; font-weight: 700; opacity: 0.9; margin-top: 2px; }
 
         /* MAIN CONTENT BODY */
         .content-body { padding: 12px; max-width: 650px; width: 100%; margin: 0 auto; }
@@ -348,6 +320,8 @@
             padding: 18px 16px;
             margin-bottom: 14px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+            width: 100%;
+            overflow: hidden;
         }
 
         .form-group { margin-bottom: 12px; text-align: left; }
@@ -388,15 +362,106 @@
             transition: transform 0.1s ease;
         }
         .btn-3d-play:active { transform: translateY(2px); }
+        .btn-3d-play.btn-secondary {
+            background: linear-gradient(180deg, #10B981 0%, #047857 100%);
+            border-color: #6EE7B7;
+            box-shadow: 0 6px 14px rgba(4, 120, 87, 0.4);
+        }
+        .btn-3d-play.btn-cyan {
+            background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 100%);
+            border-color: #7dd3fc;
+            box-shadow: 0 6px 14px rgba(3, 105, 161, 0.4);
+        }
 
-        .table-responsive { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; white-space: nowrap; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid rgba(34, 197, 94, 0.2); }
-        th { color: #A7F3D0; font-size: 0.72rem; text-transform: uppercase; font-family: var(--font-game); }
-        
+        /* RESPONSIVE FULL-WIDTH SERVICES LIST (NO HORIZONTAL SCROLL) */
+        .services-card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .service-item-box {
+            background: rgba(3, 27, 20, 0.95);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .service-item-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+        .service-item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            padding-top: 6px;
+            border-top: 1px dashed rgba(34, 197, 94, 0.25);
+            font-size: 0.78rem;
+        }
+
+        /* FILTER TABS (PAYMENT HISTORY) */
+        .filter-tabs-wrapper {
+            display: flex;
+            background: rgba(2, 20, 15, 0.95);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 14px;
+            width: 100%;
+        }
+        .filter-tab-pill {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: var(--font-game);
+            color: #A7F3D0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            text-transform: uppercase;
+        }
+        .filter-tab-pill.active {
+            background: var(--gold-grad);
+            color: #451a03;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .deposit-record-card {
+            background: rgba(2, 22, 16, 0.95);
+            border: 1.5px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .deposit-record-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+        }
+
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
         .badge-pending { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
-        .badge-completed { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
+        .badge-completed, .badge-approved { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
+        .badge-cancelled, .badge-rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
 
         /* CHAT WINDOW */
         .chat-box {
@@ -632,7 +697,7 @@
                 <li><a onclick="switchTab('viewServices')"><i class="fa-solid fa-list-check"></i> VIP Services</a></li>
                 <li><a onclick="switchTab('viewOrdersList')"><i class="fa-solid fa-box-archive"></i> Order History</a></li>
                 <li><a onclick="switchTab('viewAddFunds')"><i class="fa-solid fa-wallet"></i> Deposit Funds</a></li>
-                <li><a onclick="switchTab('viewTransactions')"><i class="fa-solid fa-clock-rotate-left"></i> Wallet History</a></li>
+                <li><a onclick="openPaymentHistoryView()"><i class="fa-solid fa-clock-rotate-left"></i> Payment History</a></li>
                 <li><a onclick="handleShareApp()"><i class="fa-solid fa-share-nodes" style="color: #38BDF8;"></i> Share App</a></li>
                 <li><a onclick="switchTab('viewSupport')"><i class="fa-solid fa-headset"></i> Live Support</a></li>
                 <li><a onclick="switchTab('viewProfile')"><i class="fa-solid fa-user-gear"></i> Account Profile</a></li>
@@ -723,29 +788,19 @@
                 <!-- RECENT ORDERS -->
                 <div class="vip-game-card">
                     <h3 style="color: #34D399; margin-bottom: 10px; font-size: 1rem;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr><th>Order #</th><th>Date</th><th>Service</th><th>Qty</th><th>Charge</th><th>Status</th></tr>
-                            </thead>
-                            <tbody id="dashRecentOrdersBody">
-                                <tr><td colspan="6" style="text-align: center; color: #A7F3D0; padding: 14px 0;">No orders yet.</td></tr>
-                            </tbody>
-                        </table>
+                    <div style="display: flex; flex-direction: column; gap: 8px;" id="dashRecentOrdersBody">
+                        <p style="text-align: center; color: #A7F3D0; padding: 14px 0; font-size: 0.85rem;">No orders yet.</p>
                     </div>
                 </div>
 
             </div>
 
-            <!-- VIEW 2: SERVICES LIST -->
+            <!-- VIEW 2: SERVICES LIST (FULL SCREEN, NO SIDE SCROLL, AUTO WRAP) -->
             <div id="viewServices" class="app-view">
                 <div class="vip-game-card">
                     <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-list-check"></i> Available Services</h3>
-                    <div class="table-responsive">
-                        <table>
-                            <thead><tr><th>Name</th><th>Rate/1K</th><th>Min/Max</th></tr></thead>
-                            <tbody id="servicesListBody"><tr><td colspan="3" style="text-align: center; color: #A7F3D0; padding: 16px 0;">Loading services...</td></tr></tbody>
-                        </table>
+                    <div class="services-card-list" id="servicesListBody">
+                        <p style="text-align: center; color: #A7F3D0; padding: 16px 0;">Loading services...</p>
                     </div>
                 </div>
             </div>
@@ -760,7 +815,7 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: ADD FUNDS -->
+            <!-- VIEW 4: ADD FUNDS (DEPOSIT) -->
             <div id="viewAddFunds" class="app-view">
                 <div class="vip-game-card">
                     <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-wallet"></i> Deposit Funds</h3>
@@ -793,17 +848,38 @@
                             <label>Transaction ID (TRX ID)</label>
                             <input type="text" id="depTrxId" required placeholder="e.g. 9845789123">
                         </div>
-                        <button type="submit" class="btn-3d-play" id="btnDepositSubmit">Submit Deposit Request</button>
+                        <button type="submit" class="btn-3d-play" id="btnDepositSubmit" style="margin-bottom: 10px;">
+                            SUBMIT DEPOSIT REQUEST
+                        </button>
                     </form>
+
+                    <!-- PAYMENT HISTORY BUTTON (DIRECTLY UNDER SUBMIT) -->
+                    <button type="button" class="btn-3d-play btn-cyan" onclick="openPaymentHistoryView()">
+                        <i class="fa-solid fa-clock-rotate-left"></i> PAYMENT HISTORY
+                    </button>
                 </div>
             </div>
 
-            <!-- VIEW 5: TRANSACTIONS -->
-            <div id="viewTransactions" class="app-view">
+            <!-- VIEW 5: FULL SCREEN PAYMENT HISTORY VIEW (WITH TABS) -->
+            <div id="viewPaymentHistory" class="app-view">
                 <div class="vip-game-card">
-                    <h3 style="color: #FFE873; margin-bottom: 12px;"><i class="fa-solid fa-clock-rotate-left"></i> Wallet History</h3>
-                    <div id="transactionsListContainer" class="table-responsive">
-                        <p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No transactions yet.</p>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                        <h3 style="color: #FFE873; margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> Payment History</h3>
+                        <button type="button" onclick="switchTab('viewAddFunds')" style="background: rgba(3,27,20,0.8); border: 1.5px solid #22c55e; color: #FFE873; padding: 5px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem;">
+                            <i class="fa-solid fa-arrow-left"></i> Back
+                        </button>
+                    </div>
+
+                    <!-- TABS: ALL / PENDING / APPROVED -->
+                    <div class="filter-tabs-wrapper">
+                        <button type="button" class="filter-tab-pill active" onclick="filterPaymentHistory('all', this)">All</button>
+                        <button type="button" class="filter-tab-pill" onclick="filterPaymentHistory('pending', this)">Pending</button>
+                        <button type="button" class="filter-tab-pill" onclick="filterPaymentHistory('approved', this)">Approved</button>
+                    </div>
+
+                    <!-- RECORDS CONTAINER -->
+                    <div id="paymentHistoryListContainer" style="display: flex; flex-direction: column; min-height: 200px;">
+                        <p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">Loading payment history...</p>
                     </div>
                 </div>
             </div>
@@ -886,6 +962,7 @@
         let currentUserProfile = null;
         let allServices = [];
         let allCategories = [];
+        let allCustomerDeposits = [];
         let selectedService = null;
 
         const PAYMENT_METHODS_DATA = {
@@ -1037,7 +1114,7 @@
             await loadUserProfile();
             loadCustomerOrders();
             loadCustomerChat();
-            loadTransactions();
+            loadCustomerDepositsHistory();
         }
 
         function switchAuthTab(mode) {
@@ -1120,7 +1197,7 @@
             notify("Account created successfully!", "success");
         }
 
-        // ================= UNIFIED PROFILE ENSURE (GOOGLE + EMAIL) =================
+        // ================= UNIFIED PROFILE ENSURE =================
         async function ensureUserProfile(user, fallbackName = null) {
             try {
                 if (!user || !user.id || !supabaseClient) return;
@@ -1151,27 +1228,35 @@
             }
         }
 
-        // ================= CLEAN LOGOUT =================
+        // ================= 100% COMPLETE & INSTANT LOGOUT =================
         async function directCleanLogout() {
             toggleSidebar();
+
             try {
                 if (supabaseClient) {
-                    await supabaseClient.auth.signOut();
+                    await supabaseClient.auth.signOut({ scope: 'local' });
                 }
             } catch (e) {}
 
-            localStorage.removeItem("supabase.auth.token");
+            // Comprehensive Storage & Token Purge
+            Object.keys(localStorage).forEach(key => {
+                if (key.includes('supabase') || key.includes('auth') || key.includes('multani')) {
+                    localStorage.removeItem(key);
+                }
+            });
             sessionStorage.clear();
             window.location.hash = "";
+
             currentUser = null;
             currentUserProfile = null;
 
-            notify("Logged out successfully!", "info");
+            // Direct UI Shift To Login Screen
             showAuthScreen();
+            notify("Logged out successfully!", "info");
 
             setTimeout(() => {
                 window.location.reload();
-            }, 250);
+            }, 200);
         }
 
         function scrollToOrderForm() {
@@ -1210,14 +1295,14 @@
                 const btn = document.getElementById("btnNavOrders");
                 if (btn) btn.classList.add("active");
                 loadCustomerOrders();
-            } else if (viewId === 'viewTransactions') {
-                loadTransactions();
             } else if (viewId === 'viewSupport') {
                 const btn = document.getElementById("btnNavSupport");
                 if (btn) btn.classList.add("active");
                 loadCustomerChat();
             } else if (viewId === 'viewProfile') {
                 loadUserProfile();
+            } else if (viewId === 'viewPaymentHistory') {
+                loadCustomerDepositsHistory();
             }
 
             document.getElementById("sidebarDrawer").classList.remove("open");
@@ -1300,12 +1385,11 @@
             }
         }
 
-        // ================= CATEGORIES & SERVICES FETCH (EXACT ADMIN MATCH) =================
+        // ================= CATEGORIES & SERVICES FETCH =================
         async function fetchFreshServicesAndCategories() {
             if (!supabaseClient) return;
 
             try {
-                // Fetch categories and services exactly as saved by Admin Panel
                 const [catsRes, srvsRes] = await Promise.all([
                     supabaseClient.from("categories").select("*").order("name", { ascending: true }),
                     supabaseClient.from("services").select("*").order("created_at", { ascending: false })
@@ -1321,7 +1405,6 @@
                     localStorage.setItem("multani_cached_srvs", JSON.stringify(allServices));
                 }
 
-                // If categories table was empty but services exist, automatically build categories list from services
                 if ((!allCategories || allCategories.length === 0) && allServices.length > 0) {
                     const uniqueCats = {};
                     allServices.forEach(s => {
@@ -1389,19 +1472,23 @@
             calculateTotalCharge();
         }
 
+        // ================= FULL SCREEN AUTO-WRAPPING SERVICES RENDER =================
         function renderServicesPageTable() {
             const body = document.getElementById("servicesListBody");
             if (!body) return;
             if (!allServices || allServices.length === 0) {
-                body.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #A7F3D0; padding: 16px 0;">No services found.</td></tr>`;
+                body.innerHTML = `<p style="text-align: center; color: #A7F3D0; padding: 16px 0;">No services found.</p>`;
                 return;
             }
+
             body.innerHTML = allServices.map(s => `
-                <tr>
-                    <td><strong>${s.name}</strong></td>
-                    <td style="color: #FFE873; font-weight: 700;">${formatPrice(parseFloat(s.rate_per_1k))}</td>
-                    <td>${s.min_quantity} - ${s.max_quantity}</td>
-                </tr>
+                <div class="service-item-box">
+                    <div class="service-item-title">${s.name}</div>
+                    <div class="service-item-meta">
+                        <span>Min/Max: <strong>${s.min_quantity} - ${s.max_quantity}</strong></span>
+                        <strong style="color: #FFE873; font-size: 0.95rem; font-family: var(--font-game);">${formatPrice(parseFloat(s.rate_per_1k))} / 1k</strong>
+                    </div>
+                </div>
             `).join("");
         }
 
@@ -1488,7 +1575,7 @@
             const list = document.getElementById("customerOrdersList");
 
             if (!currentUser || !supabaseClient) {
-                if (recentBody) recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #A7F3D0; padding: 14px 0;">No orders yet.</td></tr>`;
+                if (recentBody) recentBody.innerHTML = `<p style="text-align: center; color: #A7F3D0; padding: 14px 0; font-size: 0.85rem;">No orders yet.</p>`;
                 if (list) list.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No orders placed yet.</p>`;
                 return;
             }
@@ -1504,7 +1591,7 @@
                 document.getElementById("dashTotalOrders").innerText = `${orders.length} Orders`;
                 
                 if (orders.length === 0) {
-                    if (recentBody) recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #A7F3D0; padding: 14px 0;">No orders yet.</td></tr>`;
+                    if (recentBody) recentBody.innerHTML = `<p style="text-align: center; color: #A7F3D0; padding: 14px 0; font-size: 0.85rem;">No orders yet.</p>`;
                     if (list) list.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No orders placed yet.</p>`;
                     return;
                 }
@@ -1513,14 +1600,17 @@
                     recentBody.innerHTML = orders.slice(0, 5).map(o => {
                         const srv = allServices.find(s => String(s.id) === String(o.service_id));
                         return `
-                            <tr>
-                                <td><strong>#${o.order_number || (o.id ? String(o.id).substring(0,5) : '')}</strong></td>
-                                <td>${new Date(o.created_at).toLocaleDateString()}</td>
-                                <td>${srv ? srv.name : 'Service'}</td>
-                                <td>${o.quantity}</td>
-                                <td style="color: #FFE873; font-weight:700;">${formatPrice(parseFloat(o.charge))}</td>
-                                <td><span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span></td>
-                            </tr>
+                            <div style="background: rgba(2, 20, 15, 0.9); border: 1.5px solid var(--border-glass); border-radius: 12px; padding: 10px 12px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 4px;">
+                                    <strong style="color: #FFE873;">#${o.order_number || (o.id ? String(o.id).substring(0,5) : '')}</strong>
+                                    <span class="badge badge-${o.status || 'pending'}">${(o.status || 'pending').toUpperCase()}</span>
+                                </div>
+                                <div style="font-size: 0.85rem; color: #fff;">${srv ? srv.name : 'Service'}</div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #A7F3D0; margin-top: 4px;">
+                                    <span>Qty: ${o.quantity}</span>
+                                    <strong style="color: #FFE873;">${formatPrice(parseFloat(o.charge))}</strong>
+                                </div>
+                            </div>
                         `;
                     }).join("");
                 }
@@ -1545,8 +1635,6 @@
                 }
             } catch (err) {
                 console.error("Orders load:", err);
-                if (recentBody) recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #A7F3D0; padding: 14px 0;">No orders yet.</td></tr>`;
-                if (list) list.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No orders placed yet.</p>`;
             }
         }
 
@@ -1586,15 +1674,6 @@
 
                 if (depError) throw depError;
 
-                try {
-                    await supabaseClient.from("transactions").insert([{
-                        user_id: currentUser.id,
-                        type: 'Deposit (Pending)',
-                        description: `${method} TRX: ${trx}`,
-                        amount: usd
-                    }]);
-                } catch (tErr) {}
-
                 notify("Deposit request submitted! Admin will verify soon.", "success");
                 
                 document.getElementById("depAmountPKR").value = "";
@@ -1602,56 +1681,92 @@
                 document.getElementById("depTrxId").value = "";
                 document.getElementById("depUSDHint").innerText = "";
 
-                loadTransactions();
+                await loadCustomerDepositsHistory();
+                openPaymentHistoryView();
             } catch (err) {
                 console.error("Deposit error:", err);
                 notify("Failed: " + (err.message || "Network error"), "error");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Submit Deposit Request";
+                btn.innerText = "SUBMIT DEPOSIT REQUEST";
             }
         }
 
-        // ================= TRANSACTIONS =================
-        async function loadTransactions() {
-            const container = document.getElementById("transactionsListContainer");
+        // ================= FULL SCREEN PAYMENT HISTORY SYSTEM =================
+        function openPaymentHistoryView() {
+            switchTab('viewPaymentHistory');
+        }
+
+        async function loadCustomerDepositsHistory() {
+            const container = document.getElementById("paymentHistoryListContainer");
             if (!container) return;
 
             if (!currentUser || !supabaseClient) {
-                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No transactions yet.</p>`;
+                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No payments found.</p>`;
                 return;
             }
 
             try {
                 const { data, error } = await supabaseClient
-                    .from("transactions")
+                    .from("deposits")
                     .select("*")
                     .eq("user_id", currentUser.id)
                     .order("created_at", { ascending: false });
 
-                const trxs = data || [];
-
-                if (trxs.length === 0) {
-                    container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No transactions yet.</p>`;
-                    return;
-                }
-
-                container.innerHTML = `
-                    <table>
-                        <thead><tr><th>Date</th><th>Type</th><th>Desc</th><th>Amount</th></tr></thead>
-                        <tbody>${trxs.map(t => `
-                            <tr>
-                                <td>${new Date(t.created_at).toLocaleDateString()}</td>
-                                <td><span class="badge ${t.type && t.type.includes('Pending') ? 'badge-pending' : 'badge-completed'}">${t.type}</span></td>
-                                <td>${t.description || '-'}</td>
-                                <td style="color:${parseFloat(t.amount) < 0 ? '#f87171' : '#34D399'}; font-weight:700;">${formatPrice(parseFloat(t.amount))}</td>
-                            </tr>
-                        `).join("")}</tbody>
-                    </table>
-                `;
+                allCustomerDeposits = data || [];
+                renderPaymentHistoryList('all');
             } catch (e) {
-                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 14px 0;">No transactions yet.</p>`;
+                console.error("Deposits load:", e);
+                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No payments found.</p>`;
             }
+        }
+
+        function filterPaymentHistory(filterType, element) {
+            document.querySelectorAll(".filter-tabs-wrapper .filter-tab-pill").forEach(el => el.classList.remove("active"));
+            if (element) element.classList.add("active");
+            renderPaymentHistoryList(filterType);
+        }
+
+        function renderPaymentHistoryList(filterType = 'all') {
+            const container = document.getElementById("paymentHistoryListContainer");
+            if (!container) return;
+
+            let filtered = allCustomerDeposits;
+            if (filterType === 'pending') {
+                filtered = allCustomerDeposits.filter(d => (d.status || '').toLowerCase() === 'pending');
+            } else if (filterType === 'approved') {
+                filtered = allCustomerDeposits.filter(d => (d.status || '').toLowerCase() === 'completed' || (d.status || '').toLowerCase() === 'approved');
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">No ${filterType === 'all' ? '' : filterType} records found.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(d => {
+                const isApproved = (d.status || '').toLowerCase() === 'completed' || (d.status || '').toLowerCase() === 'approved';
+                const statusBadgeClass = isApproved ? 'badge-approved' : 'badge-pending';
+                const statusText = isApproved ? 'APPROVED' : 'PENDING';
+                const pkrAmount = (parseFloat(d.amount || 0) * 290.00).toFixed(0);
+
+                return `
+                    <div class="deposit-record-card">
+                        <div class="deposit-record-row">
+                            <strong style="color: #FFE873; font-size: 0.95rem;">${d.payment_method || 'Deposit'}</strong>
+                            <span class="badge ${statusBadgeClass}">${statusText}</span>
+                        </div>
+                        <div class="deposit-record-row" style="color: #fff; font-size: 0.88rem; font-weight: 700;">
+                            <span>Rs ${pkrAmount} PKR</span>
+                            <span style="color: #34D399; font-family: var(--font-game); font-size: 1.05rem;">$${parseFloat(d.amount).toFixed(4)} USD</span>
+                        </div>
+                        <div class="deposit-record-row" style="color: #A7F3D0; font-size: 0.75rem; border-top: 1px dashed rgba(34,197,94,0.25); padding-top: 5px; margin-top: 3px;">
+                            <span>TRX: <strong>${d.transaction_id || '-'}</strong></span>
+                            <span>Sender: <strong>${d.sender_account || '-'}</strong></span>
+                        </div>
+                        <small style="color: rgba(167, 243, 208, 0.65); font-size: 0.68rem; text-align: right;">${new Date(d.created_at).toLocaleString()}</small>
+                    </div>
+                `;
+            }).join("");
         }
 
         // ================= LIVE SUPPORT CHAT =================
