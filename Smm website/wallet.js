@@ -16,6 +16,15 @@ function calculateDepositUSD() {
     document.getElementById("depUSDHint").innerText = pkr > 0 ? `Credit in Wallet: $${usd} USD` : '';
 }
 
+function getSupabaseInstance() {
+    if (window.supabaseClient) return window.supabaseClient;
+    if (window.supabase && typeof window.supabase.createClient === 'function' && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+        window.supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+        return window.supabaseClient;
+    }
+    return null;
+}
+
 async function handleDepositSubmit(e) {
     e.preventDefault();
     const btn = document.getElementById("btnDepositSubmit");
@@ -35,6 +44,12 @@ async function handleDepositSubmit(e) {
         return;
     }
 
+    const client = getSupabaseInstance();
+    if (!client) {
+        alert("Database connection error! Check config.js");
+        return;
+    }
+
     const usd = parseFloat((pkr / 290.00).toFixed(4));
     const method = document.getElementById("depMethod").value;
     const sender = document.getElementById("depSenderNum").value.trim();
@@ -44,7 +59,7 @@ async function handleDepositSubmit(e) {
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
 
     try {
-        const { data, error } = await window.supabaseClient.from("deposits").insert([{
+        const { data, error } = await client.from("deposits").insert([{
             user_id: currentUser.id,
             amount: usd,
             payment_method: method,
@@ -90,8 +105,14 @@ async function loadCustomerDepositsHistory() {
         }
     }
 
+    const client = getSupabaseInstance();
+    if (!client) {
+        container.innerHTML = `<p style="text-align: center; color: #A7F3D0; font-size: 0.85rem; padding: 25px 0;">Database connection error.</p>`;
+        return;
+    }
+
     try {
-        const { data, error } = await window.supabaseClient
+        const { data, error } = await client
             .from("deposits")
             .select("*")
             .eq("user_id", currentUser.id)
