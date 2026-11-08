@@ -1,4 +1,3 @@
-
 // ================= MULTANI SMM WALLET SYSTEM =================
 // Uses existing config.js variables. Do NOT redeclare:
 // allCustomerDeposits or activePaymentFilter.
@@ -223,18 +222,14 @@ async function handleDepositSubmit(event) {
     return false;
 }
 
-// ---------------- PAYMENT HISTORY ----------------
+// ---------------- PAYMENT HISTORY (UPDATED FOR REFRESH FIX) ----------------
 
 async function loadCustomerDepositsHistory() {
     const client = walletClient();
-    const user = walletUser();
+    const container = document.getElementById("paymentHistoryListContainer");
 
-    const container = document.getElementById(
-        "paymentHistoryListContainer"
-    );
-
-    if (!client || !user?.id) {
-        if (container) container.innerHTML = "Please login again.";
+    if (!client) {
+        if (container) container.innerHTML = "Database client not initialized.";
         return;
     }
 
@@ -243,10 +238,19 @@ async function loadCustomerDepositsHistory() {
     }
 
     try {
+        // Session check taake page refresh par user ID miss na ho
+        const { data: { session }, error: sessionError } = await client.auth.getSession();
+        const authUser = session?.user || walletUser();
+
+        if (sessionError || !authUser?.id) {
+            if (container) container.innerHTML = "Please login again to view history.";
+            return;
+        }
+
         const { data, error } = await client
             .from("deposits")
             .select("id, amount, payment_method, sender_account, transaction_id, status, created_at")
-            .eq("user_id", user.id)
+            .eq("user_id", authUser.id)
             .order("created_at", { ascending: false });
 
         if (error) throw error;
