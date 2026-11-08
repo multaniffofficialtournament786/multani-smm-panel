@@ -38,7 +38,9 @@
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-green); position: sticky; top: 0; z-index: 100; }
         .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary-gold); background: none; border: none; }
         .wallet-badge { background: rgba(0,0,0,0.4); border: 1px solid var(--border-green); padding: 6px 14px; border-radius: 20px; font-weight: 700; color: var(--primary-gold); font-size: 14px; display: flex; align-items: center; gap: 6px; }
-        .currency-selector { background: var(--bg-card); border: 1px solid var(--border-green); color: #fff; padding: 6px 12px; border-radius: 20px; font-weight: 600; outline: none; cursor: pointer; }
+        
+        /* Exact Match Top Currency Selector Button */
+        .top-currency-box { background: var(--bg-card); border: 1px solid var(--border-green); color: #fff; padding: 6px 14px; border-radius: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; }
         .profile-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--primary-gold); object-fit: cover; cursor: pointer; }
 
         /* Notice & Bismillah Banner */
@@ -49,7 +51,7 @@
         /* Dashboard Grid Cards */
         .dashboard-container { padding: 15px; padding-bottom: 80px; max-width: 600px; margin: 0 auto; }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-card { border-radius: 16px; padding: 20px; color: #fff; display: flex; flex-direction: column; justify-content: space-height; min-height: 110px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .stat-card { border-radius: 16px; padding: 20px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; min-height: 110px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .stat-card.blue { background: linear-gradient(135deg, #00b4d8, #0077b6); }
         .stat-card.green { background: linear-gradient(135deg, #2b9348, #55a630); }
         .stat-card.orange { background: linear-gradient(135deg, #f77f00, #fcbf49); }
@@ -75,9 +77,15 @@
         .sidebar-links li a:hover, .sidebar-links li a.active { background: rgba(255,190,11,0.1); color: var(--primary-gold); }
         .sidebar-links li a.logout-link { color: var(--danger); margin-top: 20px; }
 
-        /* Modal Popup */
+        /* Modal Overlay */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 3000; }
         .modal-box { background: var(--bg-card); border: 2px solid var(--primary-gold); width: 90%; max-width: 350px; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+
+        /* Currency Modal Popup (Exact Style matching screenshot) */
+        .currency-modal-content { background: #ffffff; color: #000; width: 90%; max-width: 380px; border-radius: 24px; padding: 10px 0; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+        .currency-option { display: flex; justify-content: space-between; align-items: center; padding: 15px 24px; border-bottom: 1px solid #eee; cursor: pointer; font-weight: 600; font-size: 16px; color: #111; }
+        .currency-option:hover { background: #f8f9fa; }
+        .currency-option input[type="radio"] { accent-color: #008000; width: 18px; height: 18px; cursor: pointer; }
 
         /* Tables & Lists */
         .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -149,13 +157,9 @@
             <button class="menu-btn" onclick="toggleSidebar(true)">☰</button>
             <div class="wallet-badge">💰 <span id="header-balance">Rs 0.00</span></div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <select id="currency-select" class="currency-selector" onchange="changeCurrency()">
-                    <option value="PKR">🇵🇰 PKR</option>
-                    <option value="USD">🇺🇸 USD</option>
-                    <option value="INR">🇮🇳 INR</option>
-                    <option value="AED">🇦🇪 AED</option>
-                    <option value="SAR">🇸🇦 SAR</option>
-                </select>
+                <div class="top-currency-box" onclick="openCurrencyModal()">
+                    <span id="top-curr-flag">🇵🇰</span> <span id="top-curr-code">PKR</span> <span style="font-size: 10px;">▼</span>
+                </div>
                 <img id="top-profile-img" src="https://via.placeholder.com/150" class="profile-avatar" onclick="switchTab('profile')">
             </div>
         </div>
@@ -391,7 +395,7 @@
                         <input type="password" class="form-control" value="••••••••••••" disabled style="opacity: 0.6;">
                     </div>
                     <div style="background: rgba(255,190,11,0.08); border: 1px solid rgba(255,190,11,0.3); padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 20px; text-align: left;">
-                        ℹ️ پاس ورڈ چینج کرنے کے liye ایڈمن سے رابطہ کریں <a href="https://wa.me/923292788285" target="_blank" style="color: var(--primary-gold); font-weight: 700;">Admin</a>
+                        ℹ️ پاس ورڈ چینج کرنے کے لیے ایڈمن سے رابطہ کریں <a href="https://wa.me/923292788285" target="_blank" style="color: var(--primary-gold); font-weight: 700;">Admin</a>
                     </div>
                     <button class="btn-main" onclick="saveProfileChanges()">SAVE PROFILE</button>
                 </div>
@@ -458,6 +462,32 @@
                 🟢 Open WhatsApp Support
             </a>
             <button onclick="closeForgotPasswordModal()" style="background: none; border: 1px solid var(--border-green); color: var(--text-muted); padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 12px;">Close</button>
+        </div>
+    </div>
+
+    <!-- CURRENCY CONVERTER MODAL (Exact 5 Countries Match) -->
+    <div id="currency-modal" class="modal-overlay hidden">
+        <div class="currency-modal-content">
+            <div class="currency-option" onclick="selectCurrency('PKR', '🇵🇰')">
+                <span style="display: flex; align-items: center; gap: 12px;"><span style="font-size: 22px;">🇵🇰</span> PKR</span>
+                <input type="radio" name="curr_radio" id="radio-PKR" checked>
+            </div>
+            <div class="currency-option" onclick="selectCurrency('USD', '🇺🇸')">
+                <span style="display: flex; align-items: center; gap: 12px;"><span style="font-size: 22px;">🇺🇸</span> USD</span>
+                <input type="radio" name="curr_radio" id="radio-USD">
+            </div>
+            <div class="currency-option" onclick="selectCurrency('INR', '🇮🇳')">
+                <span style="display: flex; align-items: center; gap: 12px;"><span style="font-size: 22px;">🇮🇳</span> INR</span>
+                <input type="radio" name="curr_radio" id="radio-INR">
+            </div>
+            <div class="currency-option" onclick="selectCurrency('AED', '🇦🇪')">
+                <span style="display: flex; align-items: center; gap: 12px;"><span style="font-size: 22px;">🇦🇪</span> AED</span>
+                <input type="radio" name="curr_radio" id="radio-AED">
+            </div>
+            <div class="currency-option" onclick="selectCurrency('SAR', '🇸🇦')">
+                <span style="display: flex; align-items: center; gap: 12px;"><span style="font-size: 22px;">🇸🇦</span> SAR</span>
+                <input type="radio" name="curr_radio" id="radio-SAR">
+            </div>
         </div>
     </div>
 
@@ -582,6 +612,35 @@
             document.getElementById('forgot-modal').classList.add('hidden');
         }
 
+        function openCurrencyModal() {
+            document.getElementById('currency-modal').classList.remove('hidden');
+        }
+        function closeCurrencyModal() {
+            document.getElementById('currency-modal').classList.add('hidden');
+        }
+
+        function selectCurrency(curr, flag) {
+            currentCurrency = curr;
+            document.getElementById('top-curr-flag').innerText = flag;
+            document.getElementById('top-curr-code').innerText = curr;
+
+            ['PKR', 'USD', 'INR', 'AED', 'SAR'].forEach(c => {
+                const radio = document.getElementById(`radio-${c}`);
+                if (radio) radio.checked = (c === curr);
+            });
+
+            closeCurrencyModal();
+            fetchUserProfile();
+            if (allServices.length > 0) renderServicesList(allServices);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('currency-modal');
+            if (event.target === modal) {
+                closeCurrencyModal();
+            }
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
@@ -617,7 +676,7 @@
             if (data) {
                 const bal = parseFloat(data.balance || 0);
                 document.getElementById('header-balance').innerText = formatCurrency(bal);
-                document.getElementById('stat-spent').innerText = formatCurrency(0); // Can link total spent if needed
+                document.getElementById('stat-spent').innerText = formatCurrency(0);
                 document.getElementById('profile-name').value = data.full_name || '';
                 document.getElementById('profile-whatsapp').value = data.whatsapp || '';
                 document.getElementById('profile-email').value = data.email || currentUser.email;
@@ -629,7 +688,6 @@
         }
 
         async function loadAppData() {
-            // Categories
             const { data: categories } = await _supabase.from('service_categories').select('*').order('sort_order');
             const catSelect1 = document.getElementById('order-category');
             const catSelect2 = document.getElementById('order-category-2');
@@ -643,14 +701,12 @@
                 });
             }
 
-            // Services
             const { data: services } = await _supabase.from('services').select('*, service_categories(name)').eq('is_active', true);
             if (services) {
                 allServices = services;
                 renderServicesList(services);
             }
 
-            // Orders count & history
             const { data: orders } = await _supabase.from('orders').select('*, services(name)').eq('user_id', currentUser.id).order('created_at', { ascending: false });
             if (orders) {
                 document.getElementById('stat-total-orders').innerText = orders.length;
@@ -843,7 +899,6 @@
             input.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // Optional Supabase ticket integration
             await _supabase.from('support_tickets').insert([
                 { user_id: currentUser.id, subject: 'Live Chat Message', message: msg, status: 'Open' }
             ]);
@@ -880,12 +935,6 @@
                 alert('Profile updated successfully!');
                 fetchUserProfile();
             }
-        }
-
-        function changeCurrency() {
-            currentCurrency = document.getElementById('currency-select').value;
-            fetchUserProfile();
-            // Refresh dynamic pricing displays if needed
         }
 
         function formatCurrency(amountInPKR) {
