@@ -29,7 +29,6 @@
         .form-group { text-align: left; margin-bottom: 15px; position: relative; }
         .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; font-weight: 700; }
         
-        /* Fixed Input Box and Text Overflow Issue */
         .form-control { width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-green); border-radius: 10px; color: #fff; font-size: 14px; outline: none; overflow: hidden; text-overflow: ellipsis; }
         .form-control.has-icon { padding-right: 45px; }
         .form-control:focus { border-color: var(--primary-gold); }
@@ -110,17 +109,17 @@
             <h3 style="margin-bottom: 20px; font-size: 18px;">Login to your account</h3>
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" id="login-email" class="form-control" placeholder="name@domain.com">
+                <input type="email" id="login-email" class="form-control" placeholder="name@domain.com" autocomplete="off">
             </div>
             <div class="form-group" style="margin-bottom: 5px;">
                 <label>Password</label>
-                <input type="password" id="login-password" class="form-control has-icon" placeholder="••••••••">
+                <input type="password" id="login-password" class="form-control has-icon" placeholder="••••••••" autocomplete="current-password">
                 <span class="password-toggle" onclick="togglePassword('login-password', this)">👁️</span>
             </div>
             <div style="text-align: right; margin-bottom: 20px;">
                 <a href="#" onclick="openForgotPasswordModal()" style="font-size: 12px; color: var(--primary-gold); text-decoration: none;">Forgot Password?</a>
             </div>
-            <button class="btn-main" onclick="handleLogin()">LOGIN ACCOUNT</button>
+            <button type="button" class="btn-main" onclick="handleLogin()">LOGIN ACCOUNT</button>
             <div class="auth-switch">
                 Don't have an account? <a href="#" onclick="switchAuthView('register')">Register</a>
             </div>
@@ -131,24 +130,24 @@
             <h3 style="margin-bottom: 20px; font-size: 18px;">Create New Account</h3>
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" id="reg-name" class="form-control" placeholder="Muhammad Nadeem">
+                <input type="text" id="reg-name" class="form-control" placeholder="Enter Full Name" autocomplete="off" value="">
             </div>
             <div class="form-group">
                 <label>WhatsApp Number</label>
-                <input type="text" id="reg-whatsapp" class="form-control" placeholder="03292788285">
+                <input type="text" id="reg-whatsapp" class="form-control" placeholder="03292788285" autocomplete="off" value="">
             </div>
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" id="reg-email" class="form-control" placeholder="name@domain.com">
+                <input type="email" id="reg-email" class="form-control" placeholder="name@domain.com" autocomplete="off" value="">
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="reg-password" class="form-control has-icon" placeholder="••••••••" autocomplete="new-password">
+                <input type="password" id="reg-password" class="form-control has-icon" placeholder="••••••••" autocomplete="new-password" value="">
                 <span class="password-toggle" onclick="togglePassword('reg-password', this)">👁️</span>
             </div>
             <div class="form-group">
                 <label>Confirm Password</label>
-                <input type="password" id="reg-confirm" class="form-control has-icon" placeholder="••••••••" autocomplete="new-password">
+                <input type="password" id="reg-confirm" class="form-control has-icon" placeholder="••••••••" autocomplete="new-password" value="">
                 <span class="password-toggle" onclick="togglePassword('reg-confirm', this)">👁️</span>
             </div>
             <button type="button" class="btn-main" onclick="handleRegister()">REGISTER ACCOUNT</button>
@@ -232,7 +231,7 @@
                     <div style="font-size: 16px; font-weight: 800; margin: 15px 0; color: var(--primary-gold);">
                         Total Price: <span id="order-total-price">Rs 0.00</span>
                     </div>
-                    <button class="btn-main" onclick="submitOrder()">⚡ CONFIRM ORDER</button>
+                    <button type="button" class="btn-main" onclick="submitOrder()">⚡ CONFIRM ORDER</button>
                 </div>
             </div>
 
@@ -263,7 +262,7 @@
                     <div style="font-size: 16px; font-weight: 800; margin: 15px 0; color: var(--primary-gold);">
                         Total Price: <span id="order-total-price-2">Rs 0.00</span>
                     </div>
-                    <button class="btn-main" onclick="submitOrder(2)">⚡ CONFIRM ORDER</button>
+                    <button type="button" class="btn-main" onclick="submitOrder(2)">⚡ CONFIRM ORDER</button>
                 </div>
             </div>
 
@@ -326,8 +325,8 @@
                         <label>Transaction ID (TRX ID)</label>
                         <input type="text" id="deposit-trx" class="form-control" placeholder="e.g. 9845789123">
                     </div>
-                    <button class="btn-main" onclick="submitDeposit()">SUBMIT DEPOSIT REQUEST</button>
-                    <button class="btn-main" style="background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; margin-top: 10px;" onclick="switchTab('payment-history')">🕒 PAYMENT HISTORY</button>
+                    <button type="button" class="btn-main" onclick="submitDeposit()">SUBMIT DEPOSIT REQUEST</button>
+                    <button type="button" class="btn-main" style="background: linear-gradient(135deg, #00b4d8, #0077b6); color: #fff; margin-top: 10px;" onclick="switchTab('payment-history')">🕒 PAYMENT HISTORY</button>
                 </div>
             </div>
 
@@ -336,12 +335,12 @@
                 <div class="card-box">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <div class="card-title" style="margin: 0;">🕒 Payment History</div>
-                        <button onclick="switchTab('deposit')" style="background: none; border: 1px solid var(--primary-gold); color: var(--primary-gold); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 12px;">← Back</button>
+                        <button type="button" onclick="switchTab('deposit')" style="background: none; border: 1px solid var(--primary-gold); color: var(--primary-gold); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 12px;">← Back</button>
                     </div>
                     <div style="display: flex; gap: 5px; margin-bottom: 15px;">
-                        <button onclick="filterPayments('ALL')" style="flex:1; background: var(--primary-gold); border: none; padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">ALL</button>
-                        <button onclick="filterPayments('Pending')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">PENDING</button>
-                        <button onclick="filterPayments('Approved')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">APPROVED</button>
+                        <button type="button" onclick="filterPayments('ALL')" style="flex:1; background: var(--primary-gold); border: none; padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">ALL</button>
+                        <button type="button" onclick="filterPayments('Pending')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">PENDING</button>
+                        <button type="button" onclick="filterPayments('Approved')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">APPROVED</button>
                     </div>
                     <table class="table">
                         <thead>
@@ -370,7 +369,7 @@
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <input type="text" id="chat-input" class="form-control" placeholder="Type message...">
-                        <button onclick="sendChatMessage()" style="background: var(--primary-gold); border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; color: #000;">➤</button>
+                        <button type="button" onclick="sendChatMessage()" style="background: var(--primary-gold); border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; color: #000;">➤</button>
                     </div>
                 </div>
             </div>
@@ -405,7 +404,7 @@
                     <div style="background: rgba(255,190,11,0.08); border: 1px solid rgba(255,190,11,0.3); padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 20px; text-align: left;">
                         ℹ️ پاس ورڈ چینج کرنے کے لیے ایڈمن سے رابطہ کریں <a href="https://wa.me/923292788285" target="_blank" style="color: var(--primary-gold); font-weight: 700;">Admin</a>
                     </div>
-                    <button class="btn-main" onclick="saveProfileChanges()">SAVE PROFILE</button>
+                    <button type="button" class="btn-main" onclick="saveProfileChanges()">SAVE PROFILE</button>
                 </div>
             </div>
 
@@ -436,7 +435,7 @@
         <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <span style="font-weight: 800; color: var(--primary-gold); font-size: 18px;">👑 MULTANI VIP</span>
-                <button onclick="toggleSidebar(false)" style="background: none; border: none; color: #fff; font-size: 20px; cursor: pointer;">✕</button>
+                <button type="button" onclick="toggleSidebar(false)" style="background: none; border: none; color: #fff; font-size: 20px; cursor: pointer;">✕</button>
             </div>
             <ul class="sidebar-links">
                 <li><a href="#" onclick="switchTab('dashboard'); toggleSidebar(false);">📊 Dashboard</a></li>
@@ -469,7 +468,7 @@
             <a href="https://wa.me/923292788285?text=Assalam-o-Alaikum%20Muhammad%20Nadeem,%20mujhe%20apne%20MULTANI%20SMM%20account%20ka%20password%20change%20karwana%20hai." target="_blank" style="display: block; background: #25d366; color: #fff; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 10px;">
                 🟢 Open WhatsApp Support
             </a>
-            <button onclick="closeForgotPasswordModal()" style="background: none; border: 1px solid var(--border-green); color: var(--text-muted); padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 12px;">Close</button>
+            <button type="button" onclick="closeForgotPasswordModal()" style="background: none; border: 1px solid var(--border-green); color: var(--text-muted); padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 12px;">Close</button>
         </div>
     </div>
 
@@ -508,6 +507,11 @@
         let currencyRates = { PKR: 1, USD: 0.0034, INR: 0.28, AED: 0.013, SAR: 0.013 };
 
         document.addEventListener('DOMContentLoaded', async () => {
+            // Clear inputs on load to avoid browser autofill glitches
+            document.querySelectorAll('input').forEach(input => {
+                if(input.id !== 'order-qty' && input.id !== 'order-qty-2') input.value = '';
+            });
+
             const { data: { session } } = await _supabase.auth.getSession();
             if (session) {
                 currentUser = session.user;
@@ -554,6 +558,7 @@
                 return;
             }
 
+            // 1. Sign up user
             const { data, error } = await _supabase.auth.signUp({
                 email: email,
                 password: password,
@@ -571,8 +576,16 @@
                 ]);
             }
 
-            alert('Registration successful! Please login.');
-            switchAuthView('login');
+            // 2. Direct login after successful registration so dashboard opens automatically
+            const { data: loginData, error: loginError } = await _supabase.auth.signInWithPassword({ email, password });
+            if (loginError) {
+                alert('Registration successful! Please login.');
+                switchAuthView('login');
+                return;
+            }
+
+            currentUser = loginData.user;
+            showAppDashboard();
         }
 
         async function handleLogin() {
