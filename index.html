@@ -507,7 +507,6 @@
         let currencyRates = { PKR: 1, USD: 0.0034, INR: 0.28, AED: 0.013, SAR: 0.013 };
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Clear inputs on load to avoid browser autofill glitches
             document.querySelectorAll('input').forEach(input => {
                 if(input.id !== 'order-qty' && input.id !== 'order-qty-2') input.value = '';
             });
@@ -558,34 +557,39 @@
                 return;
             }
 
-            // 1. Sign up user
-            const { data, error } = await _supabase.auth.signUp({
-                email: email,
-                password: password,
-                options: { data: { full_name: name, whatsapp: whatsapp } }
-            });
+            try {
+                // 1. Sign up user
+                const { data, error } = await _supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: { data: { full_name: name, whatsapp: whatsapp } }
+                });
 
-            if (error) {
-                alert('Registration Error: ' + error.message);
-                return;
+                if (error) {
+                    alert('Signup Error: ' + error.message);
+                    return;
+                }
+
+                if (data && data.user) {
+                    await _supabase.from('profiles').upsert([
+                        { id: data.user.id, full_name: name, whatsapp: whatsapp, email: email, balance: 0.00, is_admin: false }
+                    ]);
+                }
+
+                // 2. Direct login after successful registration
+                const { data: loginData, error: loginError } = await _supabase.auth.signInWithPassword({ email, password });
+                if (loginError) {
+                    alert('Registration successful! Please login now.');
+                    switchAuthView('login');
+                    return;
+                }
+
+                currentUser = loginData.user;
+                showAppDashboard();
+
+            } catch (err) {
+                alert('An unexpected error occurred: ' + err.message);
             }
-
-            if (data && data.user) {
-                await _supabase.from('profiles').upsert([
-                    { id: data.user.id, full_name: name, whatsapp: whatsapp, email: email, balance: 0.00, is_admin: false }
-                ]);
-            }
-
-            // 2. Direct login after successful registration so dashboard opens automatically
-            const { data: loginData, error: loginError } = await _supabase.auth.signInWithPassword({ email, password });
-            if (loginError) {
-                alert('Registration successful! Please login.');
-                switchAuthView('login');
-                return;
-            }
-
-            currentUser = loginData.user;
-            showAppDashboard();
         }
 
         async function handleLogin() {
