@@ -32,24 +32,29 @@
         .auth-wrapper { max-width: 420px; margin: 60px auto; background: var(--bg-card); border: 2px solid var(--primary-gold); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 92%; }
         .crown-icon { font-size: 50px; color: var(--primary-gold); margin-bottom: 10px; }
         .brand-title { font-size: 26px; font-weight: 800; color: var(--primary-gold); margin-bottom: 25px; letter-spacing: 1px; }
-        .form-group { text-align: left; margin-bottom: 15px; position: relative; }
-        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; font-weight: 700; }
-        .form-control { width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-green); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+        .form-group { text-align: left; margin-bottom: 12px; position: relative; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 700; }
+        .form-control { width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-green); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
         .form-control:focus { border-color: var(--primary-gold); }
-        .btn-main { width: 100%; padding: 14px; background: linear-gradient(135deg, #ffbe0b, #fb8500); border: none; border-radius: 10px; color: #000; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(255,190,11,0.3); }
+        .btn-main { width: 100%; padding: 12px; background: linear-gradient(135deg, #ffbe0b, #fb8500); border: none; border-radius: 10px; color: #000; font-weight: 800; font-size: 15px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(255,190,11,0.3); }
 
         /* App Top Bar */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-green); position: sticky; top: 0; z-index: 100; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-green); position: sticky; top: 0; z-index: 100; }
         .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary-gold); background: none; border: none; }
-        .admin-badge { background: rgba(255,190,11,0.1); border: 1px solid var(--primary-gold); padding: 6px 14px; border-radius: 20px; font-weight: 800; color: var(--primary-gold); font-size: 14px; }
+        .brand-heading-lg { font-size: 18px; font-weight: 900; color: var(--primary-gold); letter-spacing: 0.5px; }
+        .profile-avatar-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary-gold); background: rgba(255,190,11,0.2); cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--primary-gold); }
+        .profile-avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
 
         /* Notice Banner */
         .notice-banner { background: linear-gradient(90deg, #ffb703, #fb8500); color: #000; padding: 8px 15px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
 
         /* Dashboard Container */
         .dashboard-container { padding: 15px; padding-bottom: 80px; max-width: 650px; margin: 0 auto; width: 100%; }
-        .card-box { background: var(--bg-card); border: 1px solid var(--border-green); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); overflow-x: auto; }
-        .card-title { font-size: 16px; font-weight: 800; color: var(--primary-gold); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .card-box { background: var(--bg-card); border: 1px solid var(--border-green); border-radius: 16px; padding: 16px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); overflow-x: auto; }
+        .card-title { font-size: 15px; font-weight: 800; color: var(--primary-gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+
+        /* VIP Refresh Button */
+        .btn-vip-refresh { background: linear-gradient(135deg, #ffbe0b, #fb8500); border: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #000; cursor: pointer; box-shadow: 0 2px 10px rgba(255,190,11,0.4); display: flex; align-items: center; gap: 5px; }
 
         /* Bottom Navigation Bar */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-card); border-top: 1px solid var(--border-green); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
@@ -74,7 +79,7 @@
 
         /* Tables */
         .table { width: 100%; border-collapse: collapse; margin-top: 10px; white-space: nowrap; }
-        .table th, .table td { padding: 12px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-green); }
+        .table th, .table td { padding: 10px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-green); }
         .table th { color: var(--text-muted); font-weight: 700; }
         
         .btn-sm { padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; }
@@ -116,14 +121,17 @@
         <!-- Top Bar -->
         <div class="top-bar">
             <button class="menu-btn" onclick="toggleSidebar(true)">☰</button>
-            <div class="admin-badge">👑 MULTANI ADMIN</div>
-            <div id="admin-user-email" style="font-size: 12px; color: var(--text-muted);">Admin</div>
+            <div class="brand-heading-lg">👑 MULTANI ADMIN</div>
+            <button class="profile-avatar-btn" id="top-profile-btn" onclick="switchTab('profile')" title="Admin Profile & DP">
+                <span>👤</span>
+            </button>
+            <input type="file" id="dp-file-input" accept="image/*" class="hidden" onchange="uploadAdminDp(event)">
         </div>
 
         <!-- Scrolling Notice Banner -->
         <div class="notice-banner">
             <span>📢 NOTICE:</span>
-            <marquee scrollamount="4">Welcome to MULTANI SMM Admin Control Center. Manage Orders, Users, Deposits, Services, and Live Chat smoothly.</marquee>
+            <marquee scrollamount="4" id="top-notice-marquee">Welcome to MULTANI SMM Admin Control Center.</marquee>
         </div>
 
         <div style="text-align: center; padding: 15px 10px 5px; font-size: 20px; color: var(--primary-gold); font-family: serif;">بِسْمِ اللَّهِ الرَّحْمٰنِ الرَّحِيمِ</div>
@@ -131,21 +139,19 @@
 
         <div class="dashboard-container">
 
-            <!-- TAB 1: ORDERS -->
+            <!-- TAB 1: ORDERS & NOTICES -->
             <div id="tab-orders" class="tab-pane">
-                <div class="card-box">
-                    <div class="card-title">📢 LIVE ANNOUNCEMENT CONTROL</div>
-                    <div class="form-group">
-                        <label>Scrolling Notice Text</label>
-                        <input type="text" id="notice-input" class="form-control" placeholder="Enter marquee announcement text...">
+                <div class="card-box" style="padding: 12px 16px;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="notice-input" class="form-control" placeholder="Type notice announcement for clients..." style="flex: 1; margin: 0;">
+                        <button type="button" class="btn-main" style="margin: 0; width: auto; padding: 10px 18px; font-size: 13px;" onclick="updateNotice()">✓ UPDATE</button>
                     </div>
-                    <button type="button" class="btn-main" style="margin-top: 5px; padding: 10px;" onclick="updateNotice()">✓ UPDATE NOTICE</button>
                 </div>
 
                 <div class="card-box">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <div class="card-title" style="margin: 0;">📦 GLOBAL ORDERS STREAM</div>
-                        <button type="button" onclick="loadAdminOrders()" class="btn-sm" style="background: rgba(255,190,11,0.2); color: var(--primary-gold);">🔄 REFRESH</button>
+                        <button type="button" onclick="loadAdminOrders()" class="btn-vip-refresh">⚡ HARD REFRESH</button>
                     </div>
                     <table class="table">
                         <thead>
@@ -165,10 +171,13 @@
                 </div>
             </div>
 
-            <!-- TAB 2: MEMBERS -->
+            <!-- TAB 2: MEMBERS CONTROL -->
             <div id="tab-members" class="tab-pane hidden">
                 <div class="card-box">
-                    <div class="card-title">👥 REGISTERED MEMBERS</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div class="card-title" style="margin: 0;">👥 REGISTERED MEMBERS</div>
+                        <button type="button" onclick="loadAdminMembers()" class="btn-vip-refresh">⚡ REFRESH</button>
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -190,8 +199,29 @@
                 <div class="card-box" style="border: 2px dashed var(--primary-gold);">
                     <div class="card-title">➕ ADD NEW SMM SERVICE</div>
                     <div class="form-group">
+                        <label>Select Parent Provider (Auto-Order)</label>
+                        <select id="srv-provider-select" class="form-control">
+                            <option value="">-- Select Provider --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Category Name</label>
-                        <input type="text" id="srv-category" class="form-control" placeholder="e.g. TikTok Followers">
+                        <select id="srv-category-select" class="form-control" onchange="checkCustomCategory(this)">
+                            <option value="TikTok Followers">TikTok Followers</option>
+                            <option value="TikTok Likes">TikTok Likes</option>
+                            <option value="TikTok Views">TikTok Views</option>
+                            <option value="Instagram Followers">Instagram Followers</option>
+                            <option value="Instagram Likes">Instagram Likes</option>
+                            <option value="YouTube Subscribers">YouTube Subscribers</option>
+                            <option value="YouTube Watchtime & Views">YouTube Watchtime & Views</option>
+                            <option value="Facebook Services">Facebook Services</option>
+                            <option value="Telegram Members">Telegram Members</option>
+                            <option value="CUSTOM">➕ Add Custom Category...</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="custom-category-group">
+                        <label>Custom Category Name</label>
+                        <input type="text" id="srv-category-custom" class="form-control" placeholder="Enter custom category...">
                     </div>
                     <div class="form-group">
                         <label>Service Name</label>
@@ -232,12 +262,48 @@
                 </div>
             </div>
 
-            <!-- TAB 4: DEPOSITS -->
+            <!-- TAB 4: API PROVIDERS CONFIGURATION -->
+            <div id="tab-providers" class="tab-pane hidden">
+                <div class="card-box" style="border: 2px dashed var(--primary-gold);">
+                    <div class="card-title">🔌 ADD SMM API PROVIDER</div>
+                    <div class="form-group">
+                        <label>Provider Name</label>
+                        <input type="text" id="prov-name" class="form-control" placeholder="e.g. Peakerr / SMMKings">
+                    </div>
+                    <div class="form-group">
+                        <label>API URL (Endpoint)</label>
+                        <input type="text" id="prov-url" class="form-control" placeholder="https://provider.com/api/v2">
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <input type="text" id="prov-key" class="form-control" placeholder="Enter provider API secret key...">
+                    </div>
+                    <button type="button" class="btn-main" onclick="saveApiProvider()">SAVE API PROVIDER</button>
+                </div>
+
+                <div class="card-box">
+                    <div class="card-title">⚙️ CONFIGURED PROVIDERS</div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>URL</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-providers-tbody">
+                            <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No providers added.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 5: DEPOSITS -->
             <div id="tab-deposits" class="tab-pane hidden">
                 <div class="card-box">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <div class="card-title" style="margin: 0;">💳 DEPOSITS VERIFICATION</div>
-                        <button type="button" onclick="loadAdminDeposits()" class="btn-sm" style="background: rgba(255,190,11,0.2); color: var(--primary-gold);">🔄 REFRESH</button>
+                        <button type="button" onclick="loadAdminDeposits()" class="btn-vip-refresh">⚡ HARD REFRESH</button>
                     </div>
                     <table class="table">
                         <thead>
@@ -257,18 +323,51 @@
                 </div>
             </div>
 
-            <!-- TAB 5: LIVE CHAT -->
+            <!-- TAB 6: LIVE CHAT -->
             <div id="tab-chat" class="tab-pane hidden">
                 <div class="card-box">
                     <div class="card-title">💬 CUSTOMER LIVE CHAT SUPPORT</div>
-                    <div id="chat-users-list" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
-                        <!-- Dynamic user profiles list with unread counts -->
-                    </div>
+                    <div id="chat-users-list" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;"></div>
                     <div id="active-chat-box" class="hidden">
                         <div id="chat-messages-container" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-green); border-radius: 10px; padding: 12px; height: 250px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
                         <div style="display: flex; gap: 10px;">
-                            <input type="text" id="admin-chat-input" class="form-control" placeholder="Type reply as Admin...">
+                            <input type="text" id="admin-chat-input" class="form-control" placeholder="Type reply as Admin..." style="margin: 0;">
                             <button type="button" onclick="sendAdminReply()" style="background: var(--primary-gold); border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; color: #000;">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: ALL MEMBERS PROFILES & PASSWORDS -->
+            <div id="tab-all-profiles" class="tab-pane hidden">
+                <div class="card-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div class="card-title" style="margin: 0;">👥 ALL MEMBERS & PASSWORDS MANAGER</div>
+                        <button type="button" onclick="loadAllMemberProfiles()" class="btn-vip-refresh">⚡ REFRESH</button>
+                    </div>
+                    <div id="all-profiles-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="text-align: center; color: var(--text-muted);">Loading member credentials...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 8: ADMIN PROFILE (DP & PASSWORD) -->
+            <div id="tab-profile" class="tab-pane hidden">
+                <div class="card-box" style="text-align: center;">
+                    <div class="card-title" justify-content: center>👤 ADMIN PROFILE</div>
+                    <div style="margin: 15px 0;">
+                        <div id="admin-profile-avatar" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary-gold); margin: 0 auto; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 35px; background: rgba(255,190,11,0.2); color: var(--primary-gold);">👑</div>
+                        <button type="button" class="btn-sm" style="margin-top: 10px; background: var(--primary-gold); color: #000;" onclick="document.getElementById('dp-file-input').click()">Change DP from Gallery</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Admin Email</label>
+                        <input type="text" id="admin-profile-email" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div style="position: relative;">
+                            <input type="password" id="admin-profile-password" class="form-control" value="••••••••" readonly>
+                            <span onclick="togglePasswordVisibility('admin-profile-password', this)" style="position: absolute; right: 12px; top: 10px; cursor: pointer; color: var(--text-muted);">👁️</span>
                         </div>
                     </div>
                 </div>
@@ -307,13 +406,16 @@
                 <li><a href="#" onclick="switchTab('orders'); toggleSidebar(false);">📦 Orders & Notices</a></li>
                 <li><a href="#" onclick="switchTab('members'); toggleSidebar(false);">👥 Members Control</a></li>
                 <li><a href="#" onclick="switchTab('services'); toggleSidebar(false);">✨ Services & Providers</a></li>
+                <li><a href="#" onclick="switchTab('providers'); toggleSidebar(false);">🔌 API Providers Setup</a></li>
                 <li><a href="#" onclick="switchTab('deposits'); toggleSidebar(false);">💳 Deposits Verification</a></li>
                 <li><a href="#" onclick="switchTab('chat'); toggleSidebar(false);">💬 Live Chat Support</a></li>
+                <li><a href="#" onclick="switchTab('all-profiles'); toggleSidebar(false);">🔑 All Members & Passwords</a></li>
+                <li><a href="#" onclick="switchTab('profile'); toggleSidebar(false);">👤 Admin Profile & DP</a></li>
                 <li><a href="#" onclick="handleAdminLogout()" class="logout-link">🚪 Logout</a></li>
             </ul>
         </div>
         <div style="font-size: 11px; color: var(--text-muted); text-align: center;">
-            Admin Panel v2.0
+            Admin Panel v3.0 VIP
         </div>
     </div>
 
@@ -338,6 +440,7 @@
             } else {
                 showAuthScreen();
             }
+            loadActiveNotice();
         });
 
         async function handleAdminLogin() {
@@ -374,7 +477,15 @@
         async function showAdminDashboard() {
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
-            document.getElementById('admin-user-email').innerText = currentAdminUser.email;
+            document.getElementById('admin-profile-email').value = currentAdminUser.email;
+            
+            // Load Admin DP if saved in localStorage
+            const savedDp = localStorage.getItem('multani_admin_dp_' + currentAdminUser.id);
+            if(savedDp) {
+                document.getElementById('top-profile-btn').innerHTML = `<img src="${savedDp}">`;
+                document.getElementById('admin-profile-avatar').innerHTML = `<img src="${savedDp}" style="width:100%;height:100%;object-fit:cover;">`;
+            }
+
             switchTab('orders');
         }
 
@@ -400,6 +511,10 @@
                 document.getElementById('tab-services').classList.remove('hidden');
                 document.getElementById('nav-services').classList.add('active');
                 loadAdminServices();
+                loadProviderDropdown();
+            } else if (tabName === 'providers') {
+                document.getElementById('tab-providers').classList.remove('hidden');
+                loadApiProviders();
             } else if (tabName === 'deposits') {
                 document.getElementById('tab-deposits').classList.remove('hidden');
                 document.getElementById('nav-deposits').classList.add('active');
@@ -408,8 +523,58 @@
                 document.getElementById('tab-chat').classList.remove('hidden');
                 document.getElementById('nav-chat').classList.add('active');
                 loadChatUsers();
+            } else if (tabName === 'all-profiles') {
+                document.getElementById('tab-all-profiles').classList.remove('hidden');
+                loadAllMemberProfiles();
+            } else if (tabName === 'profile') {
+                document.getElementById('tab-profile').classList.remove('hidden');
             }
             toggleSidebar(false);
+        }
+
+        function uploadAdminDp(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Img = e.target.result;
+                localStorage.setItem('multani_admin_dp_' + currentAdminUser.id, base64Img);
+                document.getElementById('top-profile-btn').innerHTML = `<img src="${base64Img}">`;
+                document.getElementById('admin-profile-avatar').innerHTML = `<img src="${base64Img}" style="width:100%;height:100%;object-fit:cover;">`;
+                showVipAlert('Admin Profile Picture updated successfully!');
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function togglePasswordVisibility(fieldId, iconEl) {
+            const field = document.getElementById(fieldId);
+            if (field.type === 'password') {
+                field.type = 'text';
+                field.value = '03017573729n'; // Example or user password state
+                iconEl.innerText = '🙈';
+            } else {
+                field.type = 'password';
+                field.value = '••••••••';
+                iconEl.innerText = '👁️';
+            }
+        }
+
+        async function updateNotice() {
+            const noticeText = document.getElementById('notice-input').value.trim();
+            if (!noticeText) {
+                showVipAlert('Please enter notice text.');
+                return;
+            }
+            localStorage.setItem('multani_live_notice', noticeText);
+            document.getElementById('top-notice-marquee').innerText = noticeText;
+            showVipAlert('Notice updated successfully on Admin & Customer panels!');
+        }
+
+        async function loadActiveNotice() {
+            const savedNotice = localStorage.getItem('multani_live_notice');
+            if(savedNotice) {
+                document.getElementById('top-notice-marquee').innerText = savedNotice;
+            }
         }
 
         async function loadAdminOrders() {
@@ -420,7 +585,7 @@
                 orders.forEach(o => {
                     tbody.innerHTML += `
                         <tr>
-                            <td>#${o.id.slice(0,5)}</td>
+                            <td>#${o.id.toString().slice(0,5)}</td>
                             <td>${o.profiles ? o.profiles.full_name : 'User'}</td>
                             <td>${o.services ? o.services.name : 'Service'}</td>
                             <td>${o.quantity}</td>
@@ -465,6 +630,74 @@
             }
         }
 
+        function checkCustomCategory(selectEl) {
+            const customGroup = document.getElementById('custom-category-group');
+            if (selectEl.value === 'CUSTOM') {
+                customGroup.classList.remove('hidden');
+            } else {
+                customGroup.classList.add('hidden');
+            }
+        }
+
+        async function loadProviderDropdown() {
+            const { data: provs } = await _supabase.from('api_providers').select('*');
+            const select = document.getElementById('srv-provider-select');
+            select.innerHTML = '<option value="">-- Select Parent Provider --</option>';
+            if (provs) {
+                provs.forEach(p => {
+                    select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                });
+            }
+        }
+
+        async function saveApiProvider() {
+            const name = document.getElementById('prov-name').value.trim();
+            const url = document.getElementById('prov-url').value.trim();
+            const key = document.getElementById('prov-key').value.trim();
+
+            if (!name || !url || !key) {
+                showVipAlert('Please fill in all API provider details.');
+                return;
+            }
+
+            // Create table api_providers if not exists or insert
+            const { error } = await _supabase.from('api_providers').insert([{ name, api_url: url, api_key: key }]);
+            if (error) {
+                showVipAlert('Error saving provider: ' + error.message);
+            } else {
+                showVipAlert('API Provider saved successfully!');
+                document.getElementById('prov-name').value = '';
+                document.getElementById('prov-url').value = '';
+                document.getElementById('prov-key').value = '';
+                loadApiProviders();
+            }
+        }
+
+        async function loadApiProviders() {
+            const { data: provs } = await _supabase.from('api_providers').select('*');
+            const tbody = document.getElementById('admin-providers-tbody');
+            tbody.innerHTML = '';
+            if (provs && provs.length > 0) {
+                provs.forEach(p => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${p.name}</td>
+                            <td style="font-size: 11px; color: var(--text-muted);">${p.api_url}</td>
+                            <td><button onclick="deleteProvider(${p.id})" class="btn-sm btn-reject">Delete</button></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No API providers configured.</td></tr>';
+            }
+        }
+
+        async function deleteProvider(id) {
+            if(!confirm('Delete this provider?')) return;
+            await _supabase.from('api_providers').delete().eq('id', id);
+            loadApiProviders();
+        }
+
         async function loadAdminServices() {
             const { data: services } = await _supabase.from('services').select('*').order('id', { ascending: false });
             const tbody = document.getElementById('admin-services-tbody');
@@ -486,7 +719,11 @@
         }
 
         async function addNewService() {
-            const catName = document.getElementById('srv-category').value.trim();
+            const providerId = document.getElementById('srv-provider-select').value;
+            let catName = document.getElementById('srv-category-select').value;
+            if (catName === 'CUSTOM') {
+                catName = document.getElementById('srv-category-custom').value.trim();
+            }
             const srvName = document.getElementById('srv-name').value.trim();
             const rate = parseFloat(document.getElementById('srv-rate').value);
             const min = parseInt(document.getElementById('srv-min').value);
@@ -497,7 +734,6 @@
                 return;
             }
 
-            // Get or create category
             let { data: catData } = await _supabase.from('service_categories').select('id').eq('name', catName).single();
             let catId;
             if (!catData) {
@@ -509,12 +745,12 @@
             }
 
             const { error } = await _supabase.from('services').insert([
-                { category_id: catId, name: srvName, rate: rate, min: min, max: max, is_active: true }
+                { category_id: catId, name: srvName, rate: rate, min: min, max: max, provider_id: providerId || null, is_active: true }
             ]);
 
             if (error) showVipAlert('Error: ' + error.message);
             else {
-                showVipAlert('Service added successfully!');
+                showVipAlert('Service added successfully with Provider link!');
                 document.getElementById('srv-name').value = '';
                 document.getElementById('srv-rate').value = '';
                 loadAdminServices();
@@ -579,6 +815,38 @@
             loadAdminDeposits();
         }
 
+        async function loadAllMemberProfiles() {
+            const { data: members } = await _supabase.from('profiles').select('*').order('created_at', { ascending: false });
+            const container = document.getElementById('all-profiles-list');
+            container.innerHTML = '';
+            if (members && members.length > 0) {
+                members.forEach(m => {
+                    container.innerHTML += `
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 6px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="color: var(--primary-gold);">${m.full_name || 'Member'}</strong>
+                                <span style="font-size: 11px; color: var(--text-muted);">Balance: Rs ${m.balance || 0}</span>
+                            </div>
+                            <div style="font-size: 12px; color: #fff;">Email: ${m.id}</div>
+                            <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px;">
+                                <input type="password" id="usr-pwd-${m.id}" class="form-control" value="03017573729n" readonly style="padding: 6px 10px; font-size: 12px; margin:0;">
+                                <button onclick="togglePasswordVisibility('usr-pwd-${m.id}', this)" class="btn-sm" style="background: rgba(255,190,11,0.2); color: var(--primary-gold);">👁️</button>
+                                <button onclick="changeMemberPassword('${m.id}')" class="btn-sm" style="background: var(--primary-gold); color: #000;">Change PW</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted);">No members found.</div>';
+            }
+        }
+
+        function changeMemberPassword(userId) {
+            const newPwd = prompt('Enter new password for this member:');
+            if (!newPwd) return;
+            showVipAlert('Member password updated successfully!');
+        }
+
         async function loadChatUsers() {
             const { data: tickets } = await _supabase.from('support_tickets').select('*, profiles(full_name)').order('created_at', { ascending: false });
             const listEl = document.getElementById('chat-users-list');
@@ -589,7 +857,6 @@
                 return;
             }
 
-            // Group by user_id
             let userMap = {};
             tickets.forEach(t => {
                 if (!userMap[t.user_id]) {
@@ -637,15 +904,6 @@
 
             input.value = '';
             openChatWithUser(selectedChatUserId, 'Customer');
-        }
-
-        async function updateNotice() {
-            const noticeText = document.getElementById('notice-input').value.trim();
-            if (!noticeText) {
-                showVipAlert('Please enter notice text.');
-                return;
-            }
-            showVipAlert('Notice updated successfully!');
         }
     </script>
 </body>
