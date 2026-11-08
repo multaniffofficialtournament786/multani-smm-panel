@@ -430,13 +430,9 @@
                         <label>Account Email (Fixed)</label>
                         <input type="email" id="profile-email" class="form-control" disabled style="opacity: 0.6;">
                     </div>
-                    <div class="form-group">
-                        <label>Account Password (Fixed)</label>
-                        <input type="password" id="profile-password" class="form-control has-icon" value="********" disabled style="opacity: 0.6;">
-                        <span class="password-toggle" onclick="togglePassword('profile-password', this)">👁️</span>
-                    </div>
-                    <div style="background: rgba(255,190,11,0.08); border: 1px solid rgba(255,190,11,0.3); padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 20px; text-align: left;">
-                        ℹ️ پاس ورڈ چینج کرنے کے لیے ایڈمن سے رابطہ کریں <a href="https://wa.me/923292488285" target="_blank" style="color: var(--primary-gold); font-weight: 700;">Admin</a>
+                    <div style="background: rgba(255,190,11,0.08); border: 1px solid rgba(255,190,11,0.3); padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; text-align: left;">
+                        🔒 پاس ورڈ تبدیل یا دیکھنے کے لیے ایڈمن سے رابطہ کریں:<br>
+                        <a href="https://wa.me/923292488285?text=Assalam-o-Alaikum%20Muhammad%20Nadeem,%20mujhe%20apne%20MULTANI%20SMM%20account%20ka%20password%20chahiye." target="_blank" style="display: inline-block; margin-top: 8px; background: #25d366; color: #fff; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: 700;">🟢 Contact Admin via WhatsApp</a>
                     </div>
                     <button type="button" class="btn-main" onclick="saveProfileChanges()">SAVE PROFILE</button>
                 </div>
@@ -521,7 +517,6 @@
         let allServices = [];
         let currentCurrency = 'PKR';
         let currencyRates = { PKR: 1, USD: 0.0034, INR: 0.28, AED: 0.013, SAR: 0.013 };
-        let userPlainPassword = ''; // Stores user password securely for profile toggle view
 
         function showVipAlert(message) {
             document.getElementById('vip-modal-message').innerText = message;
@@ -571,15 +566,9 @@
             const field = document.getElementById(fieldId);
             if (field.type === 'password') {
                 field.type = 'text';
-                if(fieldId === 'profile-password' && userPlainPassword) {
-                    field.value = userPlainPassword;
-                }
                 iconEl.innerText = '🙈';
             } else {
                 field.type = 'password';
-                if(fieldId === 'profile-password') {
-                    field.value = '********';
-                }
                 iconEl.innerText = '👁️';
             }
         }
@@ -636,7 +625,6 @@
                 }
 
                 currentUser = loginData.user;
-                userPlainPassword = password;
                 showAppDashboard();
 
             } catch (err) {
@@ -660,7 +648,6 @@
             }
 
             currentUser = data.user;
-            userPlainPassword = password; // Save plaintext password for profile view
             await _supabase.from('profiles').upsert([
                 { id: currentUser.id, full_name: currentUser.user_metadata?.full_name || 'User', whatsapp: currentUser.user_metadata?.whatsapp || '', email: currentUser.email, balance: 0.00, is_admin: false }
             ], { onConflict: 'id', ignoreDuplicates: true });
@@ -671,7 +658,6 @@
         async function handleLogout() {
             await _supabase.auth.signOut();
             currentUser = null;
-            userPlainPassword = '';
             showAuthScreen();
         }
 
@@ -757,9 +743,6 @@
                 document.getElementById('nav-support').classList.add('active');
             } else if (tabName === 'profile') {
                 document.getElementById('tab-profile').classList.remove('hidden');
-                const pwField = document.getElementById('profile-password');
-                pwField.type = 'password';
-                pwField.value = userPlainPassword ? userPlainPassword : '********';
             }
             toggleSidebar(false);
         }
@@ -978,29 +961,25 @@
             const tbody = document.getElementById('payments-table-body');
             tbody.innerHTML = '';
             
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--danger);">Error loading data.</td></tr>`;
+            if (error || !deposits || deposits.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No payment records found.</td></tr>';
                 return;
             }
 
-            if (deposits && deposits.length > 0) {
-                deposits.forEach(d => {
-                    let statusColor = 'var(--primary-gold)';
-                    if(d.status === 'Approved') statusColor = 'var(--success)';
-                    if(d.status === 'Rejected') statusColor = 'var(--danger)';
+            deposits.forEach(d => {
+                let statusColor = 'var(--primary-gold)';
+                if(d.status === 'Approved') statusColor = 'var(--success)';
+                if(d.status === 'Rejected') statusColor = 'var(--danger)';
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${d.payment_method}</td>
-                            <td>${formatCurrency(d.amount)}</td>
-                            <td>${d.transaction_id}</td>
-                            <td><span style="color: ${statusColor}; font-weight: 700;">${d.status}</span></td>
-                        </tr>
-                    `;
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No payment records found.</td></tr>';
-            }
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${d.payment_method}</td>
+                        <td>${formatCurrency(d.amount)}</td>
+                        <td>${d.transaction_id}</td>
+                        <td><span style="color: ${statusColor}; font-weight: 700;">${d.status}</span></td>
+                    </tr>
+                `;
+            });
         }
 
         function filterPayments(status) {
