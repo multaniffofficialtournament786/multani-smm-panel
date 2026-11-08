@@ -334,27 +334,56 @@
                 </div>
             </div>
 
-            <!-- TAB 6: WHATSAPP-STYLE FULL-SCREEN LIVE CHAT -->
+            <!-- TAB 6: WHATSAPP-STYLE FULL-SCREEN LIVE CHAT WITH 3 DOTS MENU -->
             <div id="tab-chat" class="tab-pane hidden">
-                <div class="card-box" style="width: 100%; min-height: 75vh; display: flex; flex-direction: column;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div class="card-title" style="margin: 0;">💬 WHATSAPP STYLE SUPPORT</div>
-                        <button type="button" onclick="loadChatUsers()" class="btn-refresh-icon">🔄 Refresh</button>
-                    </div>
-                    <div id="chat-users-list" style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                        <div style="text-align: center; color: var(--text-muted);">Loading chats...</div>
-                    </div>
-                    <div id="active-chat-box" class="hidden" style="flex: 1; display: flex; flex-direction: column;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--border-green); padding-bottom: 8px;">
-                            <button onclick="closeActiveChat()" style="background:none; border:none; color:var(--primary-gold); font-size:16px; cursor:pointer;">← Back</button>
-                            <span id="chat-active-title" style="font-weight: 800; color: #fff;">Chat Thread</span>
+                <div class="card-box" style="width: 100%; min-height: 80vh; display: flex; flex-direction: column; padding: 0; overflow: visible;">
+                    
+                    <!-- Chat Users List View -->
+                    <div id="chat-users-container" style="display: flex; flex-direction: column; height: 80vh;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border-green);">
+                            <div class="card-title" style="margin: 0;">💬 WHATSAPP STYLE SUPPORT</div>
+                            <button type="button" onclick="loadChatUsers()" class="btn-refresh-icon">🔄 Refresh</button>
                         </div>
-                        <div id="chat-messages-container" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-green); border-radius: 10px; padding: 12px; flex: 1; min-height: 350px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="admin-chat-input" class="form-control" placeholder="Type reply as Admin..." style="margin: 0;">
-                            <button type="button" onclick="sendAdminReply()" style="background: var(--primary-gold); border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; color: #000;">➤</button>
+                        <div id="chat-users-list" style="flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="text-align: center; color: var(--text-muted); margin-top: 40px;">Loading chats...</div>
                         </div>
                     </div>
+
+                    <!-- Active Chat Full Screen Box -->
+                    <div id="active-chat-box" class="hidden" style="display: flex; flex-direction: column; height: 80vh; position: relative;">
+                        
+                        <!-- WhatsApp Chat Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #0c261a; padding: 12px 15px; border-bottom: 1px solid var(--border-green);">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button onclick="closeActiveChat()" style="background:none; border:none; color:var(--primary-gold); font-size:18px; cursor:pointer;">←</button>
+                                <div id="chat-header-avatar" style="width:36px; height:36px; border-radius:50%; background:rgba(255,190,11,0.2); display:flex; align-items:center; justify-content:center; color:var(--primary-gold); font-weight:bold;">👤</div>
+                                <div>
+                                    <div id="chat-active-title" style="font-weight: 800; color: #fff; font-size: 14px;">Chat Thread</div>
+                                    <div id="chat-active-subtitle" style="font-size: 11px; color: var(--accent-green);">Online</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 3 Dots Menu Button & Dropdown -->
+                            <div style="position: relative;">
+                                <button onclick="toggleChatMenu(event)" style="background:none; border:none; color:var(--primary-gold); font-size:22px; cursor:pointer; padding: 0 5px;">⋮</button>
+                                <div id="chat-dropdown-menu" class="hidden" style="position: absolute; right: 0; top: 35px; background: #0c261a; border: 1px solid var(--primary-gold); border-radius: 10px; width: 160px; z-index: 500; box-shadow: 0 5px 20px rgba(0,0,0,0.8);">
+                                    <div onclick="clearCurrentChat()" style="padding: 10px 14px; font-size: 12px; color: var(--danger); cursor: pointer; border-bottom: 1px solid var(--border-green);">🗑️ Clear Chat</div>
+                                    <div onclick="markChatAsRead()" style="padding: 10px 14px; font-size: 12px; color: var(--success); cursor: pointer; border-bottom: 1px solid var(--border-green);">✓ Mark as Read</div>
+                                    <div onclick="viewCustomerInfo()" style="padding: 10px 14px; font-size: 12px; color: var(--primary-gold); cursor: pointer;">👤 View Profile</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages Container -->
+                        <div id="chat-messages-container" style="background: #05140d; padding: 15px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
+
+                        <!-- Chat Input Box -->
+                        <div style="display: flex; gap: 10px; padding: 12px; background: #0c261a; border-top: 1px solid var(--border-green);">
+                            <input type="text" id="admin-chat-input" class="form-control" placeholder="Type a message..." style="margin: 0; border-radius: 20px; background: rgba(0,0,0,0.5);" onkeypress="if(event.key === 'Enter') sendAdminReply();">
+                            <button type="button" onclick="sendAdminReply()" style="background: var(--primary-gold); border: none; width: 42px; height: 42px; border-radius: 50%; font-weight: 800; cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; font-size: 16px;">➤</button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -365,8 +394,8 @@
                         <div class="card-title" style="margin: 0;">👥 ALL MEMBERS & PASSWORDS MANAGER</div>
                         <button type="button" onclick="loadAllMemberProfiles()" class="btn-refresh-icon">🔄 Refresh</button>
                     </div>
-                    <div id="all-profiles-list" style="display: flex; flex-direction: column; gap: 10px;">
-                        <div style="text-align: center; color: var(--text-muted);">Loading member credentials...</div>
+                    <div id="all-profiles-list" style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="text-align: center; color: var(--text-muted);">Loading member profiles...</div>
                     </div>
                 </div>
             </div>
@@ -857,16 +886,19 @@
             if (members && members.length > 0) {
                 members.forEach(m => {
                     const userEmail = m.email || m.id || 'client@user.com';
+                    let dpHtml = `<div style="width:50px;height:50px;border-radius:50%;background:rgba(255,190,11,0.2);display:flex;align-items:center;justify-content:center;color:var(--primary-gold);font-weight:bold;font-size:20px;">👤</div>`;
+                    if(m.dp_url) {
+                        dpHtml = `<img src="${m.dp_url}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-gold);">`;
+                    }
+
                     container.innerHTML += `
-                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 8px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <strong style="color: var(--primary-gold);">${userEmail}</strong>
-                                <span style="font-size: 11px; color: var(--text-muted);">Balance: Rs ${m.balance || 0}</span>
-                            </div>
-                            <div style="font-size: 12px; color: #fff;">WhatsApp: ${m.whatsapp || 'N/A'}</div>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" id="member-pwd-${m.id}" class="form-control" placeholder="New password for member" style="padding: 6px 10px; font-size: 12px; margin:0;">
-                                <button onclick="resetMemberPassword('${userEmail}')" class="btn-sm" style="background: var(--primary-gold); color: #000;">Set Pwd</button>
+                        <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border-green);">
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                ${dpHtml}
+                                <div>
+                                    <strong style="color: var(--primary-gold); font-size: 15px;">${userEmail}</strong>
+                                    <div style="font-size: 12px; color: var(--text-muted);">WhatsApp: ${m.whatsapp || 'N/A'} | Balance: <span style="color:var(--success)">Rs ${m.balance || 0}</span></div>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -876,54 +908,56 @@
             }
         }
 
-        async function resetMemberPassword(userEmail) {
-            showVipAlert('Password update initiated for ' + userEmail);
-        }
-
-        // WhatsApp Style Full-Screen Live Chat
+        // WhatsApp Style Full-Screen Live Chat with 3 Dots Menu
         async function loadChatUsers() {
             const { data: tickets } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false });
             const listEl = document.getElementById('chat-users-list');
             listEl.innerHTML = '';
 
             if (!tickets || tickets.length === 0) {
-                listEl.innerHTML = '<div style="text-align: center; color: var(--text-muted);">No chat messages found.</div>';
+                listEl.innerHTML = '<div style="text-align: center; color: var(--text-muted); margin-top: 40px;">No chat messages found.</div>';
                 return;
             }
-
-            let userMap = {};
-            tickets.forEach(t => {
-                const uEmail = t.email || t.user_email || t.user_id || 'Client';
-                if (!userMap[uEmail]) {
-                    userMap[uEmail] = { lastMsg: t.message, unread: 0 };
-                }
-                if(t.status === 'Pending') userMap[uEmail].unread++;
-            });
 
             const { data: profiles } = await _supabase.from('profiles').select('*');
             let profileMap = {};
             if(profiles) {
-                profiles.forEach(p => { profileMap[p.email || p.id] = p; });
+                profiles.forEach(p => { 
+                    if(p.email) profileMap[p.email.toLowerCase().trim()] = p;
+                    if(p.id) profileMap[p.id] = p;
+                });
             }
 
-            for (let uEmail in userMap) {
-                let prof = profileMap[uEmail] || {};
-                let dpHtml = `<div style="width:45px;height:45px;border-radius:50%;background:rgba(255,190,11,0.2);display:flex;align-items:center;justify-content:center;color:var(--primary-gold);font-weight:bold;font-size:18px;">👤</div>`;
+            let userMap = {};
+            tickets.forEach(t => {
+                let uKey = (t.email || t.user_email || t.user_id || 'Client').toLowerCase().trim();
+                if (!userMap[uKey]) {
+                    userMap[uKey] = { originalKey: t.email || t.user_email || t.user_id || 'Client', lastMsg: t.message, unread: 0 };
+                }
+                if(t.status === 'Pending') userMap[uKey].unread++;
+            });
+
+            for (let uKey in userMap) {
+                let item = userMap[uKey];
+                let prof = profileMap[uKey] || {};
+                let displayName = prof.email || item.originalKey;
+                
+                let dpHtml = `<div style="width:50px;height:50px;border-radius:50%;background:rgba(255,190,11,0.2);display:flex;align-items:center;justify-content:center;color:var(--primary-gold);font-weight:bold;font-size:18px;">👤</div>`;
                 if(prof.dp_url) {
-                    dpHtml = `<img src="${prof.dp_url}" style="width:45px;height:45px;border-radius:50%;object-fit:cover;">`;
+                    dpHtml = `<img src="${prof.dp_url}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-gold);">`;
                 }
 
                 listEl.innerHTML += `
-                    <div onclick="openChatWithUser('${uEmail}')" style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-green);">
+                    <div onclick="openChatWithUser('${item.originalKey}')" style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-green);">
                         <div style="display: flex; gap: 12px; align-items: center;">
                             ${dpHtml}
                             <div>
-                                <strong style="color: var(--primary-gold); font-size: 15px;">${uEmail}</strong>
+                                <strong style="color: var(--primary-gold); font-size: 15px;">${displayName}</strong>
                                 <div style="font-size: 12px; color: var(--text-muted);">WhatsApp: ${prof.whatsapp || 'N/A'}</div>
-                                <div style="font-size: 13px; color: #fff; margin-top: 3px;">${userMap[uEmail].lastMsg}</div>
+                                <div style="font-size: 13px; color: #fff; margin-top: 3px;">${item.lastMsg}</div>
                             </div>
                         </div>
-                        ${userMap[uEmail].unread > 0 ? `<span style="background: var(--primary-gold); color: #000; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 12px;">${userMap[uEmail].unread} Unread</span>` : '<span style="font-size: 13px; color: var(--accent-green);">Chat ✓✓</span>'}
+                        ${item.unread > 0 ? `<span style="background: var(--primary-gold); color: #000; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 12px;">${item.unread} Unread</span>` : '<span style="font-size: 13px; color: var(--accent-green);">✓✓ Read</span>'}
                     </div>
                 `;
             }
@@ -931,10 +965,20 @@
 
         async function openChatWithUser(userEmail) {
             selectedChatEmail = userEmail;
-            document.getElementById('chat-users-list').classList.add('hidden');
+            document.getElementById('chat-users-container').classList.add('hidden');
             document.getElementById('active-chat-box').classList.remove('hidden');
             document.getElementById('chat-active-title').innerText = userEmail;
             
+            // Load customer DP in active chat header
+            const { data: prof } = await _supabase.from('profiles').select('*').eq('email', userEmail).single();
+            if (prof && prof.dp_url) {
+                document.getElementById('chat-header-avatar').innerHTML = `<img src="${prof.dp_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                document.getElementById('chat-active-subtitle').innerText = `WA: ${prof.whatsapp || 'Online'}`;
+            } else {
+                document.getElementById('chat-header-avatar').innerHTML = `👤`;
+                document.getElementById('chat-active-subtitle').innerText = `Online`;
+            }
+
             const box = document.getElementById('chat-messages-container');
             box.innerHTML = `<div style="text-align:center; color:var(--text-muted);">Loading chat...</div>`;
 
@@ -945,22 +989,57 @@
                     const isAdmin = m.message.startsWith('Admin:');
                     box.innerHTML += `
                         <div style="display: flex; justify-content: ${isAdmin ? 'flex-end' : 'flex-start'};">
-                            <div style="background: ${isAdmin ? 'rgba(255,190,11,0.2)' : 'rgba(255,255,255,0.08)'}; border: 1px solid ${isAdmin ? 'var(--primary-gold)' : 'var(--border-green)'}; padding: 10px 14px; border-radius: 12px; font-size: 14px; max-width: 80%;">
+                            <div style="background: ${isAdmin ? 'rgba(255,190,11,0.2)' : 'rgba(255,255,255,0.08)'}; border: 1px solid ${isAdmin ? 'var(--primary-gold)' : 'var(--border-green)'}; padding: 10px 14px; border-radius: 12px; font-size: 14px; max-width: 80%; color: #fff;">
                                 ${m.message}
                             </div>
                         </div>
                     `;
                 });
             } else {
-                box.innerHTML = `<div style="color: var(--text-muted); text-align: center;">No messages in this thread.</div>`;
+                box.innerHTML = `<div style="color: var(--text-muted); text-align: center; margin-top: 50px;">No messages in this thread.</div>`;
             }
             box.scrollTop = box.scrollHeight;
         }
 
         function closeActiveChat() {
             document.getElementById('active-chat-box').classList.add('hidden');
-            document.getElementById('chat-users-list').classList.remove('hidden');
+            document.getElementById('chat-users-container').classList.remove('hidden');
             loadChatUsers();
+        }
+
+        function toggleChatMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('chat-dropdown-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', () => {
+            const menu = document.getElementById('chat-dropdown-menu');
+            if (menu && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        async function clearCurrentChat() {
+            if(!confirm('Are you sure you want to clear this chat thread?')) return;
+            await _supabase.from('support_tickets').delete().or(`email.eq.${selectedChatEmail},user_email.eq.${selectedChatEmail}`);
+            showVipAlert('Chat cleared successfully!');
+            openChatWithUser(selectedChatEmail);
+        }
+
+        async function markChatAsRead() {
+            await _supabase.from('support_tickets').update({ status: 'Read' }).or(`email.eq.${selectedChatEmail},user_email.eq.${selectedChatEmail}`);
+            showVipAlert('Chat marked as read.');
+        }
+
+        async function viewCustomerInfo() {
+            const { data: prof } = await _supabase.from('profiles').select('*').eq('email', selectedChatEmail).single();
+            if (prof) {
+                showVipAlert(`Customer Info:\nEmail: ${prof.email}\nWhatsApp: ${prof.whatsapp || 'N/A'}\nBalance: Rs ${prof.balance || 0}`);
+            } else {
+                showVipAlert('Customer profile details not found.');
+            }
         }
 
         async function sendAdminReply() {
