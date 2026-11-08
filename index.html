@@ -23,16 +23,19 @@
         .hidden { display: none !important; }
 
         /* Auth Screen */
-        .auth-wrapper { max-width: 420px; margin: 40px auto; background: var(--bg-card); border: 2px solid var(--border-green); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        .auth-wrapper { max-width: 420px; margin: 40px auto; background: var(--bg-card); border: 2px solid var(--border-green); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; width: 92%; }
         .crown-icon { font-size: 50px; color: var(--primary-gold); margin-bottom: 10px; }
         .brand-title { font-size: 26px; font-weight: 800; color: var(--primary-gold); margin-bottom: 25px; letter-spacing: 1px; }
         .form-group { text-align: left; margin-bottom: 15px; position: relative; }
         .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; font-weight: 700; }
-        .form-control { width: 100%; padding: 12px 40px 12px 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-green); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+        
+        /* Fixed Input Box and Text Overflow Issue */
+        .form-control { width: 100%; padding: 12px 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-green); border-radius: 10px; color: #fff; font-size: 14px; outline: none; overflow: hidden; text-overflow: ellipsis; }
+        .form-control.has-icon { padding-right: 45px; }
         .form-control:focus { border-color: var(--primary-gold); }
         
         /* Eye Toggle Icon for Password */
-        .password-toggle { position: absolute; right: 15px; top: 35px; cursor: pointer; font-size: 16px; color: var(--text-muted); user-select: none; }
+        .password-toggle { position: absolute; right: 15px; top: 36px; cursor: pointer; font-size: 16px; color: var(--text-muted); user-select: none; z-index: 10; }
 
         .btn-main { width: 100%; padding: 14px; background: linear-gradient(135deg, #ffbe0b, #fb8500); border: none; border-radius: 10px; color: #000; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(255,190,11,0.3); }
         .auth-switch { margin-top: 20px; font-size: 13px; color: var(--text-muted); }
@@ -111,7 +114,7 @@
             </div>
             <div class="form-group" style="margin-bottom: 5px;">
                 <label>Password</label>
-                <input type="password" id="login-password" class="form-control" placeholder="••••••••">
+                <input type="password" id="login-password" class="form-control has-icon" placeholder="••••••••">
                 <span class="password-toggle" onclick="togglePassword('login-password', this)">👁️</span>
             </div>
             <div style="text-align: right; margin-bottom: 20px;">
@@ -140,15 +143,15 @@
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="reg-password" class="form-control" placeholder="••••••••">
+                <input type="password" id="reg-password" class="form-control has-icon" placeholder="••••••••" autocomplete="new-password">
                 <span class="password-toggle" onclick="togglePassword('reg-password', this)">👁️</span>
             </div>
             <div class="form-group">
                 <label>Confirm Password</label>
-                <input type="password" id="reg-confirm" class="form-control" placeholder="••••••••">
+                <input type="password" id="reg-confirm" class="form-control has-icon" placeholder="••••••••" autocomplete="new-password">
                 <span class="password-toggle" onclick="togglePassword('reg-confirm', this)">👁️</span>
             </div>
-            <button class="btn-main" onclick="handleRegister()">REGISTER ACCOUNT</button>
+            <button type="button" class="btn-main" onclick="handleRegister()">REGISTER ACCOUNT</button>
             <div class="auth-switch">
                 Already have an account? <a href="#" onclick="switchAuthView('login')">Login here</a>
             </div>
