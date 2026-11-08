@@ -113,7 +113,7 @@ async function refreshCustomerWalletBalance() {
     }
 }
 
-// ---------------- DEPOSIT SUBMISSION ----------------
+// ---------------- DEPOSIT SUBMISSION (WITH TIMEOUT & HANG FIX) ----------------
 
 async function handleDepositSubmit(event) {
     if (event) {
@@ -166,34 +166,39 @@ async function handleDepositSubmit(event) {
         button.innerHTML = "Submitting...";
     }
 
+    // Safety Timeout: 8 seconds taake button kabhi atke nahi
+    const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Request timeout. Check your internet connection.")), 8000)
+    );
+
     try {
-        const { data: sessionData, error: sessionError } =
-            await client.auth.getSession();
+        const depositAction = async () => {
+            const { data: sessionData, error: sessionError } = await client.auth.getSession();
+            if (sessionError) throw sessionError;
 
-        if (sessionError) throw sessionError;
+            const authUser = sessionData?.session?.user;
+            if (!authUser || authUser.id !== user.id) {
+                throw new Error("Your login session expired. Login again.");
+            }
 
-        const authUser = sessionData?.session?.user;
+            const amountUSD = Number((amountPKR / WALLET_CURRENCY_RATE).toFixed(4));
 
-        if (!authUser || authUser.id !== user.id) {
-            throw new Error("Your login session expired. Login again.");
-        }
+            const { error } = await client
+                .from("deposits")
+                .insert({
+                    user_id: authUser.id,
+                    amount: amountUSD,
+                    payment_method: method,
+                    sender_account: sender,
+                    transaction_id: trx,
+                    status: "pending"
+                });
 
-        const amountUSD = Number(
-            (amountPKR / WALLET_CURRENCY_RATE).toFixed(4)
-        );
+            if (error) throw error;
+            return true;
+        };
 
-        const { error } = await client
-            .from("deposits")
-            .insert({
-                user_id: authUser.id,
-                amount: amountUSD,
-                payment_method: method,
-                sender_account: sender,
-                transaction_id: trx,
-                status: "pending"
-            });
-
-        if (error) throw error;
+        await Promise.race([depositAction(), timeoutPromise]);
 
         walletNotify("Deposit request submitted! Waiting for admin approval.", "success");
 
@@ -202,7 +207,6 @@ async function handleDepositSubmit(event) {
         if (trxInput) trxInput.value = "";
 
         updateDepositUSDHint();
-
         await loadCustomerDepositsHistory();
 
     } catch (error) {
@@ -214,15 +218,14 @@ async function handleDepositSubmit(event) {
 
         if (button) {
             button.disabled = false;
-            button.innerHTML =
-                button.dataset.oldText || "SUBMIT DEPOSIT REQUEST";
+            button.innerHTML = button.dataset.oldText || "SUBMIT DEPOSIT REQUEST";
         }
     }
 
     return false;
 }
 
-// ---------------- PAYMENT HISTORY ----------------
+// ---------------- PAYMENT HISTORY (SESSION & REFRESH FIX) ----------------
 
 async function loadCustomerDepositsHistory() {
     const client = walletClient();
