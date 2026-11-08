@@ -200,7 +200,7 @@
                     </div>
                     <div class="form-group">
                         <label>Provider Service ID</label>
-                        <input type="number" id="srv-provider-service-id" class="form-control" placeholder="e.g. 1452 (ID on provider panel)">
+                        <input type="number" id="srv-provider-service-id" class="form-control" placeholder="e.g. 5659 (ID on provider panel)">
                     </div>
                     <div class="form-group">
                         <label>Category Name</label>
@@ -272,7 +272,7 @@
                     </div>
                     <div class="form-group">
                         <label>API URL (Endpoint)</label>
-                        <input type="text" id="prov-url" class="form-control" placeholder="https://provider.com/api/v2">
+                        <input type="text" id="prov-url" class="form-control" placeholder="https://smmdecent.co/api/v2">
                     </div>
                     <div class="form-group">
                         <label>API Key</label>
@@ -754,7 +754,7 @@
                         if (json.balance !== undefined) {
                             liveBalText = `${json.balance} ${json.currency || 'USD'}`;
                         } else {
-                            liveBalText = 'N/A';
+                            liveBalText = 'Active / Online';
                         }
                     } catch(e) {
                         liveBalText = 'Active / Online';
@@ -821,13 +821,22 @@
             let catId = existingCat ? existingCat.id : null;
 
             if (!catId) {
-                let { data: newCat, error: catErr } = await _supabase.from('service_categories').insert([{ name: catName, sort_order: 0 }]).select('id').single();
+                let { data: newCat } = await _supabase.from('service_categories').insert([{ name: catName, sort_order: 0 }]).select('id').single();
                 if (newCat) catId = newCat.id;
             }
 
-            // 2. Insert Service using category_id matching database schema
+            // 2. Insert Service using category_id and provider columns matching database schema
             const { error } = await _supabase.from('services').insert([
-                { category_id: catId || 1, name: srvName, rate: rate, min: min, max: max, provider_id: providerId || null, provider_service_id: providerServiceId || null, is_active: true }
+                { 
+                    category_id: catId || 1, 
+                    name: srvName, 
+                    rate: rate, 
+                    min: min, 
+                    max: max, 
+                    provider_id: providerId ? parseInt(providerId) : null, 
+                    provider_service_id: providerServiceId || null, 
+                    is_active: true 
+                }
             ]);
 
             if (error) showVipAlert('Error: ' + error.message);
@@ -882,17 +891,29 @@
         }
 
         async function updateDepositStatus(depositId, status, userEmail, amount) {
+            // Update deposit status using UUID string format
             const { error } = await _supabase.from('deposits').update({ status: status }).eq('id', depositId);
             if (error) {
                 showVipAlert('Error: ' + error.message);
                 return;
             }
 
-            if (status === 'Approved') {
-                const { data: profile } = await _supabase.from('profiles').select('balance').eq('email', userEmail).single();
+            if (status === 'Approved' && userEmail) {
+                // Fetch profile by email or user_id
+                let { data: profile } = await _supabase.from('profiles').select('*').eq('email', userEmail).single();
+                if (!profile) {
+                    let { data: profileById } = await _supabase.from('profiles').select('*').eq('id', userEmail).single();
+                    profile = profileById;
+                }
+
                 const currentBal = profile ? parseFloat(profile.balance || 0) : 0;
                 const newBal = currentBal + parseFloat(amount);
-                await _supabase.from('profiles').update({ balance: newBal }).eq('email', userEmail);
+                
+                if (profile && profile.email) {
+                    await _supabase.from('profiles').update({ balance: newBal }).eq('email', profile.email);
+                } else if (profile && profile.id) {
+                    await _supabase.from('profiles').update({ balance: newBal }).eq('id', profile.id);
+                }
             }
 
             showVipAlert(`Deposit request ${status} successfully!`);
