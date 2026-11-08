@@ -222,7 +222,7 @@ async function handleDepositSubmit(event) {
     return false;
 }
 
-// ---------------- PAYMENT HISTORY (UPDATED FOR REFRESH FIX) ----------------
+// ---------------- PAYMENT HISTORY ----------------
 
 async function loadCustomerDepositsHistory() {
     const client = walletClient();
@@ -238,7 +238,6 @@ async function loadCustomerDepositsHistory() {
     }
 
     try {
-        // Session check taake page refresh par user ID miss na ho
         const { data: { session }, error: sessionError } = await client.auth.getSession();
         const authUser = session?.user || walletUser();
 
@@ -280,9 +279,11 @@ function renderPaymentHistoryList(filter = "all") {
     let records = [...allCustomerDeposits];
 
     if (filter !== "all") {
-        records = records.filter(item =>
-            String(item.status).toLowerCase() === filter
-        );
+        records = records.filter(item => {
+            const itemStatus = String(item.status || "").trim().toLowerCase();
+            const targetFilter = String(filter).trim().toLowerCase();
+            return itemStatus === targetFilter;
+        });
     }
 
     if (!records.length) {
