@@ -6,8 +6,12 @@
     <title>MULTANI SMM VIP - Premium Reseller Panel</title>
     <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Supabase Config (Make sure config.js is in your SMM WEBSITE folder) -->
-    <script src="SMM WEBSITE/config.js"></script>
+    <script>
+        // DIRECT SUPABASE CONFIG (No config.js needed)
+        const SUPABASE_URL = 'YAHAN_APNI_ASLI_SUPABASE_URL_DALEN';
+        const SUPABASE_ANON_KEY = 'YAHAN_APNI_ASLI_SUPABASE_ANON_KEY_DALEN';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
     <style>
         :root {
             --bg-dark: #071810;
