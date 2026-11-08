@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    <!-- FORGOT PASSWORD MODAL (Hidden by default) -->
+    <!-- FORGOT PASSWORD MODAL (Hidden by default, opens only on click) -->
     <div id="forgot-modal" class="vip-modal-overlay hidden">
         <div class="vip-modal-box">
             <div style="font-size: 35px; margin-bottom: 10px;">🔒</div>
@@ -432,7 +432,7 @@
                     </div>
                     <div class="form-group">
                         <label>Account Password (Fixed)</label>
-                        <input type="password" id="profile-password" class="form-control has-icon" value="••••••••••••" disabled style="opacity: 0.6;">
+                        <input type="password" id="profile-password" class="form-control has-icon" value="********" disabled style="opacity: 0.6;">
                         <span class="password-toggle" onclick="togglePassword('profile-password', this)">👁️</span>
                     </div>
                     <div style="background: rgba(255,190,11,0.08); border: 1px solid rgba(255,190,11,0.3); padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 20px; text-align: left;">
@@ -521,6 +521,7 @@
         let allServices = [];
         let currentCurrency = 'PKR';
         let currencyRates = { PKR: 1, USD: 0.0034, INR: 0.28, AED: 0.013, SAR: 0.013 };
+        let userPlainPassword = ''; // Stores user password securely for profile toggle view
 
         function showVipAlert(message) {
             document.getElementById('vip-modal-message').innerText = message;
@@ -570,9 +571,15 @@
             const field = document.getElementById(fieldId);
             if (field.type === 'password') {
                 field.type = 'text';
+                if(fieldId === 'profile-password' && userPlainPassword) {
+                    field.value = userPlainPassword;
+                }
                 iconEl.innerText = '🙈';
             } else {
                 field.type = 'password';
+                if(fieldId === 'profile-password') {
+                    field.value = '********';
+                }
                 iconEl.innerText = '👁️';
             }
         }
@@ -629,6 +636,7 @@
                 }
 
                 currentUser = loginData.user;
+                userPlainPassword = password;
                 showAppDashboard();
 
             } catch (err) {
@@ -652,6 +660,7 @@
             }
 
             currentUser = data.user;
+            userPlainPassword = password; // Save plaintext password for profile view
             await _supabase.from('profiles').upsert([
                 { id: currentUser.id, full_name: currentUser.user_metadata?.full_name || 'User', whatsapp: currentUser.user_metadata?.whatsapp || '', email: currentUser.email, balance: 0.00, is_admin: false }
             ], { onConflict: 'id', ignoreDuplicates: true });
@@ -662,6 +671,7 @@
         async function handleLogout() {
             await _supabase.auth.signOut();
             currentUser = null;
+            userPlainPassword = '';
             showAuthScreen();
         }
 
@@ -747,6 +757,9 @@
                 document.getElementById('nav-support').classList.add('active');
             } else if (tabName === 'profile') {
                 document.getElementById('tab-profile').classList.remove('hidden');
+                const pwField = document.getElementById('profile-password');
+                pwField.type = 'password';
+                pwField.value = userPlainPassword ? userPlainPassword : '********';
             }
             toggleSidebar(false);
         }
@@ -961,9 +974,15 @@
             if (filterStatus !== 'ALL') {
                 query = query.eq('status', filterStatus);
             }
-            const { data: deposits } = await query;
+            const { data: deposits, error } = await query;
             const tbody = document.getElementById('payments-table-body');
             tbody.innerHTML = '';
+            
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--danger);">Error loading data.</td></tr>`;
+                return;
+            }
+
             if (deposits && deposits.length > 0) {
                 deposits.forEach(d => {
                     let statusColor = 'var(--primary-gold)';
