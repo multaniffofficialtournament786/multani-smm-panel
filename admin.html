@@ -1302,7 +1302,7 @@
             loadAdminCategoriesAndServices();
         }
 
-        // ================= 5. FULL-WIDTH DEPOSIT SLIP CARDS WITH APPROVE & REJECT =================
+        // ================= 5. FULL-WIDTH DEPOSIT SLIP CARDS WITH SECURE APPROVAL & REJECTION =================
         let currentDepositFilter = 'all';
 
         async function loadAdminDeposits() {
@@ -1404,46 +1404,89 @@
             }).join("");
         }
 
+        // ================= SECURE DEPOSIT APPROVAL =================
         async function handleDepositApproval(id) {
-            if (!confirm("Are you sure you want to approve this deposit and credit balance to user's wallet?")) return;
+            if (!confirm(
+                "Approve this deposit? Customer wallet will be credited in USD."
+            )) return;
 
             try {
-                // 1. Try RPC function
-                const { data, error } = await supabaseClient.rpc("admin_approve_deposit", { p_deposit_id: id });
-                
-                if (error || (data && !data.success)) {
-                    // Fallback Direct update
-                    const depositRecord = allDepositsMaster.find(x => String(x.id) === String(id));
-                    if (depositRecord) {
-                        const { data: prof } = await supabaseClient.from("profiles").select("balance").eq("id", depositRecord.user_id).maybeSingle();
-                        const currentBal = parseFloat((prof && prof.balance) || 0);
-                        const newBal = currentBal + parseFloat(depositRecord.amount || 0);
+                const btn = document.querySelector(
+                    `button[onclick="handleDepositApproval('${id}')"]`
+                );
 
-                        await Promise.all([
-                            supabaseClient.from("profiles").update({ balance: newBal }).eq("id", depositRecord.user_id),
-                            supabaseClient.from("deposits").update({ status: 'completed' }).eq("id", id)
-                        ]);
-                    }
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = "Processing...";
                 }
 
-                notify("Deposit Approved & Balance Added!", "success");
+                // ONLY secure database RPC. No direct balance update fallback.
+                const { data, error } = await supabaseClient.rpc(
+                    "admin_approve_deposit",
+                    { p_deposit_id: id }
+                );
+
+                if (error) throw error;
+
+                if (!data || data.success !== true) {
+                    throw new Error(
+                        data?.message || "Deposit approval failed."
+                    );
+                }
+
+                notify(
+                    "Deposit approved! USD added to customer wallet.",
+                    "success"
+                );
+
                 await loadAdminDeposits();
-                loadAllMembers();
-            } catch(e) {
-                notify("Approval error: " + e.message, "error");
+
+                if (typeof loadAllMembers === "function") {
+                    await loadAllMembers();
+                }
+
+            } catch (e) {
+                console.error("Deposit approval error:", e);
+
+                notify(
+                    "Approval failed: " + e.message,
+                    "error"
+                );
+
+                await loadAdminDeposits();
             }
         }
 
+        // ================= SECURE DEPOSIT REJECTION =================
         async function handleDepositRejection(id) {
-            if (!confirm("Are you sure you want to REJECT this deposit? (No balance will be added)")) return;
+            if (!confirm(
+                "Reject this deposit? No money will be added."
+            )) return;
 
             try {
-                const { error } = await supabaseClient.from("deposits").update({ status: 'rejected' }).eq("id", id);
+                // Only pending deposits can be rejected.
+                const { data, error } = await supabaseClient
+                    .from("deposits")
+                    .update({ status: "rejected" })
+                    .eq("id", id)
+                    .eq("status", "pending")
+                    .select("id");
+
                 if (error) throw error;
-                notify("Deposit Rejected and saved in history!", "info");
+
+                if (!data || data.length === 0) {
+                    throw new Error(
+                        "Deposit already processed or not found."
+                    );
+                }
+
+                notify("Deposit rejected successfully!", "info");
+
                 await loadAdminDeposits();
-            } catch(e) {
-                notify("Rejection error: " + e.message, "error");
+
+            } catch (e) {
+                console.error("Deposit rejection error:", e);
+                notify("Rejection failed: " + e.message, "error");
             }
         }
 
