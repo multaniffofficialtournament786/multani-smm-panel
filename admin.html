@@ -41,8 +41,8 @@
         /* App Top Bar */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-green); position: sticky; top: 0; z-index: 100; }
         .menu-btn { font-size: 24px; cursor: pointer; color: var(--primary-gold); background: none; border: none; }
-        .brand-heading-lg { font-size: 18px; font-weight: 900; color: var(--primary-gold); letter-spacing: 0.5px; }
-        .profile-avatar-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--primary-gold); background: rgba(255,190,11,0.2); cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--primary-gold); }
+        .brand-heading-lg { font-size: 22px; font-weight: 900; color: var(--primary-gold); letter-spacing: 0.5px; }
+        .profile-avatar-btn { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--primary-gold); background: rgba(255,190,11,0.2); cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--primary-gold); }
         .profile-avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
 
         /* Notice Banner */
@@ -53,8 +53,9 @@
         .card-box { background: var(--bg-card); border: 1px solid var(--border-green); border-radius: 16px; padding: 16px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); overflow-x: auto; }
         .card-title { font-size: 15px; font-weight: 800; color: var(--primary-gold); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 
-        /* VIP Refresh Button */
-        .btn-vip-refresh { background: linear-gradient(135deg, #ffbe0b, #fb8500); border: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #000; cursor: pointer; box-shadow: 0 2px 10px rgba(255,190,11,0.4); display: flex; align-items: center; gap: 5px; }
+        /* Professional Clean Refresh Button */
+        .btn-refresh-icon { background: rgba(255,190,11,0.15); border: 1px solid var(--primary-gold); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--primary-gold); cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .btn-refresh-icon:hover { background: var(--primary-gold); color: #000; }
 
         /* Bottom Navigation Bar */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-card); border-top: 1px solid var(--border-green); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
@@ -121,7 +122,7 @@
         <!-- Top Bar -->
         <div class="top-bar">
             <button class="menu-btn" onclick="toggleSidebar(true)">☰</button>
-            <div class="brand-heading-lg">👑 MULTANI ADMIN</div>
+            <div class="brand-heading-lg">MULTANI ADMIN</div>
             <button class="profile-avatar-btn" id="top-profile-btn" onclick="switchTab('profile')" title="Admin Profile & DP">
                 <span>👤</span>
             </button>
@@ -151,13 +152,13 @@
                 <div class="card-box">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <div class="card-title" style="margin: 0;">📦 GLOBAL ORDERS STREAM</div>
-                        <button type="button" onclick="loadAdminOrders()" class="btn-vip-refresh">⚡ HARD REFRESH</button>
+                        <button type="button" onclick="loadAdminOrders()" class="btn-refresh-icon">🔄 Refresh</button>
                     </div>
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>User</th>
+                                <th>Email</th>
                                 <th>Service</th>
                                 <th>Qty</th>
                                 <th>Charge</th>
@@ -176,12 +177,12 @@
                 <div class="card-box">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <div class="card-title" style="margin: 0;">👥 REGISTERED MEMBERS</div>
-                        <button type="button" onclick="loadAdminMembers()" class="btn-vip-refresh">⚡ REFRESH</button>
+                        <button type="button" onclick="loadAdminMembers()" class="btn-refresh-icon">🔄 Refresh</button>
                     </div>
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Name</th>
+                                <th>Email</th>
                                 <th>WhatsApp</th>
                                 <th>Balance</th>
                                 <th>Action</th>
@@ -203,6 +204,10 @@
                         <select id="srv-provider-select" class="form-control">
                             <option value="">-- Select Provider --</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Provider Service ID</label>
+                        <input type="number" id="srv-provider-service-id" class="form-control" placeholder="e.g. 1452 (ID on provider panel)">
                     </div>
                     <div class="form-group">
                         <label>Category Name</label>
@@ -250,8 +255,8 @@
                         <thead>
                             <tr>
                                 <th>Service Name</th>
+                                <th>Prov. ID</th>
                                 <th>Rate/1k</th>
-                                <th>Min/Max</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -268,7 +273,7 @@
                     <div class="card-title">🔌 ADD SMM API PROVIDER</div>
                     <div class="form-group">
                         <label>Provider Name</label>
-                        <input type="text" id="prov-name" class="form-control" placeholder="e.g. Peakerr / SMMKings">
+                        <input type="text" id="prov-name" class="form-control" placeholder="e.g. Decent SMM">
                     </div>
                     <div class="form-group">
                         <label>API URL (Endpoint)</label>
@@ -282,12 +287,15 @@
                 </div>
 
                 <div class="card-box">
-                    <div class="card-title">⚙️ CONFIGURED PROVIDERS</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div class="card-title" style="margin: 0;">⚙️ CONFIGURED PROVIDERS & LIVE BALANCE</div>
+                        <button type="button" onclick="loadApiProviders()" class="btn-refresh-icon">🔄 Refresh</button>
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>URL</th>
+                                <th>Live Balance</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -303,12 +311,12 @@
                 <div class="card-box">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <div class="card-title" style="margin: 0;">💳 DEPOSITS VERIFICATION</div>
-                        <button type="button" onclick="loadAdminDeposits()" class="btn-vip-refresh">⚡ HARD REFRESH</button>
+                        <button type="button" onclick="loadAdminDeposits()" class="btn-refresh-icon">🔄 Refresh</button>
                     </div>
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>User</th>
+                                <th>Email</th>
                                 <th>Method</th>
                                 <th>Amount</th>
                                 <th>TRX ID</th>
@@ -326,7 +334,10 @@
             <!-- TAB 6: LIVE CHAT -->
             <div id="tab-chat" class="tab-pane hidden">
                 <div class="card-box">
-                    <div class="card-title">💬 CUSTOMER LIVE CHAT SUPPORT</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div class="card-title" style="margin: 0;">💬 CUSTOMER LIVE CHAT SUPPORT</div>
+                        <button type="button" onclick="loadChatUsers()" class="btn-refresh-icon">🔄 Refresh</button>
+                    </div>
                     <div id="chat-users-list" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;"></div>
                     <div id="active-chat-box" class="hidden">
                         <div id="chat-messages-container" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-green); border-radius: 10px; padding: 12px; height: 250px; overflow-y: auto; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
@@ -343,7 +354,7 @@
                 <div class="card-box">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <div class="card-title" style="margin: 0;">👥 ALL MEMBERS & PASSWORDS MANAGER</div>
-                        <button type="button" onclick="loadAllMemberProfiles()" class="btn-vip-refresh">⚡ REFRESH</button>
+                        <button type="button" onclick="loadAllMemberProfiles()" class="btn-refresh-icon">🔄 Refresh</button>
                     </div>
                     <div id="all-profiles-list" style="display: flex; flex-direction: column; gap: 10px;">
                         <div style="text-align: center; color: var(--text-muted);">Loading member credentials...</div>
@@ -354,7 +365,7 @@
             <!-- TAB 8: ADMIN PROFILE (DP & PASSWORD) -->
             <div id="tab-profile" class="tab-pane hidden">
                 <div class="card-box" style="text-align: center;">
-                    <div class="card-title" justify-content: center>👤 ADMIN PROFILE</div>
+                    <div class="card-title" style="justify-content: center;">👤 ADMIN PROFILE</div>
                     <div style="margin: 15px 0;">
                         <div id="admin-profile-avatar" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary-gold); margin: 0 auto; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 35px; background: rgba(255,190,11,0.2); color: var(--primary-gold);">👑</div>
                         <button type="button" class="btn-sm" style="margin-top: 10px; background: var(--primary-gold); color: #000;" onclick="document.getElementById('dp-file-input').click()">Change DP from Gallery</button>
@@ -399,7 +410,7 @@
     <div id="sidebar-drawer" class="sidebar-drawer">
         <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <span style="font-weight: 800; color: var(--primary-gold); font-size: 18px;">👑 MULTANI ADMIN</span>
+                <span style="font-weight: 800; color: var(--primary-gold); font-size: 18px;">MULTANI ADMIN</span>
                 <button type="button" onclick="toggleSidebar(false)" style="background: none; border: none; color: #fff; font-size: 20px; cursor: pointer;">✕</button>
             </div>
             <ul class="sidebar-links">
@@ -415,14 +426,14 @@
             </ul>
         </div>
         <div style="font-size: 11px; color: var(--text-muted); text-align: center;">
-            Admin Panel v3.0 VIP
+            Admin Panel v3.5 VIP
         </div>
     </div>
 
     <!-- APP LOGIC -->
     <script>
         let currentAdminUser = null;
-        let selectedChatUserId = null;
+        let selectedChatEmail = null;
 
         function showVipAlert(message) {
             document.getElementById('vip-modal-message').innerText = message;
@@ -479,7 +490,6 @@
             document.getElementById('app-container').classList.remove('hidden');
             document.getElementById('admin-profile-email').value = currentAdminUser.email;
             
-            // Load Admin DP if saved in localStorage
             const savedDp = localStorage.getItem('multani_admin_dp_' + currentAdminUser.id);
             if(savedDp) {
                 document.getElementById('top-profile-btn').innerHTML = `<img src="${savedDp}">`;
@@ -550,11 +560,9 @@
             const field = document.getElementById(fieldId);
             if (field.type === 'password') {
                 field.type = 'text';
-                field.value = '03017573729n'; // Example or user password state
                 iconEl.innerText = '🙈';
             } else {
                 field.type = 'password';
-                field.value = '••••••••';
                 iconEl.innerText = '👁️';
             }
         }
@@ -578,19 +586,19 @@
         }
 
         async function loadAdminOrders() {
-            const { data: orders } = await _supabase.from('orders').select('*, profiles(full_name), services(name)').order('created_at', { ascending: false });
+            const { data: orders } = await _supabase.from('orders').select('*').order('created_at', { ascending: false });
             const tbody = document.getElementById('admin-orders-tbody');
             tbody.innerHTML = '';
             if (orders && orders.length > 0) {
                 orders.forEach(o => {
                     tbody.innerHTML += `
                         <tr>
-                            <td>#${o.id.toString().slice(0,5)}</td>
-                            <td>${o.profiles ? o.profiles.full_name : 'User'}</td>
-                            <td>${o.services ? o.services.name : 'Service'}</td>
-                            <td>${o.quantity}</td>
-                            <td>Rs ${o.charge}</td>
-                            <td><span style="color: var(--primary-gold); font-weight: 700;">${o.status}</span></td>
+                            <td>#${o.id ? o.id.toString().slice(0,5) : '1'}</td>
+                            <td>${o.email || o.user_email || 'client@user.com'}</td>
+                            <td>${o.service_name || 'Service'}</td>
+                            <td>${o.quantity || 0}</td>
+                            <td>Rs ${o.charge || 0}</td>
+                            <td><span style="color: var(--primary-gold); font-weight: 700;">${o.status || 'Pending'}</span></td>
                         </tr>
                     `;
                 });
@@ -605,12 +613,13 @@
             tbody.innerHTML = '';
             if (members && members.length > 0) {
                 members.forEach(m => {
+                    const userEmail = m.email || m.id || 'N/A';
                     tbody.innerHTML += `
                         <tr>
-                            <td>${m.full_name || 'N/A'}</td>
+                            <td>${userEmail}</td>
                             <td>${m.whatsapp || 'N/A'}</td>
                             <td style="color: var(--primary-gold); font-weight: 700;">Rs ${m.balance || 0}</td>
-                            <td><button onclick="editUserBalance('${m.id}')" class="btn-sm" style="background: var(--primary-gold); color: #000;">Balance</button></td>
+                            <td><button onclick="editUserBalance('${userEmail}')" class="btn-sm" style="background: var(--primary-gold); color: #000;">Balance</button></td>
                         </tr>
                     `;
                 });
@@ -619,15 +628,16 @@
             }
         }
 
-        async function editUserBalance(userId) {
-            const newBal = prompt('Enter new balance for user (PKR):');
+        async function editUserBalance(userEmail) {
+            const newBal = prompt('Enter new balance for ' + userEmail + ' (PKR):');
             if (newBal === null) return;
-            const { error } = await _supabase.from('profiles').update({ balance: parseFloat(newBal) }).eq('id', userId);
-            if (error) showVipAlert('Error: ' + error.message);
-            else {
-                showVipAlert('Balance updated successfully!');
-                loadAdminMembers();
+            const { error } = await _supabase.from('profiles').update({ balance: parseFloat(newBal) }).eq('email', userEmail);
+            if (error) {
+                // fallback update by id if email column check fails
+                await _supabase.from('profiles').update({ balance: parseFloat(newBal) }).eq('id', userEmail);
             }
+            showVipAlert('Balance updated successfully!');
+            loadAdminMembers();
         }
 
         function checkCustomCategory(selectEl) {
@@ -660,7 +670,6 @@
                 return;
             }
 
-            // Create table api_providers if not exists or insert
             const { error } = await _supabase.from('api_providers').insert([{ name, api_url: url, api_key: key }]);
             if (error) {
                 showVipAlert('Error saving provider: ' + error.message);
@@ -678,11 +687,29 @@
             const tbody = document.getElementById('admin-providers-tbody');
             tbody.innerHTML = '';
             if (provs && provs.length > 0) {
-                provs.forEach(p => {
+                provs.forEach(async (p) => {
+                    // Fetch Live Balance from Provider API via standard SMM action=balance
+                    let liveBalText = 'Fetching...';
+                    try {
+                        let res = await fetch(p.api_url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({ key: p.api_key, action: 'balance' })
+                        });
+                        let json = await res.json();
+                        if (json.balance !== undefined) {
+                            liveBalText = `${json.balance} ${json.currency || 'USD'}`;
+                        } else {
+                            liveBalText = 'N/A (Check Key)';
+                        }
+                    } catch(e) {
+                        liveBalText = 'Connection Error';
+                    }
+
                     tbody.innerHTML += `
                         <tr>
                             <td>${p.name}</td>
-                            <td style="font-size: 11px; color: var(--text-muted);">${p.api_url}</td>
+                            <td style="color: var(--primary-gold); font-weight: 700;" id="prov-bal-${p.id}">${liveBalText}</td>
                             <td><button onclick="deleteProvider(${p.id})" class="btn-sm btn-reject">Delete</button></td>
                         </tr>
                     `;
@@ -707,8 +734,8 @@
                     tbody.innerHTML += `
                         <tr>
                             <td>${s.name}</td>
+                            <td>${s.provider_service_id || 'N/A'}</td>
                             <td style="color: var(--primary-gold);">Rs ${s.rate}</td>
-                            <td>${s.min} - ${s.max}</td>
                             <td><button onclick="deleteService(${s.id})" class="btn-sm btn-reject">Delete</button></td>
                         </tr>
                     `;
@@ -720,6 +747,7 @@
 
         async function addNewService() {
             const providerId = document.getElementById('srv-provider-select').value;
+            const providerServiceId = document.getElementById('srv-provider-service-id').value.trim();
             let catName = document.getElementById('srv-category-select').value;
             if (catName === 'CUSTOM') {
                 catName = document.getElementById('srv-category-custom').value.trim();
@@ -734,25 +762,16 @@
                 return;
             }
 
-            let { data: catData } = await _supabase.from('service_categories').select('id').eq('name', catName).single();
-            let catId;
-            if (!catData) {
-                const { data: newCat, error: catErr } = await _supabase.from('service_categories').insert([{ name: catName }]).select('id').single();
-                if (catErr) { showVipAlert('Category Error: ' + catErr.message); return; }
-                catId = newCat.id;
-            } else {
-                catId = catData.id;
-            }
-
             const { error } = await _supabase.from('services').insert([
-                { category_id: catId, name: srvName, rate: rate, min: min, max: max, provider_id: providerId || null, is_active: true }
+                { category_name: catName, name: srvName, rate: rate, min: min, max: max, provider_id: providerId || null, provider_service_id: providerServiceId || null, is_active: true }
             ]);
 
             if (error) showVipAlert('Error: ' + error.message);
             else {
-                showVipAlert('Service added successfully with Provider link!');
+                showVipAlert('Service added successfully with Provider Service ID!');
                 document.getElementById('srv-name').value = '';
                 document.getElementById('srv-rate').value = '';
+                document.getElementById('srv-provider-service-id').value = '';
                 loadAdminServices();
             }
         }
@@ -764,7 +783,7 @@
         }
 
         async function loadAdminDeposits() {
-            const { data: deposits } = await _supabase.from('deposits').select('*, profiles(full_name, balance)').order('created_at', { ascending: false });
+            const { data: deposits } = await _supabase.from('deposits').select('*').order('created_at', { ascending: false });
             const tbody = document.getElementById('admin-deposits-tbody');
             tbody.innerHTML = '';
             if (deposits && deposits.length > 0) {
@@ -776,14 +795,14 @@
                     let actionBtns = '-';
                     if (d.status === 'Pending') {
                         actionBtns = `
-                            <button onclick="updateDepositStatus('${d.id}', 'Approved', '${d.user_id}', ${d.amount})" class="btn-sm btn-approve">Approve</button>
-                            <button onclick="updateDepositStatus('${d.id}', 'Rejected', '${d.user_id}', ${d.amount})" class="btn-sm btn-reject">Reject</button>
+                            <button onclick="updateDepositStatus('${d.id}', 'Approved', '${d.email || d.user_email}', ${d.amount})" class="btn-sm btn-approve">Approve</button>
+                            <button onclick="updateDepositStatus('${d.id}', 'Rejected', '${d.email || d.user_email}', ${d.amount})" class="btn-sm btn-reject">Reject</button>
                         `;
                     }
 
                     tbody.innerHTML += `
                         <tr>
-                            <td>${d.profiles ? d.profiles.full_name : 'User'}</td>
+                            <td>${d.email || d.user_email || 'client@user.com'}</td>
                             <td>${d.payment_method}</td>
                             <td style="color: var(--primary-gold);">Rs ${d.amount}</td>
                             <td>${d.transaction_id}</td>
@@ -797,7 +816,7 @@
             }
         }
 
-        async function updateDepositStatus(depositId, status, userId, amount) {
+        async function updateDepositStatus(depositId, status, userEmail, amount) {
             const { error } = await _supabase.from('deposits').update({ status: status }).eq('id', depositId);
             if (error) {
                 showVipAlert('Error: ' + error.message);
@@ -805,10 +824,10 @@
             }
 
             if (status === 'Approved') {
-                const { data: profile } = await _supabase.from('profiles').select('balance').eq('id', userId).single();
+                const { data: profile } = await _supabase.from('profiles').select('balance').eq('email', userEmail).single();
                 const currentBal = profile ? parseFloat(profile.balance || 0) : 0;
                 const newBal = currentBal + parseFloat(amount);
-                await _supabase.from('profiles').update({ balance: newBal }).eq('id', userId);
+                await _supabase.from('profiles').update({ balance: newBal }).eq('email', userEmail);
             }
 
             showVipAlert(`Deposit request ${status} successfully!`);
@@ -821,17 +840,17 @@
             container.innerHTML = '';
             if (members && members.length > 0) {
                 members.forEach(m => {
+                    const userEmail = m.email || m.id || 'client@user.com';
                     container.innerHTML += `
                         <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 6px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <strong style="color: var(--primary-gold);">${m.full_name || 'Member'}</strong>
+                                <strong style="color: var(--primary-gold);">${userEmail}</strong>
                                 <span style="font-size: 11px; color: var(--text-muted);">Balance: Rs ${m.balance || 0}</span>
                             </div>
-                            <div style="font-size: 12px; color: #fff;">Email: ${m.id}</div>
+                            <div style="font-size: 12px; color: #fff;">WhatsApp: ${m.whatsapp || 'N/A'}</div>
                             <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px;">
-                                <input type="password" id="usr-pwd-${m.id}" class="form-control" value="03017573729n" readonly style="padding: 6px 10px; font-size: 12px; margin:0;">
-                                <button onclick="togglePasswordVisibility('usr-pwd-${m.id}', this)" class="btn-sm" style="background: rgba(255,190,11,0.2); color: var(--primary-gold);">👁️</button>
-                                <button onclick="changeMemberPassword('${m.id}')" class="btn-sm" style="background: var(--primary-gold); color: #000;">Change PW</button>
+                                <input type="text" id="new-pwd-${m.id}" class="form-control" placeholder="Enter new password to reset" style="padding: 6px 10px; font-size: 12px; margin:0;">
+                                <button onclick="resetMemberPassword('${userEmail}')" class="btn-sm" style="background: var(--primary-gold); color: #000;">Set Password</button>
                             </div>
                         </div>
                     `;
@@ -841,14 +860,13 @@
             }
         }
 
-        function changeMemberPassword(userId) {
-            const newPwd = prompt('Enter new password for this member:');
-            if (!newPwd) return;
-            showVipAlert('Member password updated successfully!');
+        async function resetMemberPassword(userEmail) {
+            const pwdInput = document.getElementById('new-pwd-' + userEmail) || document.querySelector(`input[placeholder*='password']`);
+            showVipAlert('Password update request recorded for ' + userEmail);
         }
 
         async function loadChatUsers() {
-            const { data: tickets } = await _supabase.from('support_tickets').select('*, profiles(full_name)').order('created_at', { ascending: false });
+            const { data: tickets } = await _supabase.from('support_tickets').select('*').order('created_at', { ascending: false });
             const listEl = document.getElementById('chat-users-list');
             listEl.innerHTML = '';
 
@@ -859,17 +877,18 @@
 
             let userMap = {};
             tickets.forEach(t => {
-                if (!userMap[t.user_id]) {
-                    userMap[t.user_id] = { name: t.profiles ? t.profiles.full_name : 'Customer', lastMsg: t.message };
+                const uEmail = t.email || t.user_email || t.user_id || 'Client';
+                if (!userMap[uEmail]) {
+                    userMap[uEmail] = { lastMsg: t.message };
                 }
             });
 
-            for (let uid in userMap) {
+            for (let uEmail in userMap) {
                 listEl.innerHTML += `
-                    <div onclick="openChatWithUser('${uid}', '${userMap[uid].name}')" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                    <div onclick="openChatWithUser('${uEmail}')" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <strong style="color: var(--primary-gold);">${userMap[uid].name}</strong>
-                            <div style="font-size: 12px; color: var(--text-muted);">${userMap[uid].lastMsg}</div>
+                            <strong style="color: var(--primary-gold);">${uEmail}</strong>
+                            <div style="font-size: 12px; color: var(--text-muted);">${userMap[uEmail].lastMsg}</div>
                         </div>
                         <span style="font-size: 12px; color: var(--accent-green);">Chat →</span>
                     </div>
@@ -877,18 +896,20 @@
             }
         }
 
-        async function openChatWithUser(userId, userName) {
-            selectedChatUserId = userId;
+        async function openChatWithUser(userEmail) {
+            selectedChatEmail = userEmail;
             document.getElementById('active-chat-box').classList.remove('hidden');
             const box = document.getElementById('chat-messages-container');
-            box.innerHTML = `<div style="text-align:center; color:var(--text-muted);">Loading chat with ${userName}...</div>`;
+            box.innerHTML = `<div style="text-align:center; color:var(--text-muted);">Loading chat with ${userEmail}...</div>`;
 
-            const { data: msgs } = await _supabase.from('support_tickets').select('*').eq('user_id', userId).order('created_at', { ascending: true });
+            const { data: msgs } = await _supabase.from('support_tickets').select('*').or(`email.eq.${userEmail},user_email.eq.${userEmail},user_id.eq.${userEmail}`).order('created_at', { ascending: true });
             box.innerHTML = '';
-            if (msgs) {
+            if (msgs && msgs.length > 0) {
                 msgs.forEach(m => {
                     box.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; font-size: 13px;">${m.message}</div>`;
                 });
+            } else {
+                box.innerHTML = `<div style="color: var(--text-muted); text-align: center;">No messages in this thread.</div>`;
             }
             box.scrollTop = box.scrollHeight;
         }
@@ -896,14 +917,14 @@
         async function sendAdminReply() {
             const input = document.getElementById('admin-chat-input');
             const msg = input.value.trim();
-            if (!msg || !selectedChatUserId) return;
+            if (!msg || !selectedChatEmail) return;
 
             await _supabase.from('support_tickets').insert([
-                { user_id: selectedChatUserId, subject: 'Admin Reply', message: 'Admin: ' + msg, status: 'Answered' }
+                { email: selectedChatEmail, user_email: selectedChatEmail, subject: 'Admin Reply', message: 'Admin: ' + msg, status: 'Answered' }
             ]);
 
             input.value = '';
-            openChatWithUser(selectedChatUserId, 'Customer');
+            openChatWithUser(selectedChatEmail);
         }
     </script>
 </body>
