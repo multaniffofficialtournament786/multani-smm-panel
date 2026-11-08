@@ -1,7 +1,4 @@
 // ================= MULTANI SMM WALLET SYSTEM =================
-// Uses existing config.js variables. Do NOT redeclare:
-// allCustomerDeposits or activePaymentFilter.
-
 const WALLET_CURRENCY_RATE = 290;
 
 const WALLET_PAYMENT_METHODS = {
@@ -113,7 +110,7 @@ async function refreshCustomerWalletBalance() {
     }
 }
 
-// ---------------- DEPOSIT SUBMISSION (WITH TIMEOUT & HANG FIX) ----------------
+// ---------------- DEPOSIT SUBMISSION (WITH TIMEOUT PROTECTION) ----------------
 
 async function handleDepositSubmit(event) {
     if (event) {
@@ -124,10 +121,8 @@ async function handleDepositSubmit(event) {
     if (walletBusy) return false;
 
     const client = walletClient();
-    const user = walletUser();
-
-    if (!client || !user?.id) {
-        walletNotify("Please login again.", "error");
+    if (!client) {
+        walletNotify("Database client not initialized.", "error");
         return false;
     }
 
@@ -173,12 +168,13 @@ async function handleDepositSubmit(event) {
 
     try {
         const depositAction = async () => {
+            // Fresh session get karein taake normal chrome me bhi session miss na ho
             const { data: sessionData, error: sessionError } = await client.auth.getSession();
             if (sessionError) throw sessionError;
 
-            const authUser = sessionData?.session?.user;
-            if (!authUser || authUser.id !== user.id) {
-                throw new Error("Your login session expired. Login again.");
+            const authUser = sessionData?.session?.user || walletUser();
+            if (!authUser?.id) {
+                throw new Error("Your login session expired. Please login again.");
             }
 
             const amountUSD = Number((amountPKR / WALLET_CURRENCY_RATE).toFixed(4));
@@ -225,7 +221,7 @@ async function handleDepositSubmit(event) {
     return false;
 }
 
-// ---------------- PAYMENT HISTORY (SESSION & REFRESH FIX) ----------------
+// ---------------- PAYMENT HISTORY ----------------
 
 async function loadCustomerDepositsHistory() {
     const client = walletClient();
@@ -258,12 +254,10 @@ async function loadCustomerDepositsHistory() {
         if (error) throw error;
 
         allCustomerDeposits = data || [];
-
         renderPaymentHistoryList(activePaymentFilter);
 
     } catch (error) {
         console.error("Payment history error:", error);
-
         if (container) {
             container.innerHTML = "Unable to load payment history.";
         }
@@ -273,13 +267,10 @@ async function loadCustomerDepositsHistory() {
 function renderPaymentHistoryList(filter = "all") {
     activePaymentFilter = filter;
 
-    const container = document.getElementById(
-        "paymentHistoryListContainer"
-    );
-
+    const container = document.getElementById("paymentHistoryListContainer");
     if (!container) return;
 
-    let records = [...allCustomerDeposits];
+    let records = [...(window.allCustomerDeposits || [])];
 
     if (filter !== "all") {
         records = records.filter(item => {
@@ -290,17 +281,13 @@ function renderPaymentHistoryList(filter = "all") {
     }
 
     if (!records.length) {
-        container.innerHTML =
-            '<p style="text-align:center;padding:25px 0;">No payment records found.</p>';
+        container.innerHTML = '<p style="text-align:center;padding:25px 0;">No payment records found.</p>';
         return;
     }
 
     container.innerHTML = records.map(item => {
         const status = String(item.status || "pending").toLowerCase();
-        const date = item.created_at
-            ? new Date(item.created_at).toLocaleString()
-            : "-";
-
+        const date = item.created_at ? new Date(item.created_at).toLocaleString() : "-";
         const pkr = (Number(item.amount) || 0) * WALLET_CURRENCY_RATE;
 
         return `
@@ -341,7 +328,6 @@ function openPaymentHistoryView() {
     if (typeof switchTab === "function") {
         switchTab("viewPaymentHistory", null);
     }
-
     loadCustomerDepositsHistory();
 }
 
