@@ -6,6 +6,12 @@
     <title>MULTANI SMM VIP - Premium Reseller Panel</title>
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // REPLACE THESE WITH YOUR ACTUAL SUPABASE CREDENTIALS
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
     <style>
         :root {
             --bg-dark: #071810;
@@ -498,8 +504,7 @@
         </div>
     </div>
 
-    <!-- CONFIG & APP LOGIC -->
-    <script src="SMM WEBSITE/config.js"></script>
+    <!-- APP LOGIC -->
     <script>
         let currentUser = null;
         let allServices = [];
