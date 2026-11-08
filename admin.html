@@ -206,20 +206,20 @@
                         <label>Category Name</label>
                         <select id="srv-category-select" class="form-control" onchange="checkCustomCategory(this)">
                             <option value="TikTok Followers">TikTok Followers</option>
-                            <option value="TikTok Likes">TikTok Likes</option>
                             <option value="TikTok Views">TikTok Views</option>
                             <option value="Instagram Followers">Instagram Followers</option>
                             <option value="Instagram Likes">Instagram Likes</option>
                             <option value="YouTube Subscribers">YouTube Subscribers</option>
-                            <option value="YouTube Watchtime & Views">YouTube Watchtime & Views</option>
-                            <option value="Facebook Services">Facebook Services</option>
+                            <option value="YouTube Views">YouTube Views</option>
+                            <option value="Facebook Followers">Facebook Followers</option>
                             <option value="Telegram Members">Telegram Members</option>
-                            <option value="CUSTOM">➕ Add Custom Category...</option>
+                            <option value="WhatsApp Channel Members">WhatsApp Channel Members</option>
+                            <option value="CUSTOM">➕ Add Custom Category (e.g. WhatsApp)...</option>
                         </select>
                     </div>
                     <div class="form-group hidden" id="custom-category-group">
                         <label>Custom Category Name</label>
-                        <input type="text" id="srv-category-custom" class="form-control" placeholder="Enter custom category...">
+                        <input type="text" id="srv-category-custom" class="form-control" placeholder="Enter custom category name...">
                     </div>
                     <div class="form-group">
                         <label>Service Name</label>
@@ -816,16 +816,27 @@
                 return;
             }
 
+            // 1. Check or Insert Category in service_categories table to get category_id dynamically
+            let { data: existingCat } = await _supabase.from('service_categories').select('id').eq('name', catName).single();
+            let catId = existingCat ? existingCat.id : null;
+
+            if (!catId) {
+                let { data: newCat, error: catErr } = await _supabase.from('service_categories').insert([{ name: catName, sort_order: 0 }]).select('id').single();
+                if (newCat) catId = newCat.id;
+            }
+
+            // 2. Insert Service using category_id matching database schema
             const { error } = await _supabase.from('services').insert([
-                { category_name: catName, name: srvName, rate: rate, min: min, max: max, provider_id: providerId || null, provider_service_id: providerServiceId || null, is_active: true }
+                { category_id: catId || 1, name: srvName, rate: rate, min: min, max: max, provider_id: providerId || null, provider_service_id: providerServiceId || null, is_active: true }
             ]);
 
             if (error) showVipAlert('Error: ' + error.message);
             else {
-                showVipAlert('Service added successfully with Provider Service ID!');
+                showVipAlert('Service & Category added successfully!');
                 document.getElementById('srv-name').value = '';
                 document.getElementById('srv-rate').value = '';
                 document.getElementById('srv-provider-service-id').value = '';
+                document.getElementById('srv-category-custom').value = '';
                 loadAdminServices();
             }
         }
