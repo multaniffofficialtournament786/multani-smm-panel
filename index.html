@@ -69,8 +69,8 @@
         .stat-card .val { font-size: 24px; font-weight: 800; margin-top: 10px; }
         .stat-card .lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.9; }
 
-        /* General Card Box */
-        .card-box { background: var(--bg-card); border: 1px solid var(--border-green); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        /* General Card Box & Responsive Tables */
+        .card-box { background: var(--bg-card); border: 1px solid var(--border-green); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); overflow-x: auto; }
         .card-title { font-size: 16px; font-weight: 800; color: var(--primary-gold); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
         /* Bottom Navigation Bar */
@@ -87,9 +87,12 @@
         .sidebar-links li a:hover, .sidebar-links li a.active { background: rgba(255,190,11,0.1); color: var(--primary-gold); }
         .sidebar-links li a.logout-link { color: var(--danger); margin-top: 20px; }
 
-        /* Modal Overlay */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 3000; }
-        .modal-box { background: var(--bg-card); border: 2px solid var(--primary-gold); width: 90%; max-width: 350px; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        /* Custom VIP Modal Popup */
+        .vip-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 5000; }
+        .vip-modal-box { background: var(--bg-card); border: 2px solid var(--primary-gold); width: 90%; max-width: 360px; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9); }
+        .vip-modal-title { font-size: 18px; font-weight: 800; color: var(--primary-gold); margin-bottom: 12px; letter-spacing: 1px; }
+        .vip-modal-msg { font-size: 14px; color: #fff; margin-bottom: 20px; line-height: 1.5; word-break: break-word; }
+        .vip-modal-btn { background: linear-gradient(135deg, #ffbe0b, #fb8500); border: none; padding: 10px 25px; border-radius: 10px; font-weight: 800; color: #000; cursor: pointer; font-size: 14px; width: 100%; }
 
         /* Currency Modal Popup */
         .currency-modal-content { background: #ffffff; color: #000; width: 90%; max-width: 380px; border-radius: 24px; padding: 10px 0; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
@@ -98,12 +101,21 @@
         .currency-option input[type="radio"] { accent-color: #008000; width: 18px; height: 18px; cursor: pointer; }
 
         /* Tables & Lists */
-        .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 10px; white-space: nowrap; }
         .table th, .table td { padding: 12px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-green); }
         .table th { color: var(--text-muted); font-weight: 700; }
     </style>
 </head>
 <body>
+
+    <!-- CUSTOM VIP ALERT MODAL -->
+    <div id="vip-modal" class="vip-modal-overlay hidden">
+        <div class="vip-modal-box">
+            <div class="vip-modal-title">👑 MULTANI SMM</div>
+            <div class="vip-modal-msg" id="vip-modal-message">Notification message here</div>
+            <button class="vip-modal-btn" onclick="closeVipModal()">OK</button>
+        </div>
+    </div>
 
     <!-- AUTHENTICATION SECTION -->
     <div id="auth-container" class="auth-wrapper" style="margin-top: 40px;">
@@ -343,10 +355,11 @@
                         <div class="card-title" style="margin: 0;">🕒 Payment History</div>
                         <button type="button" onclick="switchTab('deposit')" style="background: none; border: 1px solid var(--primary-gold); color: var(--primary-gold); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 12px;">← Back</button>
                     </div>
-                    <div style="display: flex; gap: 5px; margin-bottom: 15px;">
-                        <button type="button" onclick="filterPayments('ALL')" style="flex:1; background: var(--primary-gold); border: none; padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">ALL</button>
-                        <button type="button" onclick="filterPayments('Pending')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">PENDING</button>
-                        <button type="button" onclick="filterPayments('Approved')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">APPROVED</button>
+                    <div style="display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap;">
+                        <button type="button" id="pay-btn-all" onclick="filterPayments('ALL')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">ALL</button>
+                        <button type="button" id="pay-btn-pending" onclick="filterPayments('Pending')" style="flex:1; background: var(--primary-gold); color: #000; border: none; padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">PENDING</button>
+                        <button type="button" id="pay-btn-approved" onclick="filterPayments('Approved')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">APPROVED</button>
+                        <button type="button" id="pay-btn-rejected" onclick="filterPayments('Rejected')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">REJECTED</button>
                     </div>
                     <table class="table">
                         <thead>
@@ -405,10 +418,11 @@
                     </div>
                     <div class="form-group">
                         <label>Account Password (Fixed)</label>
-                        <input type="password" class="form-control" value="••••••••••••" disabled style="opacity: 0.6;">
+                        <input type="password" id="profile-password" class="form-control has-icon" value="••••••••••••" disabled style="opacity: 0.6;">
+                        <span class="password-toggle" onclick="togglePassword('profile-password', this)">👁️</span>
                     </div>
                     <div style="background: rgba(255,190,11,0.08); border: 1px solid rgba(255,190,11,0.3); padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 20px; text-align: left;">
-                        ℹ️ پاس ورڈ چینج کرنے کے لیے ایڈمن سے رابطہ کریں <a href="https://wa.me/923292788285" target="_blank" style="color: var(--primary-gold); font-weight: 700;">Admin</a>
+                        ℹ️ پاس ورڈ چینج کرنے کے لیے ایڈمن سے رابطہ کریں <a href="https://wa.me/923292488285" target="_blank" style="color: var(--primary-gold); font-weight: 700;">Admin</a>
                     </div>
                     <button type="button" class="btn-main" onclick="saveProfileChanges()">SAVE PROFILE</button>
                 </div>
@@ -463,18 +477,18 @@
 
     <!-- FORGOT PASSWORD MODAL -->
     <div id="forgot-modal" class="modal-overlay hidden">
-        <div class="modal-box">
+        <div class="vip-modal-box" style="margin: 0 auto;">
             <div style="font-size: 35px; margin-bottom: 10px;">🔒</div>
-            <h3 style="color: var(--primary-gold); margin-bottom: 10px;">Password Reset</h3>
+            <div class="vip-modal-title">Password Reset</div>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
                 Password change karne ke liye admin se rabta karein:<br><br>
                 <strong style="color: #fff; font-size: 15px;">Muhammad Nadeem</strong><br>
-                <span style="color: var(--accent-green); font-size: 16px; font-weight: 800;">03292788285</span>
+                <span style="color: var(--accent-green); font-size: 16px; font-weight: 800;">03292488285</span>
             </p>
-            <a href="https://wa.me/923292788285?text=Assalam-o-Alaikum%20Muhammad%20Nadeem,%20mujhe%20apne%20MULTANI%20SMM%20account%20ka%20password%20change%20karwana%20hai." target="_blank" style="display: block; background: #25d366; color: #fff; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 10px;">
+            <a href="https://wa.me/923292488285?text=Assalam-o-Alaikum%20Muhammad%20Nadeem,%20mujhe%20apne%20MULTANI%20SMM%20account%20ka%20password%20change%20karwana%20hai." target="_blank" style="display: block; background: #25d366; color: #fff; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 10px;">
                 🟢 Open WhatsApp Support
             </a>
-            <button type="button" onclick="closeForgotPasswordModal()" style="background: none; border: 1px solid var(--border-green); color: var(--text-muted); padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 12px;">Close</button>
+            <button type="button" onclick="closeForgotPasswordModal()" style="background: none; border: 1px solid var(--border-green); color: var(--text-muted); padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 12px; width: 100%;">Close</button>
         </div>
     </div>
 
@@ -510,6 +524,15 @@
         let allServices = [];
         let currentCurrency = 'PKR';
         let currencyRates = { PKR: 1, USD: 0.0034, INR: 0.28, AED: 0.013, SAR: 0.013 };
+
+        // VIP Custom Alert function replacing default browser alert
+        function showVipAlert(message) {
+            document.getElementById('vip-modal-message').innerText = message;
+            document.getElementById('vip-modal').classList.remove('hidden');
+        }
+        function closeVipModal() {
+            document.getElementById('vip-modal').classList.add('hidden');
+        }
 
         document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('input').forEach(input => {
@@ -554,16 +577,15 @@
             const confirm = document.getElementById('reg-confirm').value.trim();
 
             if (!name || !whatsapp || !email || !password) {
-                alert('Please fill in all fields.');
+                showVipAlert('Please fill in all fields.');
                 return;
             }
             if (password !== confirm) {
-                alert('Passwords do not match.');
+                showVipAlert('Passwords do not match.');
                 return;
             }
 
             try {
-                // 1. Sign up user
                 const { data, error } = await _supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -571,7 +593,7 @@
                 });
 
                 if (error) {
-                    alert('Signup Error: ' + error.message);
+                    showVipAlert('Signup Error: ' + error.message);
                     return;
                 }
 
@@ -581,10 +603,9 @@
                     ]);
                 }
 
-                // 2. Direct login after successful registration
                 const { data: loginData, error: loginError } = await _supabase.auth.signInWithPassword({ email, password });
                 if (loginError) {
-                    alert('Registration successful! Please login now.');
+                    showVipAlert('Registration successful! Please login now.');
                     switchAuthView('login');
                     return;
                 }
@@ -593,7 +614,7 @@
                 showAppDashboard();
 
             } catch (err) {
-                alert('An unexpected error occurred: ' + err.message);
+                showVipAlert('An unexpected error occurred: ' + err.message);
             }
         }
 
@@ -602,13 +623,13 @@
             const password = document.getElementById('login-password').value.trim();
 
             if (!email || !password) {
-                alert('Please enter email and password.');
+                showVipAlert('Please enter email and password.');
                 return;
             }
 
             const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
             if (error) {
-                alert('Login Error: ' + error.message);
+                showVipAlert('Login Error: ' + error.message);
                 return;
             }
 
@@ -702,7 +723,7 @@
                 document.getElementById('tab-deposit').classList.remove('hidden');
             } else if (tabName === 'payment-history') {
                 document.getElementById('tab-payment-history').classList.remove('hidden');
-                loadPaymentHistory();
+                filterPayments('Pending'); // Open with PENDING by default as requested
             } else if (tabName === 'support') {
                 document.getElementById('tab-support').classList.remove('hidden');
                 document.getElementById('nav-support').classList.add('active');
@@ -851,13 +872,13 @@
             const qty = parseInt(document.getElementById(formNum === 1 ? 'order-qty' : 'order-qty-2').value);
 
             if (!srvId || !link || !qty) {
-                alert('Please fill in all order fields.');
+                showVipAlert('Please fill in all order fields.');
                 return;
             }
 
             const srv = allServices.find(s => s.id == srvId);
             if (qty < srv.min || qty > srv.max) {
-                alert(`Quantity must be between ${srv.min} and ${srv.max}`);
+                showVipAlert(`Quantity must be between ${srv.min} and ${srv.max}`);
                 return;
             }
 
@@ -868,9 +889,9 @@
             ]);
 
             if (error) {
-                alert('Order Error: ' + error.message);
+                showVipAlert('Order Error: ' + error.message);
             } else {
-                alert('Order placed successfully!');
+                showVipAlert('Order placed successfully!');
                 loadAppData();
                 switchTab('orders');
             }
@@ -883,7 +904,7 @@
             const trx = document.getElementById('deposit-trx').value.trim();
 
             if (!amount || !trx) {
-                alert('Please enter amount and Transaction ID.');
+                showVipAlert('Please enter amount and Transaction ID.');
                 return;
             }
 
@@ -892,9 +913,9 @@
             ]);
 
             if (error) {
-                alert('Deposit Error: ' + error.message);
+                showVipAlert('Deposit Error: ' + error.message);
             } else {
-                alert('Deposit request submitted successfully! Admin will verify soon.');
+                showVipAlert('Deposit request submitted successfully! Admin will verify soon.');
                 document.getElementById('deposit-amount').value = '';
                 document.getElementById('deposit-sender').value = '';
                 document.getElementById('deposit-trx').value = '';
@@ -902,7 +923,23 @@
             }
         }
 
-        async function loadPaymentHistory(filterStatus = 'ALL') {
+        async function loadPaymentHistory(filterStatus = 'Pending') {
+            // Update active states on filter buttons
+            ['ALL', 'Pending', 'Approved', 'Rejected'].forEach(st => {
+                const btn = document.getElementById(`pay-btn-${st.toLowerCase()}`);
+                if(btn) {
+                    if(st === filterStatus) {
+                        btn.style.background = 'var(--primary-gold)';
+                        btn.style.color = '#000';
+                        btn.style.border = 'none';
+                    } else {
+                        btn.style.background = 'rgba(255,255,255,0.05)';
+                        btn.style.color = '#fff';
+                        btn.style.border = '1px solid var(--border-green)';
+                    }
+                }
+            });
+
             let query = _supabase.from('deposits').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
             if (filterStatus !== 'ALL') {
                 query = query.eq('status', filterStatus);
@@ -912,12 +949,16 @@
             tbody.innerHTML = '';
             if (deposits && deposits.length > 0) {
                 deposits.forEach(d => {
+                    let statusColor = 'var(--primary-gold)';
+                    if(d.status === 'Approved') statusColor = 'var(--success)';
+                    if(d.status === 'Rejected') statusColor = 'var(--danger)';
+
                     tbody.innerHTML += `
                         <tr>
                             <td>${d.payment_method}</td>
                             <td>${formatCurrency(d.amount)}</td>
                             <td>${d.transaction_id}</td>
-                            <td><span style="color: ${d.status === 'Approved' ? 'var(--success)' : d.status === 'Rejected' ? 'var(--danger)' : 'var(--primary-gold)'};">${d.status}</span></td>
+                            <td><span style="color: ${statusColor}; font-weight: 700;">${d.status}</span></td>
                         </tr>
                     `;
                 });
@@ -956,7 +997,7 @@
                 document.getElementById('profile-avatar-img').src = base64Img;
 
                 await _supabase.from('profiles').update({ avatar_url: base64Img }).eq('id', currentUser.id);
-                alert('Profile picture updated successfully!');
+                showVipAlert('Profile picture updated successfully!');
             };
             reader.readAsDataURL(file);
         }
@@ -971,9 +1012,9 @@
             }).eq('id', currentUser.id);
 
             if (error) {
-                alert('Error updating profile: ' + error.message);
+                showVipAlert('Error updating profile: ' + error.message);
             } else {
-                alert('Profile updated successfully!');
+                showVipAlert('Profile updated successfully!');
                 fetchUserProfile();
             }
         }
