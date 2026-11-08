@@ -1,1 +1,0 @@
-# multani-smm-panel
