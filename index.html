@@ -111,9 +111,26 @@
     <!-- CUSTOM VIP ALERT MODAL -->
     <div id="vip-modal" class="vip-modal-overlay hidden">
         <div class="vip-modal-box">
-            <div class="vip-modal-title">👑 MULTANI SMM</div>
+            <div class="vip-modal-title">MULTANI SMM</div>
             <div class="vip-modal-msg" id="vip-modal-message">Notification message here</div>
             <button class="vip-modal-btn" onclick="closeVipModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- FORGOT PASSWORD MODAL (Hidden by default) -->
+    <div id="forgot-modal" class="vip-modal-overlay hidden">
+        <div class="vip-modal-box">
+            <div style="font-size: 35px; margin-bottom: 10px;">🔒</div>
+            <div class="vip-modal-title">Password Reset</div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+                Password change karne ke liye admin se rabta karein:<br><br>
+                <strong style="color: #fff; font-size: 15px;">Muhammad Nadeem</strong><br>
+                <span style="color: var(--accent-green); font-size: 16px; font-weight: 800;">03292488285</span>
+            </p>
+            <a href="https://wa.me/923292488285?text=Assalam-o-Alaikum%20Muhammad%20Nadeem,%20mujhe%20apne%20MULTANI%20SMM%20account%20ka%20password%20change%20karwana%20hai." target="_blank" style="display: block; background: #25d366; color: #fff; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 10px;">
+                🟢 Open WhatsApp Support
+            </a>
+            <button type="button" onclick="closeForgotPasswordModal()" class="vip-modal-btn" style="background: rgba(255,255,255,0.1); color: #fff;">Close</button>
         </div>
     </div>
 
@@ -152,7 +169,7 @@
             </div>
             <div class="form-group">
                 <label>WhatsApp Number</label>
-                <input type="text" id="reg-whatsapp" class="form-control" placeholder="03292788285" autocomplete="off" value="">
+                <input type="text" id="reg-whatsapp" class="form-control" placeholder="03292488285" autocomplete="off" value="">
             </div>
             <div class="form-group">
                 <label>Email Address</label>
@@ -318,15 +335,12 @@
             <div id="tab-deposit" class="tab-pane hidden">
                 <div class="card-box" style="border: 2px dashed var(--primary-gold);">
                     <div class="card-title">💳 Deposit Funds</div>
-                    <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 13px;">
-                        <span style="color: var(--primary-gold); font-weight: 700;">EASYPAISA ACCOUNT:</span><br>
-                        <strong style="font-size: 16px; color: #fff;">03186815926</strong><br>
-                        Title: Muhammad Nadeem<br>
-                        Binance Rate: 1$ = 290 PKR
+                    <div id="deposit-info-box" style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 13px;">
+                        <!-- Dynamic payment account details -->
                     </div>
                     <div class="form-group">
                         <label>Payment Method</label>
-                        <select id="deposit-method" class="form-control">
+                        <select id="deposit-method" class="form-control" onchange="updateDepositDetails()">
                             <option value="Easypaisa">Easypaisa</option>
                             <option value="Sadapay">Sadapay</option>
                         </select>
@@ -357,7 +371,7 @@
                     </div>
                     <div style="display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap;">
                         <button type="button" id="pay-btn-all" onclick="filterPayments('ALL')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">ALL</button>
-                        <button type="button" id="pay-btn-pending" onclick="filterPayments('Pending')" style="flex:1; background: var(--primary-gold); color: #000; border: none; padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">PENDING</button>
+                        <button type="button" id="pay-btn-pending" onclick="filterPayments('Pending')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">PENDING</button>
                         <button type="button" id="pay-btn-approved" onclick="filterPayments('Approved')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">APPROVED</button>
                         <button type="button" id="pay-btn-rejected" onclick="filterPayments('Rejected')" style="flex:1; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-green); padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 11px;">REJECTED</button>
                     </div>
@@ -475,25 +489,8 @@
         </div>
     </div>
 
-    <!-- FORGOT PASSWORD MODAL -->
-    <div id="forgot-modal" class="modal-overlay hidden">
-        <div class="vip-modal-box" style="margin: 0 auto;">
-            <div style="font-size: 35px; margin-bottom: 10px;">🔒</div>
-            <div class="vip-modal-title">Password Reset</div>
-            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
-                Password change karne ke liye admin se rabta karein:<br><br>
-                <strong style="color: #fff; font-size: 15px;">Muhammad Nadeem</strong><br>
-                <span style="color: var(--accent-green); font-size: 16px; font-weight: 800;">03292488285</span>
-            </p>
-            <a href="https://wa.me/923292488285?text=Assalam-o-Alaikum%20Muhammad%20Nadeem,%20mujhe%20apne%20MULTANI%20SMM%20account%20ka%20password%20change%20karwana%20hai." target="_blank" style="display: block; background: #25d366; color: #fff; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 10px;">
-                🟢 Open WhatsApp Support
-            </a>
-            <button type="button" onclick="closeForgotPasswordModal()" style="background: none; border: 1px solid var(--border-green); color: var(--text-muted); padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 12px; width: 100%;">Close</button>
-        </div>
-    </div>
-
     <!-- CURRENCY CONVERTER MODAL -->
-    <div id="currency-modal" class="modal-overlay hidden">
+    <div id="currency-modal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 3000;">
         <div class="currency-modal-content">
             <div class="currency-option" onclick="selectCurrency('PKR', '🇵🇰')">
                 <span style="display: flex; align-items: center; gap: 12px;"><span style="font-size: 22px;">🇵🇰</span> PKR</span>
@@ -525,7 +522,6 @@
         let currentCurrency = 'PKR';
         let currencyRates = { PKR: 1, USD: 0.0034, INR: 0.28, AED: 0.013, SAR: 0.013 };
 
-        // VIP Custom Alert function replacing default browser alert
         function showVipAlert(message) {
             document.getElementById('vip-modal-message').innerText = message;
             document.getElementById('vip-modal').classList.remove('hidden');
@@ -539,6 +535,8 @@
                 if(input.id !== 'order-qty' && input.id !== 'order-qty-2') input.value = '';
             });
 
+            updateDepositDetails();
+
             const { data: { session } } = await _supabase.auth.getSession();
             if (session) {
                 currentUser = session.user;
@@ -547,6 +545,26 @@
                 showAuthScreen();
             }
         });
+
+        function updateDepositDetails() {
+            const method = document.getElementById('deposit-method').value;
+            const box = document.getElementById('deposit-info-box');
+            if (method === 'Sadapay') {
+                box.innerHTML = `
+                    <span style="color: var(--primary-gold); font-weight: 700;">SADAPAY ACCOUNT:</span><br>
+                    <strong style="font-size: 16px; color: #fff;">03281926729</strong><br>
+                    Title: Muhammad Nadeem<br>
+                    Binance Rate: 1$ = 290 PKR
+                `;
+            } else {
+                box.innerHTML = `
+                    <span style="color: var(--primary-gold); font-weight: 700;">EASYPAISA ACCOUNT:</span><br>
+                    <strong style="font-size: 16px; color: #fff;">03186815926</strong><br>
+                    Title: Muhammad Nadeem<br>
+                    Binance Rate: 1$ = 290 PKR
+                `;
+            }
+        }
 
         function togglePassword(fieldId, iconEl) {
             const field = document.getElementById(fieldId);
@@ -723,7 +741,7 @@
                 document.getElementById('tab-deposit').classList.remove('hidden');
             } else if (tabName === 'payment-history') {
                 document.getElementById('tab-payment-history').classList.remove('hidden');
-                filterPayments('Pending'); // Open with PENDING by default as requested
+                filterPayments('Pending'); // Default open with PENDING
             } else if (tabName === 'support') {
                 document.getElementById('tab-support').classList.remove('hidden');
                 document.getElementById('nav-support').classList.add('active');
@@ -924,7 +942,6 @@
         }
 
         async function loadPaymentHistory(filterStatus = 'Pending') {
-            // Update active states on filter buttons
             ['ALL', 'Pending', 'Approved', 'Rejected'].forEach(st => {
                 const btn = document.getElementById(`pay-btn-${st.toLowerCase()}`);
                 if(btn) {
