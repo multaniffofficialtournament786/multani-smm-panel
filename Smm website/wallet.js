@@ -1,430 +1,393 @@
 
 // ================= MULTANI SMM WALLET SYSTEM =================
+// Uses existing Supabase client and login from config.js / auth.js
 
-const SUPABASE_URL = "https://kffkcfnawguztldjuxnu.supabase.co";
+const WALLET_CURRENCY_RATE = 290;
 
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoZW5hdXl5dXhvbmllZHd6YWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4NzI5ODgsImV4cCI6MjEwOTQ0ODk4OH0.NC1bx-akp0haMXxOQs4zrGzpID9H855J4Kno35znLTQ";
-
-let directSupabaseClient = null;
-let allCustomerDeposits = [];
-let activePaymentFilter = "all";
-
-const PKR_TO_USD_RATE = 290;
-
-// ================= SUPABASE CLIENT =================
-
-function getDirectClient() {
-    if (window.supabaseClient) {
-        return window.supabaseClient;
-    }
-
-    if (directSupabaseClient) {
-        return directSupabaseClient;
-    }
-
-    if (
-        window.supabase &&
-        typeof window.supabase.createClient === "function"
-    ) {
-        directSupabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY
-        );
-
-        return directSupabaseClient;
-    }
-
-    return null;
-}
-
-// ================= AUTH USER =================
-
-async function getWalletUser() {
-    const client = getDirectClient();
-
-    if (!client) {
-        throw new Error("Database connection not available.");
-    }
-
-    const { data, error } = await client.auth.getUser();
-
-    if (error) throw error;
-
-    if (!data || !data.user) {
-        throw new Error("Please login again.");
-    }
-
-    return data.user;
-}
-
-// ================= PAYMENT METHODS =================
-
-const PAYMENT_METHODS_DATA = {
-    Easypaisa: {
-        title: "Easypaisa Account:",
+const WALLET_PAYMENT_METHODS = {
+    easypaisa: {
+        name: "Easypaisa",
         number: "03186815926",
-        name: "Title: Muhammad Nadeem"
+        title: "Muhammad Nadeem"
     },
-
-    Sadapay: {
-        title: "Sadapay Account:",
+    sadapay: {
+        name: "SadaPay",
         number: "03281926729",
-        name: "Title: Muhammad Nadeem"
+        title: "Muhammad Nadeem"
     }
 };
 
-function handlePaymentMethodChange(method) {
-    const data =
-        PAYMENT_METHODS_DATA[method] ||
-        PAYMENT_METHODS_DATA.Easypaisa;
+let allCustomerDeposits = [];
+let activePaymentFilter = "all";
+let walletBusy = false;
 
-    const title = document.getElementById("accountTitleDisplay");
-    const number = document.getElementById("accountNumberDisplay");
-    const holder = document.getElementById("accountHolderDisplay");
+// ---------------- BASIC HELPERS ----------------
 
-    if (title) title.innerText = data.title;
-    if (number) number.innerText = data.number;
-    if (holder) holder.innerText = data.name;
+function walletClient() {
+    return (typeof supabaseClient !== "undefined" && supabaseClient)
+        ? supabaseClient
+        : null;
 }
 
-// ================= CURRENCY CALCULATION =================
+function walletUser() {
+    return (typeof currentUser !== "undefined" && currentUser && currentUser.id)
+        ? currentUser
+        : null;
+}
 
-function calculateDepositUSD() {
+function walletNotify(message, type = "info") {
+    if (typeof notify === "function") {
+        notify(message, type);
+    } else {
+        alert(message);
+    }
+}
+
+function walletEscape(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function walletFormatPKR(amount) {
+    return "Rs " + (Number(amount) || 0).toFixed(2);
+}
+
+function walletFormatDisplay(amountUSD) {
+    if (typeof formatPrice === "function") {
+        return formatPrice(Number(amountUSD) || 0);
+    }
+    return "$" + (Number(amountUSD) || 0).toFixed(2);
+}
+
+// ---------------- WALLET BALANCE ----------------
+
+async function refreshCustomerWalletBalance() {
+    const client = walletClient();
+    const user = walletUser();
+
+    if (!client || !user) return false;
+
+    try {
+        const { data, error } = await client
+            .from("profiles")
+            .select("balance")
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+            console.warn("Wallet profile not found.");
+            return false;
+        }
+
+        if (typeof currentUserProfile !== "undefined") {
+            currentUserProfile = {
+                ...(currentUserProfile || {}),
+                balance: Number(data.balance || 0)
+            };
+        }
+
+        if (typeof updateWalletDisplay === "function") {
+            updateWalletDisplay();
+        }
+
+        return true;
+
+    } catch (error) {
+        console.error("Wallet balance error:", error);
+        return false;
+    }
+}
+
+// ---------------- PAYMENT METHOD ----------------
+
+function updateDepositPaymentDetails() {
+    const methodInput = document.getElementById("depMethod");
+    const numberInput = document.getElementById("depSenderNum");
+
+    if (!methodInput || !numberInput) return;
+
+    const method = WALLET_PAYMENT_METHODS[
+        String(methodInput.value || "").toLowerCase()
+    ];
+
+    const accountDisplay = document.getElementById("depositAccountDetails");
+
+    if (method) {
+        if (accountDisplay) {
+            accountDisplay.innerText =
+                method.name + " | " + method.number +
+                " | " + method.title;
+        }
+    }
+}
+
+function updateDepositUSDHint() {
     const amountInput = document.getElementById("depAmountPKR");
     const hint = document.getElementById("depUSDHint");
 
     if (!amountInput || !hint) return;
 
-    const pkr = parseFloat(amountInput.value) || 0;
-    const usd = (pkr / PKR_TO_USD_RATE).toFixed(4);
+    const pkr = Number(amountInput.value || 0);
+    const usd = pkr / WALLET_CURRENCY_RATE;
 
-    hint.innerText =
-        pkr > 0 ? `Credit in Wallet: $${usd} USD` : "";
+    hint.innerText = "$" + usd.toFixed(2);
 }
 
-// ================= SUBMIT DEPOSIT =================
+// ---------------- SUBMIT DEPOSIT ----------------
 
-async function handleDepositSubmit(e) {
-    if (e) e.preventDefault();
+async function handleDepositSubmit(event) {
+    if (event) event.preventDefault();
 
-    const btn = document.getElementById("btnDepositSubmit");
-    const pkrInput = document.getElementById("depAmountPKR");
-    const methodInput = document.getElementById("depMethod");
-    const senderInput = document.getElementById("depSenderNum");
-    const trxInput = document.getElementById("depTrxId");
+    if (walletBusy) return;
 
-    if (!pkrInput || !methodInput || !senderInput || !trxInput) {
-        alert("Deposit form elements missing.");
-        return;
-    }
-
-    const pkr = Number(pkrInput.value);
-    const method = methodInput.value;
-    const sender = senderInput.value.trim();
-    const trx = trxInput.value.trim();
-
-    if (!Number.isFinite(pkr) || pkr < 200) {
-        alert("Minimum deposit is Rs 200.");
-        return;
-    }
-
-    if (!PAYMENT_METHODS_DATA[method]) {
-        alert("Please select a valid payment method.");
-        return;
-    }
-
-    if (!sender || !trx) {
-        alert("Please enter sender account and transaction ID.");
-        return;
-    }
-
-    const client = getDirectClient();
+    const client = walletClient();
+    const user = walletUser();
 
     if (!client) {
-        alert("Database connection error. Please refresh.");
-        return;
+        return walletNotify("Supabase connection unavailable.", "error");
     }
 
-    const originalText = btn
-        ? btn.innerHTML
-        : "SUBMIT DEPOSIT REQUEST";
+    if (!user) {
+        return walletNotify("Please login again before depositing.", "error");
+    }
 
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML =
+    const methodInput = document.getElementById("depMethod");
+    const amountInput = document.getElementById("depAmountPKR");
+    const senderInput = document.getElementById("depSenderNum");
+    const trxInput = document.getElementById("depTrxId");
+    const submitButton = document.getElementById("btnDepositSubmit");
+
+    const method = String(methodInput?.value || "").toLowerCase();
+    const amountPKR = Number(amountInput?.value || 0);
+    const senderAccount = String(senderInput?.value || "").trim();
+    const transactionId = String(trxInput?.value || "").trim();
+
+    if (!WALLET_PAYMENT_METHODS[method]) {
+        return walletNotify("Please select a valid payment method.", "error");
+    }
+
+    if (!Number.isFinite(amountPKR) || amountPKR < 200) {
+        return walletNotify("Minimum deposit is Rs 200.", "error");
+    }
+
+    if (!senderAccount || !transactionId) {
+        return walletNotify("Enter sender account and transaction ID.", "error");
+    }
+
+    const amountUSD = Number((amountPKR / WALLET_CURRENCY_RATE).toFixed(4));
+
+    walletBusy = true;
+
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.dataset.oldText = submitButton.innerHTML;
+        submitButton.innerHTML =
             '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
     }
 
     try {
-        const user = await getWalletUser();
-        const usd = Number((pkr / PKR_TO_USD_RATE).toFixed(4));
+        // Verify real Supabase Auth session
+        const { data: sessionData, error: sessionError } =
+            await client.auth.getSession();
 
-        const { error } = await client
+        if (sessionError) throw sessionError;
+
+        const authenticatedUser = sessionData?.session?.user;
+
+        if (!authenticatedUser || authenticatedUser.id !== user.id) {
+            throw new Error("Login session expired. Please login again.");
+        }
+
+        // Insert pending deposit
+        const { data, error } = await client
             .from("deposits")
             .insert({
-                user_id: user.id,
-                amount: usd,
+                user_id: authenticatedUser.id,
+                amount: amountUSD,
                 payment_method: method,
-                sender_account: sender,
-                transaction_id: trx,
+                sender_account: senderAccount,
+                transaction_id: transactionId,
                 status: "pending"
-            });
+            })
+            .select()
+            .single();
 
         if (error) throw error;
 
-        alert("Deposit request submitted successfully!");
+        walletNotify(
+            "Deposit request submitted successfully. Waiting for admin approval.",
+            "success"
+        );
 
-        pkrInput.value = "";
-        senderInput.value = "";
-        trxInput.value = "";
+        if (amountInput) amountInput.value = "";
+        if (senderInput) senderInput.value = "";
+        if (trxInput) trxInput.value = "";
 
-        const hint = document.getElementById("depUSDHint");
-        if (hint) hint.innerText = "";
-
-        openPaymentHistoryView();
+        updateDepositUSDHint();
         await loadCustomerDepositsHistory();
 
-    } catch (err) {
-        console.error("Deposit submission error:", err);
-        alert("Deposit Error: " + (err.message || "Please try again."));
+    } catch (error) {
+        console.error("Deposit submission error:", error);
+        walletNotify(error.message || "Deposit submission failed.", "error");
 
     } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
+        walletBusy = false;
+
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML =
+                submitButton.dataset.oldText ||
+                '<i class="fa-solid fa-paper-plane"></i> Submit Deposit';
         }
     }
 }
 
-// ================= PAYMENT HISTORY VIEW =================
-
-function openPaymentHistoryView() {
-    if (typeof switchTab === "function") {
-        switchTab("viewPaymentHistory");
-    }
-
-    loadCustomerDepositsHistory();
-}
-
-// ================= LOAD CUSTOMER DEPOSITS =================
+// ---------------- DEPOSIT HISTORY ----------------
 
 async function loadCustomerDepositsHistory() {
+    const client = walletClient();
+    const user = walletUser();
+
+    if (!client || !user) return;
+
     const container = document.getElementById(
         "paymentHistoryListContainer"
     );
 
-    if (!container) return;
-
-    container.innerHTML =
-        '<p style="text-align:center;padding:20px;">Loading deposits...</p>';
+    if (container) {
+        container.innerHTML =
+            '<div class="text-center">Loading payment history...</div>';
+    }
 
     try {
-        const client = getDirectClient();
-        if (!client) throw new Error("Database connection error.");
-
-        const user = await getWalletUser();
-
         const { data, error } = await client
             .from("deposits")
-            .select("*")
+            .select("id, amount, payment_method, sender_account, transaction_id, status, created_at")
             .eq("user_id", user.id)
             .order("created_at", { ascending: false });
 
         if (error) throw error;
 
         allCustomerDeposits = data || [];
+
         renderPaymentHistoryList(activePaymentFilter);
 
-    } catch (err) {
-        console.error("Deposit history error:", err);
+    } catch (error) {
+        console.error("Deposit history error:", error);
 
-        container.innerHTML =
-            '<p style="text-align:center;color:#FCA5A5;padding:20px;">' +
-            "Unable to load deposit history. " +
-            escapeWalletHTML(err.message || "") +
-            "</p>";
+        if (container) {
+            container.innerHTML =
+                '<div class="text-center">Unable to load payment history.</div>';
+        }
     }
 }
 
-// ================= FILTER HISTORY =================
+function renderPaymentHistoryList(filter = "all") {
+    activePaymentFilter = filter;
 
-function filterPaymentHistory(filterType, element) {
-    activePaymentFilter = filterType || "all";
-
-    document
-        .querySelectorAll(".filter-tabs-wrapper .filter-tab-pill")
-        .forEach(el => el.classList.remove("active"));
-
-    if (element) element.classList.add("active");
-
-    renderPaymentHistoryList(activePaymentFilter);
-}
-
-// ================= RENDER HISTORY =================
-
-function renderPaymentHistoryList(filterType = "all") {
     const container = document.getElementById(
         "paymentHistoryListContainer"
     );
 
     if (!container) return;
 
-    let filtered = allCustomerDeposits;
+    let deposits = [...allCustomerDeposits];
 
-    if (filterType === "pending") {
-        filtered = allCustomerDeposits.filter(
-            d => (d.status || "").toLowerCase() === "pending"
-        );
-    } else if (filterType === "approved") {
-        filtered = allCustomerDeposits.filter(
-            d => ["approved", "completed"].includes(
-                (d.status || "").toLowerCase()
-            )
-        );
-    } else if (filterType === "rejected") {
-        filtered = allCustomerDeposits.filter(
-            d => ["rejected", "cancelled"].includes(
-                (d.status || "").toLowerCase()
-            )
+    if (filter !== "all") {
+        deposits = deposits.filter(item =>
+            String(item.status || "").toLowerCase() === filter
         );
     }
 
-    if (!filtered.length) {
+    if (!deposits.length) {
         container.innerHTML =
-            '<p style="text-align:center;color:#A7F3D0;padding:25px;">' +
-            "No " + escapeWalletHTML(filterType) +
-            " records found.</p>";
+            '<div class="text-center">No deposit records found.</div>';
         return;
     }
 
-    container.innerHTML = filtered.map(d => {
-        const status = (d.status || "pending").toLowerCase();
+    container.innerHTML = deposits.map(item => {
+        const status = String(item.status || "pending").toLowerCase();
 
-        let statusText = "PENDING";
-        let badgeClass = "badge-pending";
+        const statusClass = {
+            pending: "pending",
+            approved: "approved",
+            rejected: "rejected"
+        }[status] || "pending";
 
-        if (status === "approved" || status === "completed") {
-            statusText = "APPROVED";
-            badgeClass = "badge-approved";
-        } else if (
-            status === "rejected" ||
-            status === "cancelled"
-        ) {
-            statusText = "REJECTED";
-            badgeClass = "badge-rejected";
-        }
-
-        const usd = Number(d.amount || 0);
-        const pkr = Math.round(usd * PKR_TO_USD_RATE);
+        const date = item.created_at
+            ? new Date(item.created_at).toLocaleString()
+            : "-";
 
         return `
-            <div class="deposit-record-card">
-                <div class="deposit-record-row">
-                    <strong style="color:#FFE873;font-size:.95rem;">
-                        ${escapeWalletHTML(d.payment_method || "Deposit")}
-                    </strong>
-                    <span class="badge ${badgeClass}">
-                        ${statusText}
-                    </span>
+            <div class="payment-history-item">
+                <div class="payment-history-info">
+                    <strong>${walletEscape(item.payment_method || "Deposit")}</strong>
+                    <small>${walletEscape(date)}</small>
+                    <small>Transaction: ${walletEscape(item.transaction_id || "-")}</small>
+                    <small>Sender: ${walletEscape(item.sender_account || "-")}</small>
                 </div>
 
-                <div class="deposit-record-row"
-                     style="color:#fff;font-size:.88rem;font-weight:700;">
-                    <span>Rs ${pkr} PKR</span>
-                    <span style="color:#34D399;font-size:1.05rem;">
-                        $${usd.toFixed(4)} USD
+                <div class="payment-history-amount">
+                    <strong>${walletFormatPKR(
+                        (Number(item.amount) || 0) * WALLET_CURRENCY_RATE
+                    )}</strong>
+                    <small>${walletFormatDisplay(item.amount)}</small>
+                    <span class="status-${statusClass}">
+                        ${walletEscape(status.toUpperCase())}
                     </span>
                 </div>
-
-                <div class="deposit-record-row"
-                     style="color:#A7F3D0;font-size:.75rem;
-                     border-top:1px dashed rgba(34,197,94,.25);
-                     padding-top:5px;margin-top:3px;">
-                    <span>TRX:
-                        <strong>${escapeWalletHTML(d.transaction_id || "-")}</strong>
-                    </span>
-                    <span>Sender:
-                        <strong>${escapeWalletHTML(d.sender_account || "-")}</strong>
-                    </span>
-                </div>
-
-                <small style="color:rgba(167,243,208,.65);
-                font-size:.68rem;text-align:right;">
-                    ${d.created_at ? new Date(d.created_at).toLocaleString() : ""}
-                </small>
             </div>
         `;
     }).join("");
 }
 
-// ================= SAFE HTML =================
+// ---------------- HISTORY FILTER ----------------
 
-function escapeWalletHTML(value) {
-    return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    })[char]);
+function filterPaymentHistory(filter) {
+    renderPaymentHistoryList(filter);
 }
 
-// ================= REFRESH WALLET BALANCE =================
+function openPaymentHistoryView() {
+    if (typeof switchTab === "function") {
+        switchTab("viewPaymentHistory", null);
+    }
+    loadCustomerDepositsHistory();
+}
 
-async function refreshCustomerWalletBalance() {
-    try {
-        const client = getDirectClient();
-        if (!client) return null;
+// ---------------- INITIALIZATION ----------------
 
-        const user = await getWalletUser();
+function initWalletSystem() {
+    const methodInput = document.getElementById("depMethod");
+    const amountInput = document.getElementById("depAmountPKR");
 
-        const { data, error } = await client
-            .from("profiles")
-            .select("balance")
-            .eq("id", user.id)
-            .single();
+    if (methodInput) {
+        methodInput.addEventListener(
+            "change",
+            updateDepositPaymentDetails
+        );
+    }
 
-        if (error) throw error;
+    if (amountInput) {
+        amountInput.addEventListener(
+            "input",
+            updateDepositUSDHint
+        );
+    }
 
-        const balance = Number(data.balance || 0);
+    updateDepositPaymentDetails();
+    updateDepositUSDHint();
 
-        const selectors = [
-            "#walletBalance",
-            "#userWalletBalance",
-            "#profileWalletBalance",
-            "[data-wallet-balance]"
-        ];
-
-        selectors.forEach(selector => {
-            document.querySelectorAll(selector).forEach(el => {
-                el.textContent = "$" + balance.toFixed(4) + " USD";
-            });
-        });
-
-        return balance;
-
-    } catch (err) {
-        console.error("Wallet balance refresh error:", err);
-        return null;
+    if (walletUser()) {
+        refreshCustomerWalletBalance();
+        loadCustomerDepositsHistory();
     }
 }
 
-// ================= INITIALIZE =================
-
-document.addEventListener("DOMContentLoaded", () => {
-    const method = document.getElementById("depMethod");
-
-    if (method) {
-        handlePaymentMethodChange(method.value);
-
-        method.addEventListener("change", () => {
-            handlePaymentMethodChange(method.value);
-        });
-    }
-
-    const amount = document.getElementById("depAmountPKR");
-
-    if (amount) {
-        amount.addEventListener("input", calculateDepositUSD);
-    }
-});
+window.addEventListener("DOMContentLoaded", initWalletSystem);
