@@ -39,7 +39,6 @@
         .form-control.has-icon { padding-right: 45px; }
         .form-control:focus { border-color: var(--primary-gold); }
         
-        /* Eye Toggle Icon for Password */
         .password-toggle { position: absolute; right: 15px; top: 36px; cursor: pointer; font-size: 16px; color: var(--text-muted); user-select: none; z-index: 10; }
 
         .btn-main { width: 100%; padding: 14px; background: linear-gradient(135deg, #ffbe0b, #fb8500); border: none; border-radius: 10px; color: #000; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 15px rgba(255,190,11,0.3); }
@@ -117,7 +116,7 @@
         </div>
     </div>
 
-    <!-- FORGOT PASSWORD MODAL (Hidden by default, opens only on click) -->
+    <!-- FORGOT PASSWORD MODAL -->
     <div id="forgot-modal" class="vip-modal-overlay hidden">
         <div class="vip-modal-box">
             <div style="font-size: 35px; margin-bottom: 10px;">🔒</div>
@@ -206,10 +205,10 @@
             </div>
         </div>
 
-        <!-- Notice Banner -->
+        <!-- Live Notice Banner -->
         <div class="notice-banner">
             <span>📢 NOTICE:</span>
-            <marquee scrollamount="4">Welcome to MULTANI SMM! All services are active with instant speed. Binance USDT Rate: 1$ = 290 PKR. 24/7 Support available.</marquee>
+            <marquee scrollamount="4" id="top-notice-marquee">Welcome to MULTANI SMM! All services are active with instant speed.</marquee>
         </div>
 
         <div class="bismillah-header">بِسْمِ اللَّهِ الرَّحْمٰنِ الرَّحِيمِ</div>
@@ -391,18 +390,27 @@
                 </div>
             </div>
 
-            <!-- TAB 7: SUPPORT / LIVE CHAT -->
+            <!-- TAB 7: WHATSAPP STYLE FULL-SCREEN SUPPORT CHAT -->
             <div id="tab-support" class="tab-pane hidden">
-                <div class="card-box">
-                    <div class="card-title">💬 Live Support Chat</div>
-                    <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-green); border-radius: 12px; padding: 15px; height: 300px; overflow-y: auto; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px;" id="chat-messages-box">
-                        <div style="background: rgba(255,190,11,0.1); border-left: 3px solid var(--primary-gold); padding: 10px; border-radius: 8px; font-size: 13px;">
-                            Assalam-o-Alaikum! Leave your question or TRX ID here. Admin will reply live.
+                <div class="card-box" style="width: 100%; height: 75vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+                    <!-- Chat Header -->
+                    <div style="display: flex; align-items: center; background: #0c261a; padding: 12px 15px; border-bottom: 1px solid var(--border-green); flex-shrink: 0; gap: 10px;">
+                        <div style="width:36px; height:36px; border-radius:50%; background:rgba(255,190,11,0.2); display:flex; align-items:center; justify-content:center; color:var(--primary-gold); font-weight:bold;">👑</div>
+                        <div>
+                            <div style="font-weight: 800; color: #fff; font-size: 14px;">MULTANI SMM VIP Support</div>
+                            <div style="font-size: 11px; color: var(--accent-green);">Online (Admin Muhammad Nadeem)</div>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="chat-input" class="form-control" placeholder="Type message...">
-                        <button type="button" onclick="sendChatMessage()" style="background: var(--primary-gold); border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; color: #000;">➤</button>
+
+                    <!-- Chat Messages Container -->
+                    <div id="chat-messages-container" style="background: #05140d; padding: 15px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="text-align: center; color: var(--text-muted);">Loading chat...</div>
+                    </div>
+
+                    <!-- Chat Input Box -->
+                    <div style="display: flex; gap: 10px; padding: 12px; background: #0c261a; border-top: 1px solid var(--border-green); flex-shrink: 0;">
+                        <input type="text" id="chat-input" class="form-control" placeholder="Type a message or TRX ID..." style="margin: 0; border-radius: 20px; background: rgba(0,0,0,0.5);" onkeypress="if(event.key === 'Enter') sendChatMessage();">
+                        <button type="button" onclick="sendChatMessage()" style="background: var(--primary-gold); border: none; width: 42px; height: 42px; border-radius: 50%; font-weight: 800; cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; font-size: 16px;">➤</button>
                     </div>
                 </div>
             </div>
@@ -440,10 +448,10 @@
 
         </div>
 
-        <!-- Bottom Navigation Bar -->
+        <!-- Bottom Navigation Bar (With 🏠 Home Icon) -->
         <div class="bottom-nav">
             <a class="nav-item active" onclick="switchTab('dashboard')" id="nav-dashboard">
-                <div>🎲</div>Home
+                <div>🏠</div>Home
             </a>
             <a class="nav-item" onclick="switchTab('new-order')" id="nav-new-order">
                 <div>🛒</div>Order
@@ -532,6 +540,7 @@
             });
 
             updateDepositDetails();
+            loadActiveNotice();
 
             const { data: { session } } = await _supabase.auth.getSession();
             if (session) {
@@ -541,6 +550,16 @@
                 showAuthScreen();
             }
         });
+
+        async function loadActiveNotice() {
+            const { data } = await _supabase.from('settings').select('*').eq('key', 'announcement').single();
+            if (data && data.value) {
+                document.getElementById('top-notice-marquee').innerText = data.value;
+            } else {
+                const savedNotice = localStorage.getItem('multani_live_notice');
+                if(savedNotice) document.getElementById('top-notice-marquee').innerText = savedNotice;
+            }
+        }
 
         function updateDepositDetails() {
             const method = document.getElementById('deposit-method').value;
@@ -724,6 +743,7 @@
             if (tabName === 'dashboard') {
                 document.getElementById('tab-dashboard').classList.remove('hidden');
                 document.getElementById('nav-dashboard').classList.add('active');
+                loadActiveNotice();
             } else if (tabName === 'new-order') {
                 document.getElementById('tab-new-order').classList.remove('hidden');
                 document.getElementById('nav-new-order').classList.add('active');
@@ -737,10 +757,11 @@
                 document.getElementById('tab-deposit').classList.remove('hidden');
             } else if (tabName === 'payment-history') {
                 document.getElementById('tab-payment-history').classList.remove('hidden');
-                filterPayments('Pending'); // Default open with PENDING
+                loadPaymentHistory('Pending');
             } else if (tabName === 'support') {
                 document.getElementById('tab-support').classList.remove('hidden');
                 document.getElementById('nav-support').classList.add('active');
+                loadCustomerChat();
             } else if (tabName === 'profile') {
                 document.getElementById('tab-profile').classList.remove('hidden');
             }
@@ -748,17 +769,17 @@
         }
 
         async function fetchUserProfile() {
-            const { data } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+            const { data } = await _supabase.from('profiles').select('*').eq('email', currentUser.email).single();
             if (data) {
                 const bal = parseFloat(data.balance || 0);
                 document.getElementById('header-balance').innerText = formatCurrency(bal);
-                document.getElementById('stat-spent').innerText = formatCurrency(0);
                 document.getElementById('profile-name').value = data.full_name || '';
                 document.getElementById('profile-whatsapp').value = data.whatsapp || '';
                 document.getElementById('profile-email').value = data.email || currentUser.email;
-                if (data.avatar_url) {
-                    document.getElementById('top-profile-img').src = data.avatar_url;
-                    document.getElementById('profile-avatar-img').src = data.avatar_url;
+                if (data.dp_url || data.avatar_url) {
+                    const dp = data.dp_url || data.avatar_url;
+                    document.getElementById('top-profile-img').src = dp;
+                    document.getElementById('profile-avatar-img').src = dp;
                 }
             }
         }
@@ -783,11 +804,15 @@
                 renderServicesList(services);
             }
 
-            const { data: orders } = await _supabase.from('orders').select('*, services(name)').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+            const { data: orders } = await _supabase.from('orders').select('*, services(name)').or(`email.eq.${currentUser.email},user_email.eq.${currentUser.email},user_id.eq.${currentUser.id}`).order('created_at', { ascending: false });
             if (orders) {
                 document.getElementById('stat-total-orders').innerText = orders.length;
                 document.getElementById('stat-completed').innerText = orders.filter(o => o.status === 'Completed').length;
                 document.getElementById('stat-pending').innerText = orders.filter(o => o.status === 'Pending').length;
+                
+                let totalSpentVal = 0;
+                orders.forEach(o => { if(o.charge) totalSpentVal += parseFloat(o.charge); });
+                document.getElementById('stat-spent').innerText = formatCurrency(totalSpentVal);
 
                 const tbody = document.getElementById('orders-table-body');
                 tbody.innerHTML = '';
@@ -795,8 +820,8 @@
                     orders.forEach(ord => {
                         tbody.innerHTML += `
                             <tr>
-                                <td>#${ord.id.slice(0, 5)}</td>
-                                <td>${ord.services ? ord.services.name : 'Service'}</td>
+                                <td>#${ord.id ? ord.id.toString().slice(0, 5) : '1'}</td>
+                                <td>${ord.services ? ord.services.name : (ord.service_name || 'Service')}</td>
                                 <td><a href="${ord.link}" target="_blank" style="color: var(--accent-green);">Link</a></td>
                                 <td>${ord.quantity}</td>
                                 <td>${formatCurrency(ord.charge)}</td>
@@ -898,14 +923,29 @@
 
             const charge = (srv.rate * qty) / 1000;
 
+            // Check User Balance (Email Based)
+            const { data: profile } = await _supabase.from('profiles').select('*').eq('email', currentUser.email).single();
+            const currentBalance = profile ? parseFloat(profile.balance || 0) : 0;
+
+            if (currentBalance < charge) {
+                showVipAlert('Insufficient balance! Please deposit funds to place order.');
+                return;
+            }
+
+            // Deduct Balance (Email Based)
+            const newBalance = currentBalance - charge;
+            await _supabase.from('profiles').update({ balance: newBalance }).eq('email', currentUser.email);
+
+            // Insert Order with Email
             const { error } = await _supabase.from('orders').insert([
-                { user_id: currentUser.id, service_id: srv.id, link: link, quantity: qty, charge: charge, status: 'Pending' }
+                { user_id: currentUser.id, email: currentUser.email, user_email: currentUser.email, service_id: srv.id, service_name: srv.name, link: link, quantity: qty, charge: charge, status: 'Pending' }
             ]);
 
             if (error) {
                 showVipAlert('Order Error: ' + error.message);
             } else {
-                showVipAlert('Order placed successfully!');
+                showVipAlert('Order placed successfully! Balance deducted.');
+                fetchUserProfile();
                 loadAppData();
                 switchTab('orders');
             }
@@ -923,7 +963,7 @@
             }
 
             const { error } = await _supabase.from('deposits').insert([
-                { user_id: currentUser.id, payment_method: method, amount: amount, sender_number: sender, transaction_id: trx, status: 'Pending' }
+                { user_id: currentUser.id, email: currentUser.email, user_email: currentUser.email, payment_method: method, amount: amount, sender_number: sender, transaction_id: trx, status: 'Pending' }
             ]);
 
             if (error) {
@@ -953,7 +993,7 @@
                 }
             });
 
-            let query = _supabase.from('deposits').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+            let query = _supabase.from('deposits').select('*').or(`email.eq.${currentUser.email},user_email.eq.${currentUser.email},user_id.eq.${currentUser.id}`).order('created_at', { ascending: false });
             if (filterStatus !== 'ALL') {
                 query = query.eq('status', filterStatus);
             }
@@ -986,19 +1026,45 @@
             loadPaymentHistory(status);
         }
 
+        async function loadCustomerChat() {
+            const chatBox = document.getElementById('chat-messages-container');
+            chatBox.innerHTML = `<div style="text-align: center; color: var(--text-muted);">Loading chat...</div>`;
+
+            const { data: msgs } = await _supabase.from('support_tickets').select('*').or(`email.eq.${currentUser.email},user_email.eq.${currentUser.email},user_id.eq.${currentUser.id}`).order('created_at', { ascending: true });
+            chatBox.innerHTML = '';
+
+            if (msgs && msgs.length > 0) {
+                msgs.forEach(m => {
+                    const isAdmin = m.message.startsWith('Admin:');
+                    chatBox.innerHTML += `
+                        <div style="display: flex; justify-content: ${isAdmin ? 'flex-start' : 'flex-end'};">
+                            <div style="background: ${isAdmin ? 'rgba(255,190,11,0.2)' : 'rgba(255,255,255,0.08)'}; border: 1px solid ${isAdmin ? 'var(--primary-gold)' : 'var(--border-green)'}; padding: 10px 14px; border-radius: 12px; font-size: 14px; max-width: 80%; color: #fff;">
+                                ${m.message}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                chatBox.innerHTML = `
+                    <div style="background: rgba(255,190,11,0.1); border-left: 3px solid var(--primary-gold); padding: 10px; border-radius: 8px; font-size: 13px; color: #fff;">
+                        Assalam-o-Alaikum! Leave your question or TRX ID here. Admin will reply live.
+                    </div>
+                `;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
         async function sendChatMessage() {
             const input = document.getElementById('chat-input');
             const msg = input.value.trim();
             if (!msg) return;
 
-            const chatBox = document.getElementById('chat-messages-box');
-            chatBox.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 13px; text-align: right;"><strong>You:</strong> ${msg}</div>`;
-            input.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
-
             await _supabase.from('support_tickets').insert([
-                { user_id: currentUser.id, subject: 'Live Chat Message', message: msg, status: 'Open' }
+                { user_id: currentUser.id, email: currentUser.email, user_email: currentUser.email, subject: 'Live Chat Message', message: msg, status: 'Pending' }
             ]);
+
+            input.value = '';
+            loadCustomerChat();
         }
 
         async function updateProfileAvatar(event) {
@@ -1011,7 +1077,7 @@
                 document.getElementById('top-profile-img').src = base64Img;
                 document.getElementById('profile-avatar-img').src = base64Img;
 
-                await _supabase.from('profiles').update({ avatar_url: base64Img }).eq('id', currentUser.id);
+                await _supabase.from('profiles').update({ dp_url: base64Img, avatar_url: base64Img }).eq('email', currentUser.email);
                 showVipAlert('Profile picture updated successfully!');
             };
             reader.readAsDataURL(file);
@@ -1024,7 +1090,7 @@
             const { error } = await _supabase.from('profiles').update({
                 full_name: name,
                 whatsapp: whatsapp
-            }).eq('id', currentUser.id);
+            }).eq('email', currentUser.email);
 
             if (error) {
                 showVipAlert('Error updating profile: ' + error.message);
